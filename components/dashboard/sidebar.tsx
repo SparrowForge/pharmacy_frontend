@@ -56,11 +56,6 @@ const inventoryNavItems = [
     href: "/dashboard/medicines",
     icon: PackageOpen,
   },
-  {
-    title: "Suppliers",
-    href: "/dashboard/suppliers",
-    icon: Truck,
-  },
 ]
 
 const peopleNavItems = [
@@ -73,6 +68,16 @@ const peopleNavItems = [
     title: "Users",
     href: "/dashboard/users",
     icon: UserCog,
+  },
+  {
+    title: "Suppliers",
+    href: "/dashboard/suppliers",
+    icon: Truck,
+  },
+  {
+    title: "Manufacturers",
+    href: "/dashboard/manufacturers",
+    icon: Building2,
   },
 ]
 

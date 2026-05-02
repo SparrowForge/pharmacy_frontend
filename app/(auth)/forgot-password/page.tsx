@@ -293,6 +293,11 @@ export default function ForgotPasswordPage() {
             </Link>
           </div>
         )}
+
+        {/* Footer */}
+        <p className="text-center text-xs text-muted-foreground mt-8">
+          &copy; 2026 PharmaSmart by Sparrow Forge Ltd. All rights reserved.
+        </p>
       </div>
     </div>
   )

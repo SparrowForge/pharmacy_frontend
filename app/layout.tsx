@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#d09062',
+  themeColor: '#4ade80',
 }
 
 export default function RootLayout({
@@ -39,8 +39,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
-      <body className="font-sans antialiased">
+    <html lang="en" className={`${inter.variable} ${poppins.variable} bg-background`}>
+      <body className="font-sans antialiased bg-gradient-to-br from-background via-background to-primary/5 animate-gradient-flow min-h-screen">
         {children}
         <Toaster />
         <Analytics />

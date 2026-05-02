@@ -58,6 +58,7 @@ export default function POSPage() {
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [cart, setCart] = useState<CartItem[]>([])
   const [discount, setDiscount] = useState(0)
+  const [discountCode, setDiscountCode] = useState("")
   const [paymentMethod, setPaymentMethod] = useState<string>("")
   const [paidAmount, setPaidAmount] = useState("")
   const [customerName, setCustomerName] = useState("")
@@ -377,6 +378,32 @@ export default function POSPage() {
                 onChange={(e) => setDiscount(Math.min(100, Math.max(0, parseFloat(e.target.value) || 0)))}
                 className="h-9 text-sm"
               />
+            </div>
+
+            {/* Discount Code */}
+            <div className="flex items-center gap-2">
+              <Input
+                type="text"
+                placeholder="Enter discount code"
+                value={discountCode}
+                onChange={(e) => setDiscountCode(e.target.value)}
+                className="h-9 text-sm flex-1"
+              />
+              <Button 
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  if (discountCode.trim()) {
+                    toast.success(`Discount code "${discountCode}" applied!`)
+                    setDiscountCode("")
+                  } else {
+                    toast.error("Please enter a discount code")
+                  }
+                }}
+                className="bg-gradient-to-r from-primary/20 to-primary/10 hover:from-primary/30 hover:to-primary/20 border-primary/30"
+              >
+                Apply
+              </Button>
             </div>
 
             <Separator />

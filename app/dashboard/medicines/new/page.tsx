@@ -166,12 +166,22 @@ export default function AddMedicinePage() {
                     </div>
                   </div>
                   <div className="space-y-2">
+                    <Label htmlFor="mrp">MRP (Max Retail Price) *</Label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                      <Input id="mrp" type="number" step="0.01" className="pl-7" placeholder="0.00" required />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="selling">Selling Price *</Label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
                       <Input id="selling" type="number" step="0.01" className="pl-7" placeholder="0.00" required />
                     </div>
                   </div>
+                </div>
+
+                <div className="grid sm:grid-cols-1 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="minStock">Minimum Stock</Label>
                     <Input id="minStock" type="number" placeholder="50" min="0" />

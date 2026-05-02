@@ -4,85 +4,85 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Pharmacy SaaS Theme - Primary: #d09062 (warm premium pharmacy tone) */
-  --background: oklch(0.98 0.005 60);
-  --foreground: oklch(0.2 0.01 60);
+  /* Eco Light Green Theme - Primary: #4ade80 (fresh eco green) */
+  --background: oklch(0.98 0.01 145);
+  --foreground: oklch(0.2 0.02 145);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.01 60);
+  --card-foreground: oklch(0.2 0.02 145);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.01 60);
-  --primary: oklch(0.7 0.12 55);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.96 0.01 60);
-  --secondary-foreground: oklch(0.2 0.01 60);
-  --muted: oklch(0.95 0.01 60);
-  --muted-foreground: oklch(0.5 0.02 60);
-  --accent: oklch(0.92 0.02 60);
-  --accent-foreground: oklch(0.2 0.01 60);
+  --popover-foreground: oklch(0.2 0.02 145);
+  --primary: oklch(0.72 0.19 145);
+  --primary-foreground: oklch(0.15 0.03 145);
+  --secondary: oklch(0.96 0.02 145);
+  --secondary-foreground: oklch(0.2 0.02 145);
+  --muted: oklch(0.95 0.02 145);
+  --muted-foreground: oklch(0.5 0.03 145);
+  --accent: oklch(0.92 0.04 145);
+  --accent-foreground: oklch(0.2 0.02 145);
   --destructive: oklch(0.55 0.2 25);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.9 0.01 60);
-  --input: oklch(0.92 0.01 60);
-  --ring: oklch(0.7 0.12 55);
-  --chart-1: oklch(0.7 0.12 55);
-  --chart-2: oklch(0.65 0.1 180);
-  --chart-3: oklch(0.6 0.08 230);
-  --chart-4: oklch(0.75 0.15 80);
+  --border: oklch(0.9 0.03 145);
+  --input: oklch(0.92 0.02 145);
+  --ring: oklch(0.72 0.19 145);
+  --chart-1: oklch(0.72 0.19 145);
+  --chart-2: oklch(0.65 0.15 160);
+  --chart-3: oklch(0.6 0.12 180);
+  --chart-4: oklch(0.75 0.12 130);
   --chart-5: oklch(0.55 0.2 25);
   --radius: 0.75rem;
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.2 0.01 60);
-  --sidebar-primary: oklch(0.7 0.12 55);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.96 0.02 55);
-  --sidebar-accent-foreground: oklch(0.2 0.01 60);
-  --sidebar-border: oklch(0.92 0.01 60);
-  --sidebar-ring: oklch(0.7 0.12 55);
+  --sidebar: oklch(0.99 0.01 145);
+  --sidebar-foreground: oklch(0.2 0.02 145);
+  --sidebar-primary: oklch(0.72 0.19 145);
+  --sidebar-primary-foreground: oklch(0.15 0.03 145);
+  --sidebar-accent: oklch(0.95 0.04 145);
+  --sidebar-accent-foreground: oklch(0.2 0.02 145);
+  --sidebar-border: oklch(0.92 0.02 145);
+  --sidebar-ring: oklch(0.72 0.19 145);
   
-  /* Custom Pharmacy Colors */
-  --pharmacy-primary: #d09062;
-  --pharmacy-primary-light: #e3b18f;
-  --pharmacy-primary-dark: #b87a52;
-  --pharmacy-beige: #f9f7f5;
-  --pharmacy-charcoal: #2b2b2b;
-  --pharmacy-success: oklch(0.65 0.15 145);
-  --pharmacy-warning: oklch(0.75 0.15 70);
-  --pharmacy-info: oklch(0.6 0.12 240);
+  /* Custom Eco Green Colors */
+  --pharmacy-primary: #4ade80;
+  --pharmacy-primary-light: #86efac;
+  --pharmacy-primary-dark: #22c55e;
+  --pharmacy-beige: #f0fdf4;
+  --pharmacy-charcoal: #14532d;
+  --pharmacy-success: oklch(0.72 0.19 145);
+  --pharmacy-warning: oklch(0.75 0.15 85);
+  --pharmacy-info: oklch(0.6 0.12 200);
 }
 
 .dark {
-  --background: oklch(0.15 0.01 60);
-  --foreground: oklch(0.95 0.005 60);
-  --card: oklch(0.18 0.01 60);
-  --card-foreground: oklch(0.95 0.005 60);
-  --popover: oklch(0.18 0.01 60);
-  --popover-foreground: oklch(0.95 0.005 60);
-  --primary: oklch(0.75 0.12 55);
-  --primary-foreground: oklch(0.15 0.01 60);
-  --secondary: oklch(0.25 0.01 60);
-  --secondary-foreground: oklch(0.95 0.005 60);
-  --muted: oklch(0.25 0.01 60);
-  --muted-foreground: oklch(0.65 0.02 60);
-  --accent: oklch(0.25 0.02 55);
-  --accent-foreground: oklch(0.95 0.005 60);
+  --background: oklch(0.15 0.02 145);
+  --foreground: oklch(0.95 0.01 145);
+  --card: oklch(0.18 0.02 145);
+  --card-foreground: oklch(0.95 0.01 145);
+  --popover: oklch(0.18 0.02 145);
+  --popover-foreground: oklch(0.95 0.01 145);
+  --primary: oklch(0.72 0.19 145);
+  --primary-foreground: oklch(0.15 0.03 145);
+  --secondary: oklch(0.25 0.02 145);
+  --secondary-foreground: oklch(0.95 0.01 145);
+  --muted: oklch(0.25 0.02 145);
+  --muted-foreground: oklch(0.65 0.03 145);
+  --accent: oklch(0.25 0.04 145);
+  --accent-foreground: oklch(0.95 0.01 145);
   --destructive: oklch(0.5 0.18 25);
-  --destructive-foreground: oklch(0.95 0.005 60);
-  --border: oklch(0.28 0.01 60);
-  --input: oklch(0.25 0.01 60);
-  --ring: oklch(0.75 0.12 55);
-  --chart-1: oklch(0.75 0.12 55);
-  --chart-2: oklch(0.7 0.1 180);
-  --chart-3: oklch(0.65 0.08 230);
-  --chart-4: oklch(0.8 0.15 80);
+  --destructive-foreground: oklch(0.95 0.01 145);
+  --border: oklch(0.28 0.02 145);
+  --input: oklch(0.25 0.02 145);
+  --ring: oklch(0.72 0.19 145);
+  --chart-1: oklch(0.72 0.19 145);
+  --chart-2: oklch(0.7 0.15 160);
+  --chart-3: oklch(0.65 0.12 180);
+  --chart-4: oklch(0.8 0.12 130);
   --chart-5: oklch(0.6 0.2 25);
-  --sidebar: oklch(0.15 0.01 60);
-  --sidebar-foreground: oklch(0.95 0.005 60);
-  --sidebar-primary: oklch(0.75 0.12 55);
-  --sidebar-primary-foreground: oklch(0.15 0.01 60);
-  --sidebar-accent: oklch(0.22 0.02 55);
-  --sidebar-accent-foreground: oklch(0.95 0.005 60);
-  --sidebar-border: oklch(0.28 0.01 60);
-  --sidebar-ring: oklch(0.75 0.12 55);
+  --sidebar: oklch(0.15 0.02 145);
+  --sidebar-foreground: oklch(0.95 0.01 145);
+  --sidebar-primary: oklch(0.72 0.19 145);
+  --sidebar-primary-foreground: oklch(0.15 0.03 145);
+  --sidebar-accent: oklch(0.22 0.04 145);
+  --sidebar-accent-foreground: oklch(0.95 0.01 145);
+  --sidebar-border: oklch(0.28 0.02 145);
+  --sidebar-ring: oklch(0.72 0.19 145);
 }
 
 @theme inline {
@@ -182,8 +182,22 @@ html {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(208, 144, 98, 0.4); }
-  50% { box-shadow: 0 0 20px 5px rgba(208, 144, 98, 0.2); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4); }
+  50% { box-shadow: 0 0 20px 5px rgba(74, 222, 128, 0.2); }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes gradient-flow {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 100% 50%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 0% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .animate-fade-in {
@@ -196,4 +210,14 @@ html {
 
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 6s ease-in-out infinite;
+}
+
+.animate-gradient-flow {
+  background-size: 300% 300%;
+  animation: gradient-flow 8s ease-in-out infinite;
 }

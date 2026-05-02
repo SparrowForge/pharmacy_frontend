@@ -29,7 +29,7 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="bg-foreground text-background py-16">
+    <footer className="bg-gradient-to-r from-foreground via-foreground/95 to-foreground/90 text-background py-16 animate-gradient">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
           {/* Brand */}
@@ -112,7 +112,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="pt-8 border-t border-background/10 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-background/60">
-            &copy; {new Date().getFullYear()} PharmaSmart. All rights reserved.
+            &copy; 2026 PharmaSmart by Sparrow Forge Ltd. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-background/60">
             <Link href="#" className="hover:text-primary transition-colors">

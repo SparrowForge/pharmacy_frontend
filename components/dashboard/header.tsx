@@ -92,7 +92,7 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
   return (
     <header
       className={cn(
-        "fixed top-0 right-0 z-30 h-16 bg-card/95 backdrop-blur-sm border-b border-border transition-all duration-300",
+        "fixed top-0 right-0 z-30 h-16 bg-gradient-to-r from-primary via-primary/80 to-primary/60 text-primary-foreground backdrop-blur-sm border-b border-primary/20 transition-all duration-300 animate-gradient",
         sidebarCollapsed ? "left-[72px]" : "left-64"
       )}
     >
@@ -100,13 +100,13 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
         {/* Search */}
         <div className="flex-1 max-w-md">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-foreground/70" />
             <Input
               type="search"
               placeholder="Search medicines, customers, orders..."
-              className="pl-10 h-10 bg-muted/50 border-transparent focus:border-border"
+              className="pl-10 h-10 bg-primary-foreground/10 border-primary-foreground/20 focus:border-primary-foreground/40 text-primary-foreground placeholder:text-primary-foreground/50"
             />
-            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 text-[10px] font-medium text-muted-foreground">
+            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex h-5 items-center gap-1 rounded border bg-primary-foreground/10 border-primary-foreground/20 px-1.5 text-[10px] font-medium text-primary-foreground/70">
               <span className="text-xs">⌘</span>K
             </kbd>
           </div>
@@ -119,7 +119,7 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
             variant="ghost"
             size="icon"
             onClick={toggleDarkMode}
-            className="h-10 w-10"
+            className="h-10 w-10 text-primary-foreground hover:bg-primary-foreground/20"
           >
             {isDarkMode ? (
               <Sun className="w-5 h-5" />
@@ -131,7 +131,7 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-10 w-10 relative">
+              <Button variant="ghost" size="icon" className="h-10 w-10 relative text-primary-foreground hover:bg-primary-foreground/20">
                 <Bell className="w-5 h-5" />
                 {unreadCount > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-destructive text-destructive-foreground text-[10px] font-medium rounded-full flex items-center justify-center">
@@ -190,13 +190,13 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
           {/* Profile */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-10 gap-2 px-2">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-sm font-semibold text-primary">JD</span>
+              <Button variant="ghost" className="h-10 gap-2 px-2 text-primary-foreground hover:bg-primary-foreground/20">
+                <div className="w-8 h-8 rounded-full bg-primary-foreground/20 flex items-center justify-center">
+                  <span className="text-sm font-semibold text-primary-foreground">JD</span>
                 </div>
                 <div className="hidden sm:block text-left">
-                  <p className="text-sm font-medium leading-none">John Doe</p>
-                  <p className="text-xs text-muted-foreground">Shop Admin</p>
+                  <p className="text-sm font-medium leading-none text-primary-foreground">John Doe</p>
+                  <p className="text-xs text-primary-foreground/70">Shop Admin</p>
                 </div>
               </Button>
             </DropdownMenuTrigger>

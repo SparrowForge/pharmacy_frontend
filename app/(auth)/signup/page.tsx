@@ -92,7 +92,7 @@ export default function SignupPage() {
 
           {/* Footer */}
           <p className="text-sm text-background/50">
-            &copy; {new Date().getFullYear()} PharmaSmart. All rights reserved.
+            &copy; 2026 PharmaSmart by Sparrow Forge Ltd. All rights reserved.
           </p>
         </div>
       </div>
