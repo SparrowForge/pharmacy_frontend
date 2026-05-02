@@ -24,6 +24,7 @@ import {
   Building2,
   UserCog,
   ClipboardList,
+  RotateCcw,
 } from "lucide-react"
 
 const mainNavItems = [
@@ -78,6 +79,24 @@ const peopleNavItems = [
     title: "Manufacturers",
     href: "/dashboard/manufacturers",
     icon: Building2,
+  },
+]
+
+const operationsNavItems = [
+  {
+    title: "Invoices",
+    href: "/dashboard/invoices",
+    icon: FileText,
+  },
+  {
+    title: "Returns",
+    href: "/dashboard/returns",
+    icon: RotateCcw,
+  },
+  {
+    title: "Purchase Orders",
+    href: "/dashboard/purchase-orders",
+    icon: ClipboardList,
   },
 ]
 
@@ -207,11 +226,12 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <ScrollArea className="flex-1 py-4">
-          <nav className="px-3 space-y-6">
+        <ScrollArea className="flex-1 py-4 overflow-hidden">
+          <nav className="px-3 space-y-6 pr-4">
             <NavSection items={mainNavItems} />
             <NavSection title="Inventory" items={inventoryNavItems} />
             <NavSection title="People" items={peopleNavItems} />
+            <NavSection title="Operations" items={operationsNavItems} />
             <NavSection title="More" items={moreNavItems} />
             <NavSection title="Admin" items={adminNavItems} />
           </nav>

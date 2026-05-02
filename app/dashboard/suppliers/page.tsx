@@ -21,6 +21,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import {
@@ -43,6 +56,7 @@ import {
   Building2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
 
 const suppliersData = [
   { id: 1, name: "PharmaCorp", contact: "John Smith", email: "john@pharmacorp.com", phone: "+1 555-0101", address: "123 Medical Drive, NY", products: 45, status: "Active" },
@@ -55,6 +69,7 @@ const suppliersData = [
 export default function SuppliersPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [addModalOpen, setAddModalOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState("basic")
 
   const filteredSuppliers = suppliersData.filter((supplier) =>
     supplier.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -78,40 +93,150 @@ export default function SuppliersPage() {
               Add Supplier
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-lg">
+          <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle>Add New Supplier</DialogTitle>
               <DialogDescription>
-                Enter supplier details to add to your network
+                Enter supplier details with location information
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Company Name *</Label>
-                  <Input placeholder="Supplier name" />
+
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="basic">Basic Info</TabsTrigger>
+                <TabsTrigger value="location">Location Details</TabsTrigger>
+              </TabsList>
+
+              {/* BASIC INFO TAB */}
+              <TabsContent value="basic" className="space-y-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Company Name *</Label>
+                    <Input placeholder="Supplier name" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Contact Person *</Label>
+                    <Input placeholder="Contact name" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Email *</Label>
+                    <Input type="email" placeholder="email@company.com" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Phone *</Label>
+                    <Input placeholder="+1 555-0000" />
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Contact Person *</Label>
-                  <Input placeholder="Contact name" />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Email *</Label>
-                  <Input type="email" placeholder="email@company.com" />
+                  <Label>Street Address</Label>
+                  <Input placeholder="Street address" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Phone *</Label>
-                  <Input placeholder="+1 555-0000" />
+                  <Label>Description</Label>
+                  <Textarea placeholder="Company description" rows={2} />
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Address</Label>
-                <Textarea placeholder="Full address" rows={2} />
-              </div>
-              <Button className="w-full bg-primary hover:bg-primary/90">
+              </TabsContent>
+
+              {/* LOCATION DETAILS TAB */}
+              <TabsContent value="location" className="space-y-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Division/State *</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select division" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="dhaka">Dhaka</SelectItem>
+                        <SelectItem value="chittagong">Chittagong</SelectItem>
+                        <SelectItem value="rajshahi">Rajshahi</SelectItem>
+                        <SelectItem value="khulna">Khulna</SelectItem>
+                        <SelectItem value="barishal">Barishal</SelectItem>
+                        <SelectItem value="sylhet">Sylhet</SelectItem>
+                        <SelectItem value="rangpur">Rangpur</SelectItem>
+                        <SelectItem value="mymensingh">Mymensingh</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>District *</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select district" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="dhaka">Dhaka</SelectItem>
+                        <SelectItem value="narayanganj">Narayanganj</SelectItem>
+                        <SelectItem value="gazipur">Gazipur</SelectItem>
+                        <SelectItem value="faridpur">Faridpur</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Upazila *</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select upazila" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="gulshan">Gulshan</SelectItem>
+                        <SelectItem value="banani">Banani</SelectItem>
+                        <SelectItem value="motijheel">Motijheel</SelectItem>
+                        <SelectItem value="dhanmondi">Dhanmondi</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Union</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select union" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="union1">Union 1</SelectItem>
+                        <SelectItem value="union2">Union 2</SelectItem>
+                        <SelectItem value="union3">Union 3</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Thana/Police Station</Label>
+                    <Input placeholder="Thana name" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Zone/Area</Label>
+                    <Input placeholder="Zone name" />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Postal Code</Label>
+                  <Input placeholder="Postal code" />
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            <div className="flex gap-2 pt-4">
+              <Button 
+                className="flex-1 bg-primary hover:bg-primary/90"
+                onClick={() => {
+                  toast.success("Supplier added successfully")
+                  setAddModalOpen(false)
+                  setActiveTab("basic")
+                }}
+              >
                 Add Supplier
+              </Button>
+              <Button variant="outline" onClick={() => setAddModalOpen(false)}>
+                Cancel
               </Button>
             </div>
           </DialogContent>
