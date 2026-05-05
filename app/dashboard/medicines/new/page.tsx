@@ -35,8 +35,7 @@ export default function AddMedicinePage() {
   const [activeTab, setActiveTab] = useState("basic")
   const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState("")
-  const [badges, setBadges] = useState<string[]>([])
-  const [badgeInput, setBadgeInput] = useState("")
+
   const [rackNumber, setRackNumber] = useState("")
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -70,9 +69,9 @@ export default function AddMedicinePage() {
         <div className="space-y-6">
           {/* Tabs for Different Sections */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="basic">Basic</TabsTrigger>
-              <TabsTrigger value="pricing">Pricing</TabsTrigger>
+
               <TabsTrigger value="business">Business</TabsTrigger>
               <TabsTrigger value="seo">SEO & Media</TabsTrigger>
             </TabsList>
@@ -244,113 +243,7 @@ export default function AddMedicinePage() {
               </Card>
             </TabsContent>
 
-            {/* PRICING TAB */}
-            <TabsContent value="pricing" className="space-y-6">
-              <Card className="border-border">
-                <CardHeader>
-                  <CardTitle>Stock & Pricing</CardTitle>
-                  <CardDescription>Set inventory and pricing details</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid sm:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="batch">Batch Number *</Label>
-                      <Input id="batch" placeholder="B2024XXX" required />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="expiry">Expiry Date *</Label>
-                      <Input id="expiry" type="date" required />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="stock">Initial Stock *</Label>
-                      <Input id="stock" type="number" placeholder="0" min="0" required />
-                    </div>
-                  </div>
-
-                  <div className="grid sm:grid-cols-4 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="purchase">Purchase Price *</Label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                        <Input id="purchase" type="number" step="0.01" className="pl-7" placeholder="0.00" required />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="mrp">MRP *</Label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                        <Input id="mrp" type="number" step="0.01" className="pl-7" placeholder="0.00" required />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="selling">Selling Price *</Label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                        <Input id="selling" type="number" step="0.01" className="pl-7" placeholder="0.00" required />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="offeredPrice">Offered Price</Label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                        <Input id="offeredPrice" type="number" step="0.01" className="pl-7" placeholder="0.00" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="minStock">Minimum Stock Level</Label>
-                      <Input id="minStock" type="number" placeholder="50" min="0" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="maxStock">Maximum Stock Level</Label>
-                      <Input id="maxStock" type="number" placeholder="500" min="0" />
-                    </div>
-                  </div>
-
-                  {/* Badges for Pricing */}
-                  <div className="space-y-2">
-                    <Label>Product Badges</Label>
-                    <div className="flex gap-2 mb-2">
-                      <Input
-                        placeholder="e.g. New, Sale, Popular, Limited"
-                        value={badgeInput}
-                        onChange={(e) => setBadgeInput(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && badgeInput.trim()) {
-                            setBadges([...badges, badgeInput.trim()])
-                            setBadgeInput("")
-                          }
-                        }}
-                      />
-                      <Button type="button" variant="outline" onClick={() => {
-                        if (badgeInput.trim()) {
-                          setBadges([...badges, badgeInput.trim()])
-                          setBadgeInput("")
-                        }
-                      }}>
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {badges.map((badge) => (
-                        <Badge key={badge} className="gap-2 bg-primary hover:bg-primary/90">
-                          {badge}
-                          <button
-                            type="button"
-                            onClick={() => setBadges(badges.filter((b) => b !== badge))}
-                            className="hover:text-destructive"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+            
 
             {/* BUSINESS SETTINGS TAB */}
             <TabsContent value="business" className="space-y-6">

@@ -1,10 +1,16 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -12,7 +18,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -20,15 +26,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   Search,
   Plus,
@@ -42,43 +48,117 @@ import {
   Trash2,
   Eye,
   ShoppingCart,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 const customersData = [
-  { id: 1, name: "John Doe", email: "john@email.com", phone: "+1 555-0201", totalOrders: 24, totalSpent: 1250.00, loyaltyPoints: 125, creditLimit: 500, status: "Regular" },
-  { id: 2, name: "Sarah Wilson", email: "sarah@email.com", phone: "+1 555-0202", totalOrders: 56, totalSpent: 3450.00, loyaltyPoints: 345, creditLimit: 1000, status: "VIP" },
-  { id: 3, name: "Mike Brown", email: "mike@email.com", phone: "+1 555-0203", totalOrders: 12, totalSpent: 580.00, loyaltyPoints: 58, creditLimit: 200, status: "Regular" },
-  { id: 4, name: "Emily Davis", email: "emily@email.com", phone: "+1 555-0204", totalOrders: 8, totalSpent: 320.00, loyaltyPoints: 32, creditLimit: 0, status: "New" },
-  { id: 5, name: "David Chen", email: "david@email.com", phone: "+1 555-0205", totalOrders: 89, totalSpent: 5680.00, loyaltyPoints: 568, creditLimit: 2000, status: "VIP" },
-  { id: 6, name: "Lisa Anderson", email: "lisa@email.com", phone: "+1 555-0206", totalOrders: 15, totalSpent: 890.00, loyaltyPoints: 89, creditLimit: 300, status: "Regular" },
-]
+  {
+    id: 1,
+    name: "John Doe",
+    email: "john@email.com",
+    phone: "+1 555-0201",
+    totalOrders: 24,
+    totalSpent: 1250.0,
+    loyaltyPoints: 125,
+    creditLimit: 500,
+    status: "Regular",
+  },
+  {
+    id: 2,
+    name: "Sarah Wilson",
+    email: "sarah@email.com",
+    phone: "+1 555-0202",
+    totalOrders: 56,
+    totalSpent: 3450.0,
+    loyaltyPoints: 345,
+    creditLimit: 1000,
+    status: "VIP",
+  },
+  {
+    id: 3,
+    name: "Mike Brown",
+    email: "mike@email.com",
+    phone: "+1 555-0203",
+    totalOrders: 12,
+    totalSpent: 580.0,
+    loyaltyPoints: 58,
+    creditLimit: 200,
+    status: "Regular",
+  },
+  {
+    id: 4,
+    name: "Emily Davis",
+    email: "emily@email.com",
+    phone: "+1 555-0204",
+    totalOrders: 8,
+    totalSpent: 320.0,
+    loyaltyPoints: 32,
+    creditLimit: 0,
+    status: "New",
+  },
+  {
+    id: 5,
+    name: "David Chen",
+    email: "david@email.com",
+    phone: "+1 555-0205",
+    totalOrders: 89,
+    totalSpent: 5680.0,
+    loyaltyPoints: 568,
+    creditLimit: 2000,
+    status: "VIP",
+  },
+  {
+    id: 6,
+    name: "Lisa Anderson",
+    email: "lisa@email.com",
+    phone: "+1 555-0206",
+    totalOrders: 15,
+    totalSpent: 890.0,
+    loyaltyPoints: 89,
+    creditLimit: 300,
+    status: "Regular",
+  },
+];
 
 export default function CustomersPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [addModalOpen, setAddModalOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [addModalOpen, setAddModalOpen] = useState(false);
 
-  const filteredCustomers = customersData.filter((customer) =>
-    customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    customer.phone.includes(searchQuery)
-  )
+  const filteredCustomers = customersData.filter(
+    (customer) =>
+      customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customer.phone.includes(searchQuery),
+  );
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "VIP": return "bg-primary/10 text-primary"
-      case "Regular": return "bg-green-100 text-green-700"
-      case "New": return "bg-blue-100 text-blue-700"
-      default: return "bg-gray-100 text-gray-700"
+      case "VIP":
+        return "bg-primary/10 text-primary";
+      case "Regular":
+        return "bg-green-100 text-green-700";
+      case "New":
+        return "bg-blue-100 text-blue-700";
+      default:
+        return "bg-gray-100 text-gray-700";
     }
-  }
+  };
+  const types = ["Customer", "Supplier", "Zyrtec", "Prilosec", "Nature Made", "Advil", "Glucophage", "Bayer", "Generic"]
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Customers</h1>
+          <h1 className="text-2xl font-bold text-foreground">Stakeholders</h1>
           <p className="text-muted-foreground">
             Manage customer profiles and loyalty programs
           </p>
@@ -87,44 +167,86 @@ export default function CustomersPage() {
           <DialogTrigger asChild>
             <Button className="bg-primary hover:bg-primary/90">
               <Plus className="w-4 h-4 mr-2" />
-              Add Customer
+              Add Stakeholder
             </Button>
           </DialogTrigger>
+
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
-              <DialogTitle>Add New Customer</DialogTitle>
+              <DialogTitle>Add New Stakeholder</DialogTitle>
               <DialogDescription>
-                Create a new customer profile
+                Create and manage customer or supplier profile
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label>Full Name *</Label>
-                <Input placeholder="Customer name" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+
+            <div className="space-y-6 py-4">
+              {/* BASIC INFO */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                  Basic Information
+                </h4>
+
                 <div className="space-y-2">
-                  <Label>Phone *</Label>
-                  <Input placeholder="+1 555-0000" />
+                  <Label>Full Name *</Label>
+                  <Input placeholder="Enter full name" />
                 </div>
-                <div className="space-y-2">
-                  <Label>Email</Label>
-                  <Input type="email" placeholder="email@example.com" />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Phone *</Label>
+                    <Input placeholder="+880 1XXXXXXXXX" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <Input type="email" placeholder="email@example.com" />
+                  </div>
                 </div>
               </div>
+
+              <div className="space-y-2 ">
+                <Label htmlFor="type">Brand</Label>
+                <Select>
+                  <SelectTrigger id="type">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {types.map((type) => (
+                      <SelectItem key={type} value={type.toLowerCase()}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+           
+              {/* ADDRESS */}
               <div className="space-y-2">
                 <Label>Address</Label>
                 <Textarea placeholder="Full address" rows={2} />
               </div>
-              <div className="space-y-2">
-                <Label>Credit Limit</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                  <Input type="number" className="pl-7" placeholder="0.00" />
+
+              {/* FINANCIAL INFO */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                  Financial Details
+                </h4>
+
+                <div className="space-y-2">
+                  <Label>Credit Limit</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      $
+                    </span>
+                    <Input type="number" className="pl-7" placeholder="0.00" />
+                  </div>
                 </div>
               </div>
+
+              {/* ACTION */}
               <Button className="w-full bg-primary hover:bg-primary/90">
-                Add Customer
+                Add Stakeholder
               </Button>
             </div>
           </DialogContent>
@@ -134,18 +256,45 @@ export default function CustomersPage() {
       {/* Stats */}
       <div className="grid sm:grid-cols-4 gap-4">
         {[
-          { label: "Total Customers", value: "1,245", icon: Users, color: "bg-primary/10 text-primary" },
-          { label: "VIP Customers", value: "89", icon: Gift, color: "bg-yellow-500/10 text-yellow-600" },
-          { label: "Total Credit Given", value: "$12,450", icon: CreditCard, color: "bg-blue-500/10 text-blue-500" },
-          { label: "Avg. Spend", value: "$156", icon: ShoppingCart, color: "bg-green-500/10 text-green-500" },
+          {
+            label: "Total Stakeholders",
+            value: "1,245",
+            icon: Users,
+            color: "bg-primary/10 text-primary",
+          },
+          {
+            label: "VIP Stakeholders",
+            value: "89",
+            icon: Gift,
+            color: "bg-yellow-500/10 text-yellow-600",
+          },
+          {
+            label: "Total Credit Given",
+            value: "$12,450",
+            icon: CreditCard,
+            color: "bg-blue-500/10 text-blue-500",
+          },
+          {
+            label: "Avg. Spend",
+            value: "$156",
+            icon: ShoppingCart,
+            color: "bg-green-500/10 text-green-500",
+          },
         ].map((stat, index) => (
           <Card key={index} className="border-border">
             <CardContent className="p-6 flex items-center gap-4">
-              <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center", stat.color)}>
+              <div
+                className={cn(
+                  "w-12 h-12 rounded-lg flex items-center justify-center",
+                  stat.color,
+                )}
+              >
                 <stat.icon className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {stat.value}
+                </p>
                 <p className="text-sm text-muted-foreground">{stat.label}</p>
               </div>
             </CardContent>
@@ -164,10 +313,10 @@ export default function CustomersPage() {
         />
       </div>
 
-      {/* Customers Table */}
+      {/* Stakeholders Table */}
       <Card className="border-border">
         <CardHeader>
-          <CardTitle>All Customers</CardTitle>
+          <CardTitle>All Stakeholders</CardTitle>
           <CardDescription>
             {filteredCustomers.length} customers found
           </CardDescription>
@@ -176,7 +325,7 @@ export default function CustomersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Customer</TableHead>
+                <TableHead>Stakeholder</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead className="text-right">Orders</TableHead>
                 <TableHead className="text-right">Total Spent</TableHead>
@@ -193,7 +342,10 @@ export default function CustomersPage() {
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                         <span className="text-sm font-semibold text-primary">
-                          {customer.name.split(" ").map(n => n[0]).join("")}
+                          {customer.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
                         </span>
                       </div>
                       <p className="font-medium">{customer.name}</p>
@@ -211,12 +363,17 @@ export default function CustomersPage() {
                       </p>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-medium">{customer.totalOrders}</TableCell>
+                  <TableCell className="text-right font-medium">
+                    {customer.totalOrders}
+                  </TableCell>
                   <TableCell className="text-right font-semibold text-primary">
                     ${customer.totalSpent.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-700">
+                    <Badge
+                      variant="secondary"
+                      className="bg-yellow-100 text-yellow-700"
+                    >
                       <Gift className="w-3 h-3 mr-1" />
                       {customer.loyaltyPoints}
                     </Badge>
@@ -225,7 +382,12 @@ export default function CustomersPage() {
                     ${customer.creditLimit.toFixed(2)}
                   </TableCell>
                   <TableCell>
-                    <Badge className={cn("border-0", getStatusColor(customer.status))}>
+                    <Badge
+                      className={cn(
+                        "border-0",
+                        getStatusColor(customer.status),
+                      )}
+                    >
                       {customer.status}
                     </Badge>
                   </TableCell>
@@ -263,5 +425,5 @@ export default function CustomersPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
