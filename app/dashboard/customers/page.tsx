@@ -57,7 +57,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import AddStakeholderDialog from "@/components/stakeholders/AddStakeholderDialog";
 
 const customersData = [
   {
@@ -128,6 +130,8 @@ const customersData = [
   },
 ];
 
+
+
 export default function CustomersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [addModalOpen, setAddModalOpen] = useState(false);
@@ -151,7 +155,17 @@ export default function CustomersPage() {
         return "bg-gray-100 text-gray-700";
     }
   };
-  const types = ["Customer", "Supplier", "Zyrtec", "Prilosec", "Nature Made", "Advil", "Glucophage", "Bayer", "Generic"]
+  const types = [
+    "Customer",
+    "Supplier",
+    "Zyrtec",
+    "Prilosec",
+    "Nature Made",
+    "Advil",
+    "Glucophage",
+    "Bayer",
+    "Generic",
+  ];
 
   return (
     <div className="space-y-6">
@@ -163,94 +177,7 @@ export default function CustomersPage() {
             Manage customer profiles and loyalty programs
           </p>
         </div>
-        <Dialog open={addModalOpen} onOpenChange={setAddModalOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-primary hover:bg-primary/90">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Stakeholder
-            </Button>
-          </DialogTrigger>
-
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Add New Stakeholder</DialogTitle>
-              <DialogDescription>
-                Create and manage customer or supplier profile
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-6 py-4">
-              {/* BASIC INFO */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                  Basic Information
-                </h4>
-
-                <div className="space-y-2">
-                  <Label>Full Name *</Label>
-                  <Input placeholder="Enter full name" />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Phone *</Label>
-                    <Input placeholder="+880 1XXXXXXXXX" />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Email</Label>
-                    <Input type="email" placeholder="email@example.com" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2 ">
-                <Label htmlFor="type">Brand</Label>
-                <Select>
-                  <SelectTrigger id="type">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {types.map((type) => (
-                      <SelectItem key={type} value={type.toLowerCase()}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-           
-              {/* ADDRESS */}
-              <div className="space-y-2">
-                <Label>Address</Label>
-                <Textarea placeholder="Full address" rows={2} />
-              </div>
-
-              {/* FINANCIAL INFO */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                  Financial Details
-                </h4>
-
-                <div className="space-y-2">
-                  <Label>Credit Limit</Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                      $
-                    </span>
-                    <Input type="number" className="pl-7" placeholder="0.00" />
-                  </div>
-                </div>
-              </div>
-
-              {/* ACTION */}
-              <Button className="w-full bg-primary hover:bg-primary/90">
-                Add Stakeholder
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <AddStakeholderDialog/>
       </div>
 
       {/* Stats */}
