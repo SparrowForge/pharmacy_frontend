@@ -23,7 +23,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 const steps = [
   { id: 1, title: "Basic Info" },
