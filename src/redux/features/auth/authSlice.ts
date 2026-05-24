@@ -59,7 +59,7 @@ const authSlice = createSlice({
         user: ILoginUser;
         tokens: ITokens;
         message: string;
-      }>
+      }>,
     ) => {
       state.loading = false;
 
@@ -93,7 +93,7 @@ const authSlice = createSlice({
         user: IRegisterUser;
         message: string;
         emailDispatched: boolean;
-      }>
+      }>,
     ) => {
       state.loading = false;
       state.user = action.payload.user as any; // safe reuse
@@ -106,6 +106,24 @@ const authSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
       state.successMessage = null;
+    },
+
+    /* ---------------- AUTH VERIFY EMAIL REDUCERS ---------------- */
+
+    verifyStart: (state) => {
+      state.loading = true;
+      state.error = null;
+      state.successMessage = null;
+    },
+
+    verifySuccess: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.successMessage = action.payload;
+    },
+
+    verifyFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
     },
 
     /* ---------------- AUTH LOGIN REDUCERS ---------------- */
@@ -131,6 +149,7 @@ const authSlice = createSlice({
 });
 
 export const {
+  /* ---------------- AUTH LOGIN REDUCERS ---------------- */
   loginStart,
   loginSuccess,
   loginFailure,
@@ -139,6 +158,11 @@ export const {
   registerStart,
   registerSuccess,
   registerFailure,
+
+  /* ---------------- AUTH VERIFY EMAIL REDUCERS ---------------- */
+  verifyStart,
+  verifySuccess,
+  verifyFailure,
 
   clearAuthMessage,
   logout,

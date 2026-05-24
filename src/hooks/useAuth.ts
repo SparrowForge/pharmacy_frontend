@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { IAuthLoginPayload } from "../types/auth.types";
+import { IAuthLoginPayload, IVerifyEmailPayload } from "../types/auth.types";
 
 import {
   loginFailure,
@@ -12,6 +12,9 @@ import {
   registerStart,
   registerSuccess,
   registerFailure,
+  verifyStart,
+  verifySuccess,
+  verifyFailure,
 } from "../redux/features/auth/authSlice";
 
 import { authService } from "../services/auth.service";
@@ -21,7 +24,7 @@ export const useAuth = () => {
 
   const auth = useAppSelector((state) => state.auth);
 
-  /* ---------------- LOGIN (UNCHANGED) ---------------- */
+  /* ---------------- LOGIN  ---------------- */
 
   const loginUser = useCallback(
     async (data: IAuthLoginPayload) => {
@@ -46,8 +49,7 @@ export const useAuth = () => {
 
         return response;
       } catch (error: any) {
-        const message =
-          error?.response?.data?.message || "Login failed";
+        const message = error?.response?.data?.message || "Login failed";
 
         dispatch(loginFailure(message));
 
@@ -59,7 +61,7 @@ export const useAuth = () => {
     [dispatch],
   );
 
-  /* ---------------- NEW: REGISTER ---------------- */
+  /* ----------------  REGISTER ---------------- */
 
   const registerUser = useCallback(
     async (data: any) => {
@@ -80,8 +82,7 @@ export const useAuth = () => {
 
         return response;
       } catch (error: any) {
-        const message =
-          error?.response?.data?.message || "Registration failed";
+        const message = error?.response?.data?.message || "Registration failed";
 
         dispatch(registerFailure(message));
 
@@ -93,7 +94,27 @@ export const useAuth = () => {
     [dispatch],
   );
 
-  /* ---------------- STATE (UNCHANGED) ---------------- */
+  /* ---------------- VERIFY EMAIL ---------------- */
+
+  const verifyEmailUser = useCallback(
+    async (data: IVerifyEmailPayload) => {
+      try {
+        dispatch(verifyStart());
+        const response = await authService.verifyEmailService(data);
+        dispatch(verifySuccess(response.message));
+        toast.success(response.message);
+        return response;
+      } catch (error: any) {
+        const message = error?.response?.data?.message || "Verification failed";
+        dispatch(verifyFailure(message));
+        toast.error(message);
+        throw error;
+      }
+    },
+    [dispatch],
+  );
+
+  /* ---------------- STATE  ---------------- */
 
   const memoizedState = useMemo(
     () => ({
@@ -109,7 +130,8 @@ export const useAuth = () => {
 
   return {
     loginUser,
-    registerUser, // NEW
+    registerUser,
+    verifyEmailUser,
     ...memoizedState,
   };
 };

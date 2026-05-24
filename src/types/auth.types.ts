@@ -53,3 +53,15 @@ export interface IAuthLoginResponse {
   user: ILoginUser;
   tokens: ITokens;
 }
+
+
+
+// Verify Token Interface
+export interface IVerifyEmailPayload {
+  token: string;
+}
+
+export interface IVerifyEmailResponse {
+  message: string;
+  success?: boolean;
+}

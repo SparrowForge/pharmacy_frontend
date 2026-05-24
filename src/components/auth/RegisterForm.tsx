@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/src/hooks/useAuth";
 import { useShops } from "@/src/hooks/useShops";
 import { useBranches } from "@/src/hooks/useBranches";
+import { USER_ROLE_OPTIONS } from "@/src/constants/userRoles";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -52,30 +53,20 @@ export default function RegisterForm() {
 
   const validate = () => {
     const err: any = {};
-
     if (!formData.fullName) err.fullName = "Full name required";
-
     if (!formData.email) err.email = "Email required";
-
     if (!formData.phone) err.phone = "Phone required";
-
     if (!formData.password || formData.password.length < 6)
       err.password = "Min 6 characters required";
-
     if (!formData.shopId) err.shopId = "Shop required";
-
     if (!formData.branchId) err.branchId = "Branch required";
-
     setErrors(err);
-
     return Object.keys(err).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validate()) return;
-
     try {
       await registerUser(formData);
       toast.success("Registration successful");
@@ -200,15 +191,18 @@ export default function RegisterForm() {
                   role: value,
                 })
               }
-              defaultValue="staff"
+              defaultValue={formData.role}
             >
               <SelectTrigger className="h-12 w-full">
-                <SelectValue />
+                <SelectValue placeholder="Select role" />
               </SelectTrigger>
 
               <SelectContent>
-                <SelectItem value="staff">Staff</SelectItem>
-                <SelectItem value="pos_user">POS User</SelectItem>
+                {USER_ROLE_OPTIONS.map((role) => (
+                  <SelectItem key={role.value} value={role.value}>
+                    {role.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

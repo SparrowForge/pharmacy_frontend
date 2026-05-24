@@ -1,4 +1,4 @@
-import { IAuthLoginPayload, IAuthLoginResponse, IRegisterPayload, IRegisterResponse } from "../types/auth.types";
+import { IAuthLoginPayload, IAuthLoginResponse, IRegisterPayload, IRegisterResponse, IVerifyEmailPayload, IVerifyEmailResponse } from "../types/auth.types";
 import axiosInstance from "./axios";
 
 
@@ -24,7 +24,19 @@ const registerUserService = async (
   return res.data;
 };
 
+const verifyEmailService = async (
+  data: IVerifyEmailPayload
+): Promise<IVerifyEmailResponse> => {
+  const res = await axiosInstance.post<IVerifyEmailResponse>(
+    "/auth/verify-email",
+    data
+  );
+
+  return res.data;
+};
+
 export const authService = {
   loginUserService,
   registerUserService,
+  verifyEmailService,
 };
