@@ -25,8 +25,12 @@ import {
   Package,
   Clock,
   CheckCircle,
+  KeyRound,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/src/hooks/useAuth";
+import { useCurrentUser } from "@/src/hooks/useCurrentUser";
 
 const notifications = [
   {
@@ -68,7 +72,12 @@ interface HeaderProps {
 }
 
 export function Header({ sidebarCollapsed }: HeaderProps) {
+  const router = useRouter();
+  const { logoutUser } = useAuth();
+  const user = useCurrentUser();
+
   const [isDarkMode, setIsDarkMode] = useState(false);
+
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const toggleDarkMode = () => {
@@ -88,6 +97,19 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
         return <Bell className="w-4 h-4" />;
     }
   };
+
+  const initials =
+    user?.fullName
+      ?.split(" ")
+      .map((n) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() || "U";
+
+  const role =
+    user?.role
+      ?.replace(/_/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase()) || "Role";
 
   return (
     <header
@@ -114,7 +136,7 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          {/* Dark Mode Toggle */}
+          {/* Dark Mode */}
           <Button
             variant="ghost"
             size="icon"
@@ -128,7 +150,7 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
             )}
           </Button>
 
-          {/* Notifications */}
+          {/* Notifications (UNCHANGED) */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -144,6 +166,7 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
                 )}
               </Button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="end" className="w-80">
               <DropdownMenuLabel className="flex items-center justify-between">
                 <span>Notifications</span>
@@ -154,6 +177,7 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
                 )}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+
               <div className="max-h-80 overflow-y-auto">
                 {notifications.map((notification) => (
                   <DropdownMenuItem
@@ -184,6 +208,7 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
                   </DropdownMenuItem>
                 ))}
               </div>
+
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-center text-sm text-primary cursor-pointer">
                 View all notifications
@@ -191,7 +216,7 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Profile */}
+          {/* Profile (FIXED) */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -200,50 +225,64 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
               >
                 <div className="w-8 h-8 rounded-full bg-primary-foreground/20 flex items-center justify-center">
                   <span className="text-sm font-semibold text-primary-foreground">
-                    JD
+                    {initials}
                   </span>
                 </div>
+
                 <div className="hidden sm:block text-left">
                   <p className="text-sm font-medium leading-none text-primary-foreground">
-                    John Doe
+                    {user?.fullName || "User"}
                   </p>
                   <p className="text-xs text-primary-foreground/70">
-                    Shop Admin
+                    {role}
                   </p>
                 </div>
               </Button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium">John Doe</p>
+                  <p className="text-sm font-medium">
+                    {user?.fullName || "User"}
+                  </p>
                   <p className="text-xs text-muted-foreground">
-                    john@pharmacy.com
+                    {user?.email || "user@email.com"}
                   </p>
                 </div>
               </DropdownMenuLabel>
+
               <DropdownMenuSeparator />
+
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/profile" className="cursor-pointer">
                   <User className="w-4 h-4 mr-2" />
                   Profile
                 </Link>
               </DropdownMenuItem>
+
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/settings" className="cursor-pointer">
                   <Settings className="w-4 h-4 mr-2" />
                   Settings
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                asChild
-                className="text-destructive focus:text-destructive"
-              >
-                <Link href="/login" className="cursor-pointer">
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
+
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/change-password" className="cursor-pointer">
+                  <KeyRound className="w-4 h-4 mr-2" />
+                  Change Password
                 </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem
+                onClick={() => logoutUser()}
+                className="text-destructive focus:text-destructive cursor-pointer"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

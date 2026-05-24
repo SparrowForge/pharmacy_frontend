@@ -75,3 +75,45 @@ export interface IResendVerificationEmailPayload {
 export interface IResendVerificationEmailResponse {
   message: string;
 }
+
+
+// Forgot Password
+export interface IForgotPasswordPayload {
+  email: string;
+}
+
+export interface IForgotPasswordResponse {
+  message: string;
+}
+
+// Verify Email with code for forgot password
+export interface IVerifyResetCodePayload {
+  email: string;
+  code: string;
+}
+
+export interface IVerifyResetCodeResponse {
+  message: string;
+}
+
+// Change Password
+export interface IResetPasswordPayload {
+  email: string;
+  code: string;
+  newPassword: string;
+}
+
+export interface IResetPasswordResponse {
+  message: string;
+}
+
+
+// Get Current User
+export interface ICurrentUser {
+  id: string;
+  fullName: string;
+  email: string;
+  role: string;
+  shopId?: string;
+  branchId?: string;
+}

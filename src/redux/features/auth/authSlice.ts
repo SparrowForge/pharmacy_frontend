@@ -46,7 +46,6 @@ const authSlice = createSlice({
 
   reducers: {
     /* ---------------- AUTH LOGIN REDUCERS  ---------------- */
-
     loginStart: (state) => {
       state.loading = true;
       state.error = null;
@@ -80,7 +79,6 @@ const authSlice = createSlice({
     },
 
     /* ---------------- AUTH REGISTER REDUCERS ---------------- */
-
     registerStart: (state) => {
       state.loading = true;
       state.error = null;
@@ -109,7 +107,6 @@ const authSlice = createSlice({
     },
 
     /* ---------------- AUTH VERIFY EMAIL REDUCERS ---------------- */
-
     verifyStart: (state) => {
       state.loading = true;
       state.error = null;
@@ -127,7 +124,6 @@ const authSlice = createSlice({
     },
 
     /* ---------------- AUTH RESEND VERIFY EMAIL REDUCERS ---------------- */
-
     resendVerificationStart: (state) => {
       state.loading = true;
       state.error = null;
@@ -144,8 +140,56 @@ const authSlice = createSlice({
       state.error = action.payload;
     },
 
-    /* ---------------- AUTH LOGIN REDUCERS ---------------- */
+    /* ---------------- FORGOT PASSWORD REDUCERS ---------------- */
+    forgotPasswordStart: (state) => {
+      state.loading = true;
+      state.error = null;
+      state.successMessage = null;
+    },
 
+    forgotPasswordSuccess: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.successMessage = action.payload;
+    },
+
+    forgotPasswordFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    /* ---------------- VERIFY RESET CODE REDUCERS ---------------- */
+    verifyResetCodeStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+
+    verifyResetCodeSuccess: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.successMessage = action.payload;
+    },
+
+    verifyResetCodeFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    /* ---------------- RESET PASSWORD REDUCERS ---------------- */
+    resetPasswordStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+
+    resetPasswordSuccess: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.successMessage = action.payload;
+    },
+
+    resetPasswordFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    /* ---------------- AUTH LOGIN REDUCERS ---------------- */
     clearAuthMessage: (state) => {
       state.error = null;
       state.successMessage = null;
@@ -186,6 +230,21 @@ export const {
   resendVerificationStart,
   resendVerificationSuccess,
   resendVerificationFailure,
+
+  /* ---------------- AUTH FORGOT PASSWORD REDUCERS ---------------- */
+  forgotPasswordStart,
+  forgotPasswordSuccess,
+  forgotPasswordFailure,
+
+  /* ---------------- VERIFY RESET CODE REDUCERS ---------------- */
+  verifyResetCodeStart,
+  verifyResetCodeSuccess,
+  verifyResetCodeFailure,
+
+  /* ---------------- RESET PASSWORD REDUCERS ---------------- */
+  resetPasswordStart,
+  resetPasswordSuccess,
+  resetPasswordFailure,
 
   clearAuthMessage,
   logout,

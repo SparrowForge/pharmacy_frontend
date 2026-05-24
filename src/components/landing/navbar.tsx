@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/src/components/ui/button";
 import { Menu, X, Pill } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { useCurrentUser } from "@/src/hooks/useCurrentUser";
 
 const navLinks = [
   { href: "#features", label: "Features" },
@@ -17,6 +18,7 @@ const navLinks = [
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const user = useCurrentUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,9 +64,11 @@ export function Navbar() {
 
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-3">
-            <Button variant="ghost" asChild>
-              <Link href="/login">Login</Link>
-            </Button>
+            {!user?.role && (
+              <Button variant="ghost" asChild>
+                <Link href="/login">Login</Link>
+              </Button>
+            )}
             <Button asChild className="bg-primary hover:bg-primary/90">
               <Link href="/signup">Get Started</Link>
             </Button>

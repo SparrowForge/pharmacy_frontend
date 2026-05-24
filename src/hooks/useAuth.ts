@@ -1,7 +1,14 @@
 import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { IAuthLoginPayload, IResendVerificationEmailPayload, IVerifyEmailPayload } from "../types/auth.types";
+import {
+  IAuthLoginPayload,
+  IForgotPasswordPayload,
+  IResendVerificationEmailPayload,
+  IResetPasswordPayload,
+  IVerifyEmailPayload,
+  IVerifyResetCodePayload,
+} from "../types/auth.types";
 
 import {
   loginFailure,
@@ -18,6 +25,16 @@ import {
   resendVerificationStart,
   resendVerificationSuccess,
   resendVerificationFailure,
+  forgotPasswordStart,
+  forgotPasswordSuccess,
+  forgotPasswordFailure,
+  verifyResetCodeStart,
+  verifyResetCodeSuccess,
+  verifyResetCodeFailure,
+  resetPasswordStart,
+  resetPasswordSuccess,
+  resetPasswordFailure,
+  logout,
 } from "../redux/features/auth/authSlice";
 
 import { authService } from "../services/auth.service";
@@ -116,32 +133,98 @@ export const useAuth = () => {
 
   /* ---------------- RESEND VERIFY EMAIL ---------------- */
   const resendVerificationEmailUser = useCallback(
-  async (
-    data: IResendVerificationEmailPayload
-  ) => {
-    try {
-      dispatch(resendVerificationStart());
-      const response = await authService.resendVerificationEmailService(data);
-      dispatch(
-        resendVerificationSuccess(
-          response.message
-        )
-      );
-      toast.success(response.message);
-      return response;
-    } catch (error: any) {
-      const message =
-        error?.response?.data?.message ||
-        "Failed to resend verification email";
-      dispatch(
-        resendVerificationFailure(message)
-      );
-      toast.error(message);
-      throw error;
-    }
-  },
-  [dispatch],
-);
+    async (data: IResendVerificationEmailPayload) => {
+      try {
+        dispatch(resendVerificationStart());
+        const response = await authService.resendVerificationEmailService(data);
+        dispatch(resendVerificationSuccess(response.message));
+        toast.success(response.message);
+        return response;
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message ||
+          "Failed to resend verification email";
+        dispatch(resendVerificationFailure(message));
+        toast.error(message);
+        throw error;
+      }
+    },
+    [dispatch],
+  );
+
+  /* ---------------- FORGOT PASSWORD ---------------- */
+  const forgotPasswordUser = useCallback(
+    async (data: IForgotPasswordPayload) => {
+      try {
+        dispatch(forgotPasswordStart());
+        const response = await authService.forgotPasswordService(data);
+        dispatch(forgotPasswordSuccess(response.message));
+        toast.success(response.message);
+        return response;
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message || "Failed to send reset email";
+
+        dispatch(forgotPasswordFailure(message));
+
+        toast.error(message);
+
+        throw error;
+      }
+    },
+    [dispatch],
+  );
+
+  /* ---------------- VERIFY RESET CODE ---------------- */
+  const verifyResetCodeUser = useCallback(
+    async (data: IVerifyResetCodePayload) => {
+      try {
+        dispatch(verifyResetCodeStart());
+        const response = await authService.verifyResetCodeService(data);
+        dispatch(verifyResetCodeSuccess(response.message));
+        toast.success(response.message);
+        return response;
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message || "Invalid verification code";
+        dispatch(verifyResetCodeFailure(message));
+        toast.error(message);
+        throw error;
+      }
+    },
+    [dispatch],
+  );
+
+  /* ---------------- RESET PASSWORD ---------------- */
+  const resetPasswordUser = useCallback(
+    async (data: IResetPasswordPayload) => {
+      try {
+        dispatch(resetPasswordStart());
+        const response = await authService.resetPasswordService(data);
+        dispatch(resetPasswordSuccess(response.message));
+        toast.success(response.message);
+        return response;
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message || "Failed to reset password";
+        dispatch(resetPasswordFailure(message));
+        toast.error(message);
+        throw error;
+      }
+    },
+    [dispatch],
+  );
+
+  /* ---------------- LOGOUT FUNCTIONALITY ---------------- */
+  const logoutUser = useCallback(() => {
+    dispatch(logout());
+
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+
+    toast.success("Logged out successfully");
+  }, [dispatch]);
 
   /* ---------------- STATE  ---------------- */
   const memoizedState = useMemo(
@@ -161,6 +244,10 @@ export const useAuth = () => {
     registerUser,
     verifyEmailUser,
     resendVerificationEmailUser,
+    forgotPasswordUser,
+    verifyResetCodeUser,
+    resetPasswordUser,
+    logoutUser,
     ...memoizedState,
   };
 };

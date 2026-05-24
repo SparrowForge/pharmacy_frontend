@@ -30,7 +30,6 @@ export default function DashboardLayout({
         >
           <div className="p-6">{children}</div>
         </main>
-        <Footer />
       </div>
     </ProtectedRoute>
   );
