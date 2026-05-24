@@ -126,6 +126,24 @@ const authSlice = createSlice({
       state.error = action.payload;
     },
 
+    /* ---------------- AUTH RESEND VERIFY EMAIL REDUCERS ---------------- */
+
+    resendVerificationStart: (state) => {
+      state.loading = true;
+      state.error = null;
+      state.successMessage = null;
+    },
+
+    resendVerificationSuccess: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.successMessage = action.payload;
+    },
+
+    resendVerificationFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
     /* ---------------- AUTH LOGIN REDUCERS ---------------- */
 
     clearAuthMessage: (state) => {
@@ -163,6 +181,11 @@ export const {
   verifyStart,
   verifySuccess,
   verifyFailure,
+
+  /* ---------------- AUTH RESEND VERIFY EMAIL REDUCERS ---------------- */
+  resendVerificationStart,
+  resendVerificationSuccess,
+  resendVerificationFailure,
 
   clearAuthMessage,
   logout,

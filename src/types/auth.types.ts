@@ -56,7 +56,7 @@ export interface IAuthLoginResponse {
 
 
 
-// Verify Token Interface
+// Verify Email Interface
 export interface IVerifyEmailPayload {
   token: string;
 }
@@ -64,4 +64,14 @@ export interface IVerifyEmailPayload {
 export interface IVerifyEmailResponse {
   message: string;
   success?: boolean;
+}
+
+
+// Resend Verify Email
+export interface IResendVerificationEmailPayload {
+  email: string;
+}
+
+export interface IResendVerificationEmailResponse {
+  message: string;
 }

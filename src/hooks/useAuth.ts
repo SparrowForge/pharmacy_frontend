@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { IAuthLoginPayload, IVerifyEmailPayload } from "../types/auth.types";
+import { IAuthLoginPayload, IResendVerificationEmailPayload, IVerifyEmailPayload } from "../types/auth.types";
 
 import {
   loginFailure,
@@ -15,6 +15,9 @@ import {
   verifyStart,
   verifySuccess,
   verifyFailure,
+  resendVerificationStart,
+  resendVerificationSuccess,
+  resendVerificationFailure,
 } from "../redux/features/auth/authSlice";
 
 import { authService } from "../services/auth.service";
@@ -25,7 +28,6 @@ export const useAuth = () => {
   const auth = useAppSelector((state) => state.auth);
 
   /* ---------------- LOGIN  ---------------- */
-
   const loginUser = useCallback(
     async (data: IAuthLoginPayload) => {
       try {
@@ -62,7 +64,6 @@ export const useAuth = () => {
   );
 
   /* ----------------  REGISTER ---------------- */
-
   const registerUser = useCallback(
     async (data: any) => {
       try {
@@ -95,7 +96,6 @@ export const useAuth = () => {
   );
 
   /* ---------------- VERIFY EMAIL ---------------- */
-
   const verifyEmailUser = useCallback(
     async (data: IVerifyEmailPayload) => {
       try {
@@ -114,8 +114,36 @@ export const useAuth = () => {
     [dispatch],
   );
 
-  /* ---------------- STATE  ---------------- */
+  /* ---------------- RESEND VERIFY EMAIL ---------------- */
+  const resendVerificationEmailUser = useCallback(
+  async (
+    data: IResendVerificationEmailPayload
+  ) => {
+    try {
+      dispatch(resendVerificationStart());
+      const response = await authService.resendVerificationEmailService(data);
+      dispatch(
+        resendVerificationSuccess(
+          response.message
+        )
+      );
+      toast.success(response.message);
+      return response;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        "Failed to resend verification email";
+      dispatch(
+        resendVerificationFailure(message)
+      );
+      toast.error(message);
+      throw error;
+    }
+  },
+  [dispatch],
+);
 
+  /* ---------------- STATE  ---------------- */
   const memoizedState = useMemo(
     () => ({
       user: auth.user,
@@ -132,6 +160,7 @@ export const useAuth = () => {
     loginUser,
     registerUser,
     verifyEmailUser,
+    resendVerificationEmailUser,
     ...memoizedState,
   };
 };
