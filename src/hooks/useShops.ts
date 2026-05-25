@@ -1,11 +1,16 @@
 import { useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/src/redux/hooks";
 import {
+  createShopFailure,
+  createShopStart,
+  createShopSuccess,
   fetchShopsFailure,
   fetchShopsStart,
   fetchShopsSuccess,
 } from "../redux/features/shops/shopSlice";
 import { shopService } from "../services/shop.service";
+import { ICreateShopPayload } from "../types/shop.types";
+import { toast } from "sonner";
 
 export const useShops = () => {
   const dispatch = useAppDispatch();
@@ -24,6 +29,25 @@ export const useShops = () => {
     }
   }, [dispatch]);
 
+  const createShop = useCallback(
+    async (payload: ICreateShopPayload) => {
+      try {
+        dispatch(createShopStart());
+        const response = await shopService.createShopService(payload);
+        dispatch(createShopSuccess(response));
+        toast.success("Shop created successfully");
+        return response;
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message || "Failed to create shop";
+        dispatch(createShopFailure(message));
+        toast.error(message);
+        throw error;
+      }
+    },
+    [dispatch],
+  );
+
   const memoizedState = useMemo(
     () => ({
       shops: shopState.shops,
@@ -35,6 +59,8 @@ export const useShops = () => {
 
   return {
     fetchShops,
+
+    createShop,
     ...memoizedState,
   };
 };

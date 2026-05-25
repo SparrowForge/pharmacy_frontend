@@ -56,7 +56,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-gradient-to-br from-background via-background to-primary/5 animate-gradient-flow min-h-screen">
         <ReduxProvider>
           {children}
-          <Toaster />
+          <Toaster position="top-right" richColors/>
           <Analytics />
         </ReduxProvider>
       </body>

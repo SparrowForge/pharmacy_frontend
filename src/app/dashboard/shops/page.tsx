@@ -58,6 +58,7 @@ import {
   Crown,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import ShopDialogueForm from "@/src/components/shops/ShopDialogueForm";
 
 const shopsData = [
   {
@@ -169,82 +170,7 @@ export default function ShopsPage() {
             </p>
           </div>
         </div>
-        <Dialog open={addModalOpen} onOpenChange={setAddModalOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-primary hover:bg-primary/90">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Shop
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Create New Shop</DialogTitle>
-              <DialogDescription>
-                Set up a new pharmacy in the system
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label>Shop Name *</Label>
-                <Input placeholder="Pharmacy name" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Owner Name *</Label>
-                  <Input placeholder="Owner full name" />
-                </div>
-                <div className="space-y-2">
-                  <Label>Email *</Label>
-                  <Input type="email" placeholder="owner@email.com" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Phone *</Label>
-                <Input placeholder="+1 555-0000" />
-              </div>
-              <div className="space-y-2">
-                <Label>Address</Label>
-                <Textarea placeholder="Full address" rows={2} />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Subscription Plan *</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select plan" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {plans.map((plan) => (
-                        <SelectItem key={plan} value={plan.toLowerCase()}>
-                          {plan}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Branch Limit</Label>
-                  <Input type="number" placeholder="1" min="1" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Status</Label>
-                <Select defaultValue="active">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="suspended">Suspended</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button className="w-full bg-primary hover:bg-primary/90">
-                Create Shop
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <ShopDialogueForm />
       </div>
 
       {/* Stats */}
