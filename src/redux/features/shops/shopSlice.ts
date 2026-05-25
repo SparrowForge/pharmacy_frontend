@@ -3,54 +3,89 @@ import { IShop } from "@/src/types/shop.types";
 
 interface IShopState {
   shops: IShop[];
-  loading: boolean;
+
+  fetchLoading: boolean;
+  createLoading: boolean;
+
   error: string | null;
+
+  page: number;
+  limit: number;
+  total: number;
 }
 
 const initialState: IShopState = {
   shops: [],
-  loading: false,
+
+  fetchLoading: false,
+  createLoading: false,
+
   error: null,
+
+  page: 1,
+  limit: 10,
+  total: 0,
 };
 
 const shopSlice = createSlice({
   name: "shop",
   initialState,
   reducers: {
-    /* SHOPS READ */
+    /* ================= FETCH SHOPS ================= */
+
     fetchShopsStart: (state) => {
-      state.loading = true;
+      state.fetchLoading = true;
       state.error = null;
     },
 
-    fetchShopsSuccess: (state, action: PayloadAction<IShop[]>) => {
-      state.loading = false;
-      state.shops = action.payload;
+    fetchShopsSuccess: (
+      state,
+      action: PayloadAction<{
+        data: IShop[];
+        page: number;
+        limit: number;
+        total: number;
+      }>
+    ) => {
+      state.fetchLoading = false;
+
+      state.shops = action.payload.data;
+      state.page = action.payload.page;
+      state.limit = action.payload.limit;
+      state.total = action.payload.total;
     },
 
     fetchShopsFailure: (state, action: PayloadAction<string>) => {
-      state.loading = false;
+      state.fetchLoading = false;
       state.error = action.payload;
     },
 
-    /* SHOPS CREATE */
+    /* ================= CREATE SHOP ================= */
+
     createShopStart: (state) => {
-      state.loading = true;
+      state.createLoading = true;
       state.error = null;
     },
 
-    createShopSuccess: (state, action) => {
-      state.loading = false;
-      state.shops = action.payload;
+    createShopSuccess: (state, action: PayloadAction<IShop>) => {
+      state.createLoading = false;
+
+      // add new shop on top (NO REFRESH NEEDED)
+      state.shops.unshift(action.payload);
+
+      state.total += 1;
     },
 
-    createShopFailure: (state, action) => {
-      state.loading = false;
+    createShopFailure: (state, action: PayloadAction<string>) => {
+      state.createLoading = false;
       state.error = action.payload;
     },
 
+    /* ================= RESET ================= */
+
     clearShopState: (state) => {
-      state.loading = false;
+      state.fetchLoading = false;
+      state.createLoading = false;
       state.error = null;
     },
   },

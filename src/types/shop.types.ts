@@ -30,6 +30,14 @@ export interface IShopResponse {
   data: IShop[];
 }
 
+export interface IGetShopsQuery {
+  page?: number;
+  limit?: number;
+  q?: string;
+  includeDeleted?: boolean;
+}
+
+
 export interface ICreateShopPayload {
   name: string;
   owner_name: string;
@@ -48,6 +56,7 @@ export interface ICreateShopPayload {
   line_id: string | null;
   branch_limit: number;
 }
+
 
 export interface IShopState {
   loading: boolean;

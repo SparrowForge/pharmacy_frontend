@@ -32,7 +32,7 @@ import { useShops } from "@/src/hooks/useShops";
 export default function ShopDialogueForm() {
   const [open, setOpen] = useState(false);
 
-  const { createShop, loading } = useShops();
+  const { createShop, createLoading } = useShops();
   const { shopPlans, getShopPlans } = useEnum();
 
 const initialFormState = {
@@ -245,9 +245,9 @@ const initialFormState = {
           <Button
             onClick={handleCreate}
             className="w-full bg-primary hover:bg-primary/90"
-            disabled={loading}
+            disabled={createLoading}
           >
-            {loading ? (
+            {createLoading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Creating...

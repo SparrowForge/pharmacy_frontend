@@ -1,8 +1,10 @@
 import axiosInstance from "./axios";
-import { ICreateShopPayload, IShop, IShopResponse } from "@/src/types/shop.types";
+import { ICreateShopPayload, IGetShopsQuery, IShop, IShopResponse } from "@/src/types/shop.types";
 
-const getAllShops = async (): Promise<IShopResponse> => {
-  const res = await axiosInstance.get<IShopResponse>("/shops");
+const getAllShops = async ( params: IGetShopsQuery): Promise<IShopResponse> => {
+  const res = await axiosInstance.get<IShopResponse>("/shops",{
+    params,
+  });
   return res.data;
 };
 

@@ -1,66 +1,84 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@/src/redux/hooks";
+import { shopService } from "../services/shop.service";
+import { toast } from "sonner";
+
 import {
-  createShopFailure,
-  createShopStart,
-  createShopSuccess,
-  fetchShopsFailure,
   fetchShopsStart,
   fetchShopsSuccess,
+  fetchShopsFailure,
+  createShopStart,
+  createShopSuccess,
+  createShopFailure,
 } from "../redux/features/shops/shopSlice";
-import { shopService } from "../services/shop.service";
-import { ICreateShopPayload } from "../types/shop.types";
-import { toast } from "sonner";
 
 export const useShops = () => {
   const dispatch = useAppDispatch();
   const shopState = useAppSelector((state) => state.shops);
-  const fetchShops = useCallback(async () => {
-    try {
-      dispatch(fetchShopsStart());
-      const res = await shopService.getAllShops();
-      dispatch(fetchShopsSuccess(res.data));
-    } catch (error: any) {
-      dispatch(
-        fetchShopsFailure(
-          error?.response?.data?.message || "Failed to fetch shops",
-        ),
-      );
-    }
-  }, [dispatch]);
+
+  /* ================= FETCH ================= */
+
+  const fetchShops = useCallback(
+    async (params?: {
+      page?: number;
+      limit?: number;
+      q?: string;
+      includeDeleted?: boolean;
+    }) => {
+      try {
+        dispatch(fetchShopsStart());
+
+        const res = await shopService.getAllShops({
+          page: params?.page ?? 1,
+          limit: params?.limit ?? 10,
+          q: params?.q ?? "",
+          includeDeleted: params?.includeDeleted ?? false,
+        });
+
+        dispatch(fetchShopsSuccess(res));
+      } catch (error: any) {
+        dispatch(
+          fetchShopsFailure(
+            error?.response?.data?.message || "Failed to fetch shops"
+          )
+        );
+      }
+    },
+    [dispatch]
+  );
+
+  /* ================= CREATE ================= */
 
   const createShop = useCallback(
-    async (payload: ICreateShopPayload) => {
+    async (payload: any) => {
       try {
         dispatch(createShopStart());
-        const response = await shopService.createShopService(payload);
-        dispatch(createShopSuccess(response));
+
+        const res = await shopService.createShopService(payload);
+
+        dispatch(createShopSuccess(res));
+
         toast.success("Shop created successfully");
-        return response;
+
+        return res;
       } catch (error: any) {
         const message =
           error?.response?.data?.message || "Failed to create shop";
+
         dispatch(createShopFailure(message));
+
         toast.error(message);
+
         throw error;
       }
     },
-    [dispatch],
-  );
-
-  const memoizedState = useMemo(
-    () => ({
-      shops: shopState.shops,
-      loading: shopState.loading,
-      error: shopState.error,
-    }),
-    [shopState],
+    [dispatch]
   );
 
   return {
     fetchShops,
-
     createShop,
-    ...memoizedState,
+
+    ...shopState,
   };
 };
