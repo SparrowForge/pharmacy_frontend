@@ -25,6 +25,7 @@ import {
   UserCog,
   ChartAreaIcon,
   ShoppingBagIcon,
+  ShoppingCartIcon,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -93,14 +94,19 @@ const menu = [
     icon: Settings,
     children: [
       {
-        title: "General Settings",
-        href: "/dashboard/settings",
-        icon: Settings,
-      },
-      {
         title: "Shops",
         href: "/dashboard/shops",
         icon: ShoppingBagIcon,
+      },
+      {
+        title: "Branch",
+        href: "/dashboard/branch",
+        icon: ShoppingCartIcon,
+      },
+      {
+        title: "General Settings",
+        href: "/dashboard/settings",
+        icon: Settings,
       },
       { title: "AI Insights", href: "/dashboard/ai-insights", icon: Sparkles },
     ],
