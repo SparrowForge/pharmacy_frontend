@@ -42,7 +42,7 @@ export default function VerifyEmail() {
   /* ---------------- VERIFY ---------------- */
 
   useEffect(() => {
-    const token = searchParams.get("token");
+    const token = searchParams.get("verify_token");
     const emailFromUrl =
       searchParams.get("email") || "";
 
@@ -86,7 +86,6 @@ export default function VerifyEmail() {
 
   const handleResend = async () => {
     if (!email) return;
-
     try {
       await resendVerificationEmailUser({
         email,
@@ -123,15 +122,12 @@ export default function VerifyEmail() {
             {status === "success" && (
               <>
                 <CheckCircle className="w-10 h-10 mx-auto text-green-500" />
-
                 <h2 className="text-xl font-semibold text-green-600">
                   Verified Successfully
                 </h2>
-
                 <p className="text-muted-foreground text-sm">
                   {message}
                 </p>
-
                 <Button
                   className="w-full"
                   onClick={() =>
@@ -147,17 +143,14 @@ export default function VerifyEmail() {
             {status === "error" && (
               <>
                 <XCircle className="w-10 h-10 mx-auto text-red-500" />
-
                 <h2 className="text-xl font-semibold text-red-600">
                   Verification Failed
                 </h2>
-
                 <p className="text-muted-foreground text-sm">
                   {message}
                 </p>
-
                 {/* RESEND BUTTON */}
-                {email && (
+                {status === "error" && (
                   <Button
                     className="w-full"
                     onClick={handleResend}
