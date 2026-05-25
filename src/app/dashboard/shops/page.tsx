@@ -43,16 +43,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
+import ShopDialogDelete from "@/src/components/shops/ShopDialogDelete";
 
 export default function ShopsPage() {
   const [page, setPage] = useState(initialPage);
   const [limit] = useState(initialLimit);
   const [search, setSearch] = useState("");
   const [includeDeleted, setIncludeDeleted] = useState(false);
-  const { fetchShops } = useShops();
+  const { fetchShops, deleteShop} = useShops();
   const { shops, fetchLoading } = useAppSelector((state) => state.shops);
   const [editShopId, setEditShopId] = useState<string | null>(null);
   const [openEdit, setOpenEdit] = useState(false);
+
   useEffect(() => {
     fetchShops({
       page,
@@ -106,6 +108,7 @@ export default function ShopsPage() {
             setOpenEdit(false);
           }}
         />
+       
       </div>
 
       {/* Stats */}
@@ -268,7 +271,10 @@ export default function ShopsPage() {
                               Edit Shop
                             </DropdownMenuItem>
 
-                            <DropdownMenuItem className="text-destructive">
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() => deleteShop(shop.id)}
+                            >
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete
                             </DropdownMenuItem>

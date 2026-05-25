@@ -16,6 +16,9 @@ import {
   updateShopStart,
   updateShopSuccess,
   updateShopFailure,
+  deleteShopStart,
+  deleteShopSuccess,
+  deleteShopFailure,
 } from "../redux/features/shops/shopSlice";
 import { IUpdateShopPayload } from "../types/shop.types";
 
@@ -101,31 +104,54 @@ export const useShops = () => {
 
   /* ================= UPDATE SINGLE ================= */
   const updateShop = useCallback(
-  async (id: string, payload: IUpdateShopPayload) => {
-    try {
-      dispatch(updateShopStart());
-      const res = await shopService.updateShopService(id, payload);
-      dispatch(updateShopSuccess(res));
-      toast.success("Shop updated successfully");
-      return res;
-    } catch (error: any) {
-      const message =
-        error?.response?.data?.message || "Failed to update shop";
-      dispatch(updateShopFailure(message));
+    async (id: string, payload: IUpdateShopPayload) => {
+      try {
+        dispatch(updateShopStart());
+        const res = await shopService.updateShopService(id, payload);
+        dispatch(updateShopSuccess(res));
+        toast.success("Shop updated successfully");
+        return res;
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message || "Failed to update shop";
+        dispatch(updateShopFailure(message));
 
-      toast.error(message);
+        toast.error(message);
 
-      throw error;
-    }
-  },
-  [dispatch],
-);
+        throw error;
+      }
+    },
+    [dispatch],
+  );
+
+  /* ================= DELETE SINGLE ================= */
+  const deleteShop = useCallback(
+    async (id: string) => {
+      try {
+        dispatch(deleteShopStart());
+        const res = await shopService.deleteShopService(id);
+        dispatch(deleteShopSuccess(id));
+        toast.success(res?.message || "Shop deleted successfully");
+        return res;
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message || "Failed to delete shop";
+        dispatch(deleteShopFailure(message));
+
+        toast.error(message);
+
+        throw error;
+      }
+    },
+    [dispatch],
+  );
 
   return {
     fetchShops,
     createShop,
     fetchSingleShop,
     updateShop,
+    deleteShop,
 
     ...shopState,
   };

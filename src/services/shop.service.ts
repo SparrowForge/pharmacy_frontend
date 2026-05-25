@@ -1,5 +1,5 @@
 import axiosInstance from "./axios";
-import { ICreateShopPayload, IGetShopsQuery, IShop, IShopResponse, IUpdateShopPayload } from "@/src/types/shop.types";
+import { ICreateShopPayload, IDeleteShopResponse, IGetShopsQuery, IShop, IShopResponse, IUpdateShopPayload } from "@/src/types/shop.types";
 
 const getAllShops = async ( params: IGetShopsQuery): Promise<IShopResponse> => {
   const res = await axiosInstance.get<IShopResponse>("/shops",{
@@ -32,9 +32,15 @@ const updateShopService = async (
   return response.data;
 };
 
+const deleteShopService = async (id: string): Promise<IDeleteShopResponse> => {
+  const response = await axiosInstance.delete(`/shops/${id}`);
+  return response.data;
+};
+
 export const shopService = {
   getAllShops,
   createShopService,
   getSingleShopService,
-  updateShopService
+  updateShopService,
+  deleteShopService
 };

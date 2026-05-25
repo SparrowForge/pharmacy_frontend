@@ -7,6 +7,7 @@ interface IShopState {
   fetchLoading: boolean;
   createLoading: boolean;
   updateLoading: boolean;
+  deleteLoading: boolean;
 
   singleShop: IShop | null;
   singleShopLoading: boolean;
@@ -25,6 +26,7 @@ const initialState: IShopState = {
   fetchLoading: false,
   createLoading: false,
   updateLoading: false,
+  deleteLoading: false,
 
   singleShop: null,
   singleShopLoading: false,
@@ -42,7 +44,6 @@ const shopSlice = createSlice({
   initialState,
   reducers: {
     /* ================= FETCH SHOPS ================= */
-
     fetchShopsStart: (state) => {
       state.fetchLoading = true;
       state.error = null;
@@ -71,7 +72,6 @@ const shopSlice = createSlice({
     },
 
     /* ================= CREATE SHOP ================= */
-
     createShopStart: (state) => {
       state.createLoading = true;
       state.error = null;
@@ -92,7 +92,6 @@ const shopSlice = createSlice({
     },
 
     /* ================= GET SINGLE SHOP ================= */
-
     fetchSingleShopStart: (state) => {
       state.singleShopLoading = true;
       state.singleShopError = null;
@@ -109,7 +108,6 @@ const shopSlice = createSlice({
     },
 
     /* ================= UPDATE SINGLE SHOP ================= */
-
     updateShopStart: (state) => {
       state.updateLoading = true;
       state.error = null;
@@ -127,6 +125,23 @@ const shopSlice = createSlice({
 
     updateShopFailure: (state, action: PayloadAction<string>) => {
       state.updateLoading = false;
+      state.error = action.payload;
+    },
+
+    /* ================= DELETE SINGLE SHOP ================= */
+    deleteShopStart: (state) => {
+      state.deleteLoading = true;
+      state.error = null;
+    },
+
+    deleteShopSuccess: (state, action: PayloadAction<string>) => {
+      state.deleteLoading = false;
+      const deletedId = action.payload;
+      state.shops = state.shops.filter((shop) => shop.id !== deletedId);
+    },
+
+    deleteShopFailure: (state, action: PayloadAction<string>) => {
+      state.deleteLoading = false;
       state.error = action.payload;
     },
 
@@ -156,6 +171,10 @@ export const {
   updateShopStart,
   updateShopSuccess,
   updateShopFailure,
+
+  deleteShopStart,
+  deleteShopSuccess,
+  deleteShopFailure,
 
   clearShopState,
 } = shopSlice.actions;

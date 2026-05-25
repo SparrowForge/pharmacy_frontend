@@ -87,3 +87,9 @@ export interface IUpdateShopPayload {
   line_id?: string | null;
   branch_limit: number;
 }
+
+export interface IDeleteShopResponse {
+  success: boolean;
+  message: string;
+  id: string;
+}
