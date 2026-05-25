@@ -19,15 +19,30 @@ import {
 } from "@/src/components/ui/table";
 import { Badge } from "@/src/components/ui/badge";
 import { cn } from "@/src/lib/utils";
-import { Building2, MapPin, Users, Search, Crown } from "lucide-react";
+import {
+  Building2,
+  MapPin,
+  Users,
+  Search,
+  Crown,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+} from "lucide-react";
 
 import { useAppDispatch, useAppSelector } from "@/src/redux/hooks";
 import { shopService } from "@/src/services/shop.service";
 
 import ShopDialogueForm from "@/src/components/shops/ShopDialogueForm";
 import { useShops } from "@/src/hooks/useShops";
-import {  initialLimit, initialPage } from "@/src/constants/utils";
+import { initialLimit, initialPage } from "@/src/constants/utils";
 import Loading from "@/src/components/common/Loading";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/src/components/ui/dropdown-menu";
 
 export default function ShopsPage() {
   const [page, setPage] = useState(initialPage);
@@ -35,8 +50,9 @@ export default function ShopsPage() {
   const [search, setSearch] = useState("");
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const { fetchShops } = useShops();
-  const { shops,fetchLoading } = useAppSelector((state) => state.shops);
-
+  const { shops, fetchLoading } = useAppSelector((state) => state.shops);
+  const [editShopId, setEditShopId] = useState<string | null>(null);
+  const [openEdit, setOpenEdit] = useState(false);
   useEffect(() => {
     fetchShops({
       page,
@@ -49,7 +65,7 @@ export default function ShopsPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchShops();
-    }, 400);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [fetchShops]);
@@ -83,11 +99,17 @@ export default function ShopsPage() {
             </p>
           </div>
         </div>
-        <ShopDialogueForm />
+        <ShopDialogueForm
+          shopId={editShopId}
+          onClose={() => {
+            setEditShopId(null);
+            setOpenEdit(false);
+          }}
+        />
       </div>
 
       {/* Stats */}
-      <div className="grid sm:grid-cols-2 gap-4">
+      {/* <div className="grid sm:grid-cols-2 gap-4">
         {[
           {
             label: "Total Shops",
@@ -97,7 +119,9 @@ export default function ShopsPage() {
           },
           {
             label: "Active Shops",
-            value: shops.length && shops?.filter((item) => item.status === "active").length,
+            value:
+              shops.length &&
+              shops?.filter((item) => item.status === "active").length,
             icon: Building2,
             color: "bg-green-500/10 text-green-500",
           },
@@ -121,7 +145,7 @@ export default function ShopsPage() {
             </CardContent>
           </Card>
         ))}
-      </div>
+      </div> */}
 
       {/* Search (UI only for now) */}
       <div className="relative max-w-md">
@@ -137,6 +161,7 @@ export default function ShopsPage() {
           }}
         />
       </div>
+
       <div className="flex items-center gap-2">
         <input
           type="checkbox"
@@ -171,55 +196,87 @@ export default function ShopsPage() {
               </TableHeader>
 
               <TableBody>
-                {shops.length && shops?.map((shop) => (
-                  <TableRow key={shop.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary/10 flex items-center justify-center rounded">
-                          <Building2 className="w-5 h-5 text-primary" />
+                {shops.length &&
+                  shops?.map((shop) => (
+                    <TableRow key={shop.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-primary/10 flex items-center justify-center rounded">
+                            <Building2 className="w-5 h-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{shop.name}</p>
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <MapPin className="w-3 h-3" />
+                              {shop.city || "No city"}
+                            </p>
+                          </div>
                         </div>
+                      </TableCell>
+
+                      <TableCell>
                         <div>
-                          <p className="font-medium">{shop.name}</p>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            {shop.city || "No city"}
+                          <p className="font-medium">{shop.owner_name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {shop.owner_email}
                           </p>
                         </div>
-                      </div>
-                    </TableCell>
+                      </TableCell>
 
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{shop.owner_name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {shop.owner_email}
-                        </p>
-                      </div>
-                    </TableCell>
+                      <TableCell>
+                        <Badge className={cn(getPlanColor(shop.plan))}>
+                          {shop.plan}
+                        </Badge>
+                      </TableCell>
 
-                    <TableCell>
-                      <Badge className={cn(getPlanColor(shop.plan))}>
-                        {shop.plan}
-                      </Badge>
-                    </TableCell>
+                      <TableCell className="text-center">
+                        {shop.branch_limit}
+                      </TableCell>
 
-                    <TableCell className="text-center">
-                      {shop.branch_limit}
-                    </TableCell>
+                      <TableCell>
+                        <Badge
+                          className={
+                            shop.status === "active"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                          }
+                        >
+                          {shop.status}
+                        </Badge>
+                      </TableCell>
 
-                    <TableCell>
-                      <Badge
-                        className={
-                          shop.status === "active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                        }
-                      >
-                        {shop.status}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                            >
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setEditShopId(shop.id);
+                                setOpenEdit(true);
+                              }}
+                            >
+                              <Edit className="w-4 h-4 mr-2" />
+                              Edit Shop
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem className="text-destructive">
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           )}

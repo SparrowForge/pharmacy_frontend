@@ -64,3 +64,26 @@ export interface IShopState {
 
   shop: IShop | null;
 }
+
+
+export interface ISingleShopResponse extends IShop { }
+
+export interface IUpdateShopPayload {
+  company_id?: string | null;
+  name: string;
+  owner_name: string;
+  owner_email: string;
+  owner_phone: string;
+  address?: string;
+  city?: string;
+  postal_code?: string;
+  country_id?: string | null;
+  division_id?: string | null;
+  district_id?: string | null;
+  thana_id?: string | null;
+  plan: "starter" | "business" | "enterprise";
+  status: string;
+  route_id?: string | null;
+  line_id?: string | null;
+  branch_limit: number;
+}

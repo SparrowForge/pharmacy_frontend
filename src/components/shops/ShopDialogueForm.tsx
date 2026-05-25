@@ -29,30 +29,74 @@ import { toast } from "sonner";
 import { useEnum } from "@/src/hooks/useEnum";
 import { useShops } from "@/src/hooks/useShops";
 
-export default function ShopDialogueForm() {
+export default function ShopDialogueForm({
+  shopId,
+  onClose,
+}: {
+  shopId?: string | null;
+  onClose?: () => void;
+}) {
   const [open, setOpen] = useState(false);
 
-  const { createShop, createLoading } = useShops();
+  const {
+    createShop,
+    createLoading,
+    fetchSingleShop, 
+    updateShop,
+    updateLoading
+  } = useShops();
+
   const { shopPlans, getShopPlans } = useEnum();
 
-const initialFormState = {
-  name: "",
-  owner_name: "",
-  owner_email: "",
-  owner_phone: "",
-  address: "",
-  city: "",
-  postal_code: "",
-  plan: "",
-  status: "active",
-  branch_limit: 1,
-};
+  const initialFormState = {
+    name: "",
+    owner_name: "",
+    owner_email: "",
+    owner_phone: "",
+    address: "",
+    city: "",
+    postal_code: "",
+    plan: "",
+    status: "active",
+    branch_limit: 1,
+  };
 
   const [form, setForm] = useState(initialFormState);
+  const isEditMode = Boolean(shopId);
 
   useEffect(() => {
     getShopPlans();
   }, []);
+
+  // ✅ LOAD SINGLE SHOP WHEN EDITING
+  useEffect(() => {
+    const loadShop = async () => {
+      if (!shopId) return;
+
+      try {
+        const res = await fetchSingleShop(shopId);
+
+        setForm({
+          name: res.name ?? "",
+          owner_name: res.owner_name ?? "",
+          owner_email: res.owner_email ?? "",
+          owner_phone: res.owner_phone ?? "",
+          address: res.address ?? "",
+          city: res.city ?? "",
+          postal_code: res.postal_code ?? "",
+          plan: res.plan ?? "",
+          status: res.status ?? "active",
+          branch_limit: res.branch_limit ?? 1,
+        });
+
+        setOpen(true);
+      } catch (err) {
+        toast.error("Failed to load shop data");
+      }
+    };
+
+    loadShop();
+  }, [shopId]);
 
   const handleChange = (key: string, value: any) => {
     setForm((prev) => ({
@@ -70,12 +114,13 @@ const initialFormState = {
     return null;
   };
 
-  const handleCreate = async () => {
+  // ✅ CREATE + UPDATE HANDLER
+  const handleSubmit = async () => {
     const error = validate();
     if (error) return toast.error(error);
 
     try {
-      await createShop({
+      const payload = {
         ...form,
         plan: form.plan as "starter" | "business" | "enterprise",
         country_id: null,
@@ -84,19 +129,36 @@ const initialFormState = {
         thana_id: null,
         route_id: null,
         line_id: null,
-      });
+      };
 
-      toast.success("Shop created successfully");
-      setForm(initialFormState)
-      setOpen(false); // ONLY CLOSE ON SUCCESS
+      if (isEditMode && shopId) {
+        await updateShop(shopId, payload);
+        toast.success("Shop updated successfully");
+      } else {
+        await createShop(payload);
+        toast.success("Shop created successfully");
+      }
+
+      setForm(initialFormState);
+      setOpen(false);
+      onClose?.();
     } catch (err) {
-      // DO NOT CLOSE MODAL
-      console.log(err);
+      toast.error("Something went wrong");
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(val) => {
+        setOpen(val);
+
+        // reset ONLY when closing manually in create mode
+        if (!val && !isEditMode) {
+          setForm(initialFormState);
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button className="bg-primary hover:bg-primary/90">
           <Plus className="w-4 h-4 mr-2" />
@@ -106,7 +168,9 @@ const initialFormState = {
 
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Create New Shop</DialogTitle>
+          <DialogTitle>
+            {isEditMode ? "Edit Shop" : "Create New Shop"}
+          </DialogTitle>
           <DialogDescription>
             Set up a new pharmacy in the system
           </DialogDescription>
@@ -243,15 +307,17 @@ const initialFormState = {
 
           {/* SUBMIT */}
           <Button
-            onClick={handleCreate}
+            onClick={handleSubmit}
             className="w-full bg-primary hover:bg-primary/90"
-            disabled={createLoading}
+            disabled={createLoading || updateLoading}
           >
-            {createLoading ? (
+            {createLoading || updateLoading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Creating...
+                {isEditMode ? "Updating..." : "Creating..."}
               </>
+            ) : isEditMode ? (
+              "Update Shop"
             ) : (
               "Create Shop"
             )}

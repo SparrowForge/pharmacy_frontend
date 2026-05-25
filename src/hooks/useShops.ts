@@ -10,14 +10,20 @@ import {
   createShopStart,
   createShopSuccess,
   createShopFailure,
+  fetchSingleShopStart,
+  fetchSingleShopSuccess,
+  fetchSingleShopFailure,
+  updateShopStart,
+  updateShopSuccess,
+  updateShopFailure,
 } from "../redux/features/shops/shopSlice";
+import { IUpdateShopPayload } from "../types/shop.types";
 
 export const useShops = () => {
   const dispatch = useAppDispatch();
   const shopState = useAppSelector((state) => state.shops);
 
   /* ================= FETCH ================= */
-
   const fetchShops = useCallback(
     async (params?: {
       page?: number;
@@ -39,16 +45,15 @@ export const useShops = () => {
       } catch (error: any) {
         dispatch(
           fetchShopsFailure(
-            error?.response?.data?.message || "Failed to fetch shops"
-          )
+            error?.response?.data?.message || "Failed to fetch shops",
+          ),
         );
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   /* ================= CREATE ================= */
-
   const createShop = useCallback(
     async (payload: any) => {
       try {
@@ -72,12 +77,55 @@ export const useShops = () => {
         throw error;
       }
     },
-    [dispatch]
+    [dispatch],
   );
+
+  /* ================= GET SINGLE ================= */
+  const fetchSingleShop = useCallback(
+    async (id: string) => {
+      try {
+        dispatch(fetchSingleShopStart());
+        const res = await shopService.getSingleShopService(id);
+        dispatch(fetchSingleShopSuccess(res));
+        return res;
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message || "Failed to fetch shop";
+        dispatch(fetchSingleShopFailure(message));
+        toast.error(message);
+        throw error;
+      }
+    },
+    [dispatch],
+  );
+
+  /* ================= UPDATE SINGLE ================= */
+  const updateShop = useCallback(
+  async (id: string, payload: IUpdateShopPayload) => {
+    try {
+      dispatch(updateShopStart());
+      const res = await shopService.updateShopService(id, payload);
+      dispatch(updateShopSuccess(res));
+      toast.success("Shop updated successfully");
+      return res;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message || "Failed to update shop";
+      dispatch(updateShopFailure(message));
+
+      toast.error(message);
+
+      throw error;
+    }
+  },
+  [dispatch],
+);
 
   return {
     fetchShops,
     createShop,
+    fetchSingleShop,
+    updateShop,
 
     ...shopState,
   };

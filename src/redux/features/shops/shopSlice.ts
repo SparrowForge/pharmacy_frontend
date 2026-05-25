@@ -6,6 +6,11 @@ interface IShopState {
 
   fetchLoading: boolean;
   createLoading: boolean;
+  updateLoading: boolean;
+
+  singleShop: IShop | null;
+  singleShopLoading: boolean;
+  singleShopError: string | null;
 
   error: string | null;
 
@@ -19,6 +24,11 @@ const initialState: IShopState = {
 
   fetchLoading: false,
   createLoading: false,
+  updateLoading: false,
+
+  singleShop: null,
+  singleShopLoading: false,
+  singleShopError: null,
 
   error: null,
 
@@ -45,7 +55,7 @@ const shopSlice = createSlice({
         page: number;
         limit: number;
         total: number;
-      }>
+      }>,
     ) => {
       state.fetchLoading = false;
 
@@ -81,6 +91,45 @@ const shopSlice = createSlice({
       state.error = action.payload;
     },
 
+    /* ================= GET SINGLE SHOP ================= */
+
+    fetchSingleShopStart: (state) => {
+      state.singleShopLoading = true;
+      state.singleShopError = null;
+    },
+
+    fetchSingleShopSuccess: (state, action: PayloadAction<IShop>) => {
+      state.singleShopLoading = false;
+      state.singleShop = action.payload;
+    },
+
+    fetchSingleShopFailure: (state, action: PayloadAction<string>) => {
+      state.singleShopLoading = false;
+      state.singleShopError = action.payload;
+    },
+
+    /* ================= UPDATE SINGLE SHOP ================= */
+
+    updateShopStart: (state) => {
+      state.updateLoading = true;
+      state.error = null;
+    },
+
+    updateShopSuccess: (state, action: PayloadAction<IShop>) => {
+      state.updateLoading = false;
+
+      const updatedShop = action.payload;
+
+      state.shops = state.shops.map((shop) =>
+        shop.id === updatedShop.id ? updatedShop : shop,
+      );
+    },
+
+    updateShopFailure: (state, action: PayloadAction<string>) => {
+      state.updateLoading = false;
+      state.error = action.payload;
+    },
+
     /* ================= RESET ================= */
 
     clearShopState: (state) => {
@@ -99,6 +148,14 @@ export const {
   createShopStart,
   createShopSuccess,
   createShopFailure,
+
+  fetchSingleShopStart,
+  fetchSingleShopSuccess,
+  fetchSingleShopFailure,
+
+  updateShopStart,
+  updateShopSuccess,
+  updateShopFailure,
 
   clearShopState,
 } = shopSlice.actions;
