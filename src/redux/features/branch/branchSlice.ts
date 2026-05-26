@@ -25,7 +25,7 @@ interface IBranchState {
 const initialState: IBranchState = {
   branches: [],
   fetchLoading: false,
-  createLoading: true,
+  createLoading: false,
   page: 1,
   limit: 10,
   total: 0,

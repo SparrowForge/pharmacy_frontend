@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 
 import {
@@ -29,6 +30,14 @@ import { toast } from "sonner";
 import { useBranches } from "@/src/hooks/useBranches";
 import { useShops } from "@/src/hooks/useShops";
 
+import { useCountries } from "@/src/hooks/useCountries";
+import { useDivisions } from "@/src/hooks/useDivisions";
+import { useDistricts } from "@/src/hooks/useDistricts";
+import { useThanas } from "@/src/hooks/useThanas";
+
+import { useRoutes } from "@/src/hooks/useRoutes";
+import { useLines } from "@/src/hooks/useLines";
+
 export default function BranchDialogueForm({
   branchId,
   onClose,
@@ -48,10 +57,24 @@ export default function BranchDialogueForm({
   } = useBranches();
 
   const { fetchShops, shops } = useShops();
+
+  const { countries, fetchCountries } = useCountries();
+
+  const { divisions, fetchDivisions } = useDivisions();
+
+  const { districts, fetchDistricts } = useDistricts();
+
+  const { thanas, fetchThanas } = useThanas();
+
+  const { routes, fetchRoutes } = useRoutes();
+
+  const { lines, fetchLines } = useLines();
+
   const isEditMode = Boolean(branchId);
+
   const initialFormState = {
     shop_id: "",
-      
+
     name: "",
 
     address: "",
@@ -74,13 +97,24 @@ export default function BranchDialogueForm({
 
   const [form, setForm] = useState(initialFormState);
 
-  /* LOAD SHOPS */
   useEffect(() => {
     fetchShops({
       page: 1,
       limit: 100,
     });
-  }, [fetchShops]);
+
+    fetchCountries();
+
+    fetchDivisions();
+
+    fetchDistricts();
+
+    fetchThanas();
+
+    fetchRoutes();
+
+    fetchLines();
+  }, []);
 
   /* LOAD SINGLE BRANCH */
   useEffect(() => {
@@ -127,23 +161,28 @@ export default function BranchDialogueForm({
       ...prev,
       [key]: value,
     }));
+
+    console.log(key, value);
   };
 
   const validate = () => {
     if (!form.shop_id) return "Shop is required";
+
     if (!form.name) return "Branch name is required";
+
     if (!form.email) return "Email is required";
+
     if (!form.phone) return "Phone is required";
 
     return null;
   };
 
-  /* SUBMIT */
   const handleSubmit = async () => {
     const error = validate();
 
     if (error) {
-      return toast.error(error);
+      toast.error(error);
+      return;
     }
 
     try {
@@ -158,7 +197,10 @@ export default function BranchDialogueForm({
 
         country_id: form.country_id || null,
         division_id: form.division_id || null,
+
+        // backend expects district name
         district_id: form.district_id || null,
+
         thana_id: form.thana_id || null,
 
         route_id: form.route_id || null,
@@ -185,13 +227,14 @@ export default function BranchDialogueForm({
       setOpen(false);
 
       onClose?.();
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Something went wrong");
     }
   };
 
-  const loading =
-  isEditMode ? updateLoading : createLoading;
+  const loading = createLoading || updateLoading;
+
+  console.log(districts)
 
   return (
     <Dialog
@@ -213,7 +256,7 @@ export default function BranchDialogueForm({
         </DialogTrigger>
       )}
 
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {isEditMode ? "Edit Branch" : "Create New Branch"}
@@ -290,7 +333,7 @@ export default function BranchDialogueForm({
               value={form.address}
               onChange={(e) => handleChange("address", e.target.value)}
               placeholder="Full address"
-              rows={2}
+              rows={3}
             />
           </div>
 
@@ -322,21 +365,43 @@ export default function BranchDialogueForm({
             <div className="space-y-2">
               <Label>Country</Label>
 
-              <Input
+              <Select
                 value={form.country_id}
-                onChange={(e) => handleChange("country_id", e.target.value)}
-                placeholder="Country"
-              />
+                onValueChange={(value) => handleChange("country_id", value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select country" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {countries.map((country) => (
+                    <SelectItem key={country.id} value={country.id}>
+                      {country.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
               <Label>Division</Label>
 
-              <Input
+              <Select
                 value={form.division_id}
-                onChange={(e) => handleChange("division_id", e.target.value)}
-                placeholder="Division"
-              />
+                onValueChange={(value) => handleChange("division_id", value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select division" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {divisions.map((division) => (
+                    <SelectItem key={division.id} value={division.id}>
+                      {division.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -345,21 +410,43 @@ export default function BranchDialogueForm({
             <div className="space-y-2">
               <Label>District</Label>
 
-              <Input
+              <Select
                 value={form.district_id}
-                onChange={(e) => handleChange("district_id", e.target.value)}
-                placeholder="District"
-              />
+                onValueChange={(value) => handleChange("district_id", value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select district" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {districts.map((district) => (
+                    <SelectItem key={district.id} value={district.id}>
+                      {district.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
               <Label>Thana</Label>
 
-              <Input
+              <Select
                 value={form.thana_id}
-                onChange={(e) => handleChange("thana_id", e.target.value)}
-                placeholder="Thana"
-              />
+                onValueChange={(value) => handleChange("thana_id", value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select thana" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {thanas.map((thana) => (
+                    <SelectItem key={thana.id} value={thana.id}>
+                      {thana.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -368,21 +455,43 @@ export default function BranchDialogueForm({
             <div className="space-y-2">
               <Label>Route</Label>
 
-              <Input
+              <Select
                 value={form.route_id}
-                onChange={(e) => handleChange("route_id", e.target.value)}
-                placeholder="Route"
-              />
+                onValueChange={(value) => handleChange("route_id", value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select route" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {routes.map((route) => (
+                    <SelectItem key={route.id} value={route.id}>
+                      {route.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
               <Label>Line</Label>
 
-              <Input
+              <Select
                 value={form.line_id}
-                onChange={(e) => handleChange("line_id", e.target.value)}
-                placeholder="Line"
-              />
+                onValueChange={(value) => handleChange("line_id", value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select line" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {lines.map((line) => (
+                    <SelectItem key={line.id} value={line.id}>
+                      {line.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -401,13 +510,14 @@ export default function BranchDialogueForm({
               <SelectContent>
                 <SelectItem value="active">Active</SelectItem>
 
-                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="suspended">Suspended</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* SUBMIT */}
           <Button
+            type="button"
             onClick={handleSubmit}
             className="w-full bg-primary hover:bg-primary/90"
             disabled={loading}
@@ -416,9 +526,7 @@ export default function BranchDialogueForm({
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
 
-                {isEditMode
-                  ? "Updating..."
-                  : "Creating..."}
+                {isEditMode ? "Updating..." : "Creating..."}
               </>
             ) : isEditMode ? (
               "Update Branch"
