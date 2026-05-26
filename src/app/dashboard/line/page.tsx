@@ -1,4 +1,4 @@
-// app/dashboard/thanas/page.tsx
+// app/dashboard/lines/page.tsx
 
 "use client";
 
@@ -23,9 +23,9 @@ import {
   TableRow,
 } from "@/src/components/ui/table";
 
-import { MoreHorizontal, Edit, Trash2, Search, MapPin } from "lucide-react";
+import { MoreHorizontal, Edit, Trash2, Search, Waypoints } from "lucide-react";
 
-import { useThanas } from "@/src/hooks/useThanas";
+import { useLines } from "@/src/hooks/useLines";
 
 import { useAppSelector } from "@/src/redux/hooks";
 
@@ -39,9 +39,9 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 
 import { initialLimit, initialPage } from "@/src/constants/utils";
-import ThanaDialogueForm from "@/src/components/thanas/ThanaDialogueForm";
+import LineDialogueForm from "@/src/components/line/LineDialogueForm";
 
-export default function ThanasPage() {
+export default function LinesPage() {
   const [page, setPage] = useState(initialPage);
 
   const [limit] = useState(initialLimit);
@@ -50,39 +50,39 @@ export default function ThanasPage() {
 
   const [includeDeleted, setIncludeDeleted] = useState(false);
 
-  const [editThanaId, setEditThanaId] = useState<string | null>(null);
+  const [editLineId, setEditLineId] = useState<string | null>(null);
 
-  const { fetchThanas, deleteThana } = useThanas();
+  const { fetchLines, deleteLine } = useLines();
 
-  const { thanas, fetchLoading } = useAppSelector((state) => state.thanas);
+  const { lines, fetchLoading } = useAppSelector((state) => state.lines);
 
   useEffect(() => {
-    fetchThanas({
+    fetchLines({
       page,
       limit,
       q: search,
       includeDeleted,
     });
-  }, [fetchThanas, page, limit, search, includeDeleted]);
+  }, [fetchLines, page, limit, search, includeDeleted]);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-            <MapPin className="w-6 h-6 text-primary" />
+            <Waypoints className="w-6 h-6 text-primary" />
           </div>
 
           <div>
-            <h1 className="text-2xl font-bold">Thana Management</h1>
+            <h1 className="text-2xl font-bold">Line Management</h1>
 
-            <p className="text-muted-foreground">Manage all thanas</p>
+            <p className="text-muted-foreground">Manage all lines</p>
           </div>
         </div>
 
-        <ThanaDialogueForm
-          thanaId={editThanaId}
-          onClose={() => setEditThanaId(null)}
+        <LineDialogueForm
+          lineId={editLineId}
+          onClose={() => setEditLineId(null)}
         />
       </div>
 
@@ -92,7 +92,7 @@ export default function ThanasPage() {
         <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
 
         <Input
-          placeholder="Search thanas..."
+          placeholder="Search lines..."
           className="pl-10"
           value={search}
           onChange={(e) => {
@@ -122,39 +122,37 @@ export default function ThanasPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>All Thanas</CardTitle>
+          <CardTitle>All Lines</CardTitle>
         </CardHeader>
 
         <CardContent>
           {fetchLoading ? (
-            <Loading text="Loading thanas..." />
+            <Loading text="Loading lines..." />
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Thana Name</TableHead>
+                  <TableHead>Line Name</TableHead>
 
-                  <TableHead>Code</TableHead>
+                  <TableHead>Route ID</TableHead>
 
-                  <TableHead>Postal Code</TableHead>
-
-                  <TableHead>District ID</TableHead>
+                  <TableHead>Description</TableHead>
 
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
 
               <TableBody>
-                {thanas.length > 0 &&
-                  thanas.map((thana) => (
-                    <TableRow key={thana.id}>
-                      <TableCell>{thana.name}</TableCell>
+                {lines.length > 0 &&
+                  lines.map((line) => (
+                    <TableRow key={line.id}>
+                      <TableCell>{line.name}</TableCell>
 
-                      <TableCell>{thana.code}</TableCell>
+                      <TableCell>{line.route_id}</TableCell>
 
-                      <TableCell>{thana.postal_code}</TableCell>
-
-                      <TableCell>{thana.district_id}</TableCell>
+                      <TableCell className="max-w-[300px] truncate">
+                        {line.description}
+                      </TableCell>
 
                       <TableCell className="text-right">
                         <DropdownMenu>
@@ -170,7 +168,7 @@ export default function ThanasPage() {
 
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                              onClick={() => setEditThanaId(thana.id)}
+                              onClick={() => setEditLineId(line.id)}
                             >
                               <Edit className="w-4 h-4 mr-2" />
                               Edit
@@ -178,7 +176,7 @@ export default function ThanasPage() {
 
                             <DropdownMenuItem
                               className="text-destructive"
-                              onClick={() => deleteThana(thana.id)}
+                              onClick={() => deleteLine(line.id)}
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete

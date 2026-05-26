@@ -27,6 +27,7 @@ import {
   ShoppingBagIcon,
   ShoppingCartIcon,
   Home,
+  Command,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -115,6 +116,53 @@ const menu = [
         icon: Settings,
       },
       { title: "AI Insights", href: "/dashboard/ai-insights", icon: Sparkles },
+    ],
+  },
+  {
+    title: "General",
+    icon: Command,
+    children: [
+      {
+        title: "Countries",
+        href: "/dashboard/country",
+        icon: Home,
+      },
+      {
+        title: "Divisions",
+        href: "/dashboard/division",
+        icon: Home,
+      },
+      {
+        title: "Districts",
+        href: "/dashboard/districts",
+        icon: Home,
+      },
+      {
+        title: "Thanas",
+        href: "/dashboard/thanas",
+        icon: Home,
+      },
+      {
+        title: "Regions",
+        href: "/dashboard/regions",
+        icon: Home,
+      },
+      {
+        title: "Zones",
+        href: "/dashboard/zone",
+        icon: Home,
+      },
+      {
+        title: "Routes",
+        href: "/dashboard/route",
+        icon: Home,
+      },
+      {
+        title: "Lines",
+        href: "/dashboard/line",
+        icon: Home,
+      },
+     
     ],
   },
   {

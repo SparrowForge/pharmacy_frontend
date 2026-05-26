@@ -1,4 +1,4 @@
-// app/dashboard/thanas/page.tsx
+// app/dashboard/regions/page.tsx
 
 "use client";
 
@@ -23,9 +23,7 @@ import {
   TableRow,
 } from "@/src/components/ui/table";
 
-import { MoreHorizontal, Edit, Trash2, Search, MapPin } from "lucide-react";
-
-import { useThanas } from "@/src/hooks/useThanas";
+import { MoreHorizontal, Edit, Trash2, Search, Map } from "lucide-react";
 
 import { useAppSelector } from "@/src/redux/hooks";
 
@@ -39,9 +37,10 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 
 import { initialLimit, initialPage } from "@/src/constants/utils";
-import ThanaDialogueForm from "@/src/components/thanas/ThanaDialogueForm";
+import { useRegions } from "@/src/hooks/useRegion";
+import RegionDialogueForm from "@/src/components/regions/RegionDialogueForm";
 
-export default function ThanasPage() {
+export default function RegionsPage() {
   const [page, setPage] = useState(initialPage);
 
   const [limit] = useState(initialLimit);
@@ -50,39 +49,39 @@ export default function ThanasPage() {
 
   const [includeDeleted, setIncludeDeleted] = useState(false);
 
-  const [editThanaId, setEditThanaId] = useState<string | null>(null);
+  const [editRegionId, setEditRegionId] = useState<string | null>(null);
 
-  const { fetchThanas, deleteThana } = useThanas();
+  const { fetchRegions, deleteRegion } = useRegions();
 
-  const { thanas, fetchLoading } = useAppSelector((state) => state.thanas);
+  const { regions, fetchLoading } = useAppSelector((state) => state.regions);
 
   useEffect(() => {
-    fetchThanas({
+    fetchRegions({
       page,
       limit,
       q: search,
       includeDeleted,
     });
-  }, [fetchThanas, page, limit, search, includeDeleted]);
+  }, [fetchRegions, page, limit, search, includeDeleted]);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-            <MapPin className="w-6 h-6 text-primary" />
+            <Map className="w-6 h-6 text-primary" />
           </div>
 
           <div>
-            <h1 className="text-2xl font-bold">Thana Management</h1>
+            <h1 className="text-2xl font-bold">Region Management</h1>
 
-            <p className="text-muted-foreground">Manage all thanas</p>
+            <p className="text-muted-foreground">Manage all regions</p>
           </div>
         </div>
 
-        <ThanaDialogueForm
-          thanaId={editThanaId}
-          onClose={() => setEditThanaId(null)}
+        <RegionDialogueForm
+          regionId={editRegionId}
+          onClose={() => setEditRegionId(null)}
         />
       </div>
 
@@ -92,7 +91,7 @@ export default function ThanasPage() {
         <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
 
         <Input
-          placeholder="Search thanas..."
+          placeholder="Search regions..."
           className="pl-10"
           value={search}
           onChange={(e) => {
@@ -122,39 +121,33 @@ export default function ThanasPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>All Thanas</CardTitle>
+          <CardTitle>All Regions</CardTitle>
         </CardHeader>
 
         <CardContent>
           {fetchLoading ? (
-            <Loading text="Loading thanas..." />
+            <Loading text="Loading regions..." />
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Thana Name</TableHead>
+                  <TableHead>Region Name</TableHead>
 
-                  <TableHead>Code</TableHead>
-
-                  <TableHead>Postal Code</TableHead>
-
-                  <TableHead>District ID</TableHead>
+                  <TableHead>Description</TableHead>
 
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
 
               <TableBody>
-                {thanas.length > 0 &&
-                  thanas.map((thana) => (
-                    <TableRow key={thana.id}>
-                      <TableCell>{thana.name}</TableCell>
+                {regions.length > 0 &&
+                  regions.map((region) => (
+                    <TableRow key={region.id}>
+                      <TableCell>{region.name}</TableCell>
 
-                      <TableCell>{thana.code}</TableCell>
-
-                      <TableCell>{thana.postal_code}</TableCell>
-
-                      <TableCell>{thana.district_id}</TableCell>
+                      <TableCell className="max-w-[300px] truncate">
+                        {region.description}
+                      </TableCell>
 
                       <TableCell className="text-right">
                         <DropdownMenu>
@@ -170,7 +163,7 @@ export default function ThanasPage() {
 
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                              onClick={() => setEditThanaId(thana.id)}
+                              onClick={() => setEditRegionId(region.id)}
                             >
                               <Edit className="w-4 h-4 mr-2" />
                               Edit
@@ -178,7 +171,7 @@ export default function ThanasPage() {
 
                             <DropdownMenuItem
                               className="text-destructive"
-                              onClick={() => deleteThana(thana.id)}
+                              onClick={() => deleteRegion(region.id)}
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete
