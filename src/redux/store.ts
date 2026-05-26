@@ -9,8 +9,9 @@ import districtReducer from "./features/districts/districtSlice";
 import thanaReducer from "./features/thanas/thanaSlice";
 import regionReducer from "./features/region/regionSlice";
 import zoneReducer from "./features/zone/zoneSlice";
-import routerReducer from "./features/routes/routeSlice"
-import lineReducer from "./features/lines/lineSlice"
+import routerReducer from "./features/routes/routeSlice";
+import lineReducer from "./features/lines/lineSlice";
+import companyReducer from "./features/company/companySlice";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -24,7 +25,8 @@ export const store = configureStore({
     regions: regionReducer,
     zones: zoneReducer,
     routes: routerReducer,
-    lines:lineReducer
+    lines: lineReducer,
+    companies: companyReducer,
   },
 });
 
