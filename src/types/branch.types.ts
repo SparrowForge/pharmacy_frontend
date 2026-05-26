@@ -51,3 +51,25 @@ export interface ICreateBranchPayload {
   phone?: string;
   status?: string;
 }
+
+
+export interface IUpdateBranchPayload {
+  shop_id: string;
+
+  name: string;
+  address: string;
+  city: string;
+  postal_code: string;
+
+  country_id: string | null;
+  division_id: string | null;
+  district_id: string | null;
+  thana_id: string | null;
+
+  route_id: string | null;
+  line_id: string | null;
+
+  email: string;
+  phone: string;
+  status: string;
+}

@@ -11,6 +11,15 @@ interface IBranchState {
 
   createLoading: boolean;
   error: string | null;
+
+  singleBranch: IBranch | null;
+  singleBranchLoading: boolean;
+
+  updateLoading: boolean;
+  deleteLoading: boolean;
+  singleLoading: boolean;
+
+  selectedBranch: IBranch | null;
 }
 
 const initialState: IBranchState = {
@@ -21,12 +30,22 @@ const initialState: IBranchState = {
   limit: 10,
   total: 0,
   error: null,
+
+  singleBranch: null,
+  singleBranchLoading: false,
+
+  updateLoading: false,
+  deleteLoading: false,
+  singleLoading: false,
+
+  selectedBranch: null,
 };
 
 const branchSlice = createSlice({
   name: "branch",
   initialState,
   reducers: {
+    /* FETCH */
     fetchBranchesStart: (state) => {
       state.fetchLoading = true;
       state.error = null;
@@ -53,6 +72,7 @@ const branchSlice = createSlice({
       state.error = action.payload;
     },
 
+    /* CREATE */
     createBranchStart: (state) => {
       state.createLoading = true;
       state.error = null;
@@ -67,6 +87,58 @@ const branchSlice = createSlice({
 
     createBranchFailure: (state, action) => {
       state.createLoading = false;
+      state.error = action.payload;
+    },
+
+    /* SINGLE BRANCH */
+    fetchSingleBranchStart: (state) => {
+      state.singleBranchLoading = true;
+      state.error = null;
+    },
+
+    fetchSingleBranchSuccess: (state, action: PayloadAction<IBranch>) => {
+      state.singleBranchLoading = false;
+      state.singleBranch = action.payload;
+    },
+
+    fetchSingleBranchFailure: (state, action: PayloadAction<string>) => {
+      state.singleBranchLoading = false;
+      state.error = action.payload;
+    },
+
+    /* UPDATE */
+    updateBranchStart: (state) => {
+      state.updateLoading = true;
+    },
+
+    updateBranchSuccess: (state, action: PayloadAction<IBranch>) => {
+      state.updateLoading = false;
+
+      state.branches = state.branches.map((branch) =>
+        branch.id === action.payload.id ? action.payload : branch,
+      );
+    },
+
+    updateBranchFailure: (state, action: PayloadAction<string>) => {
+      state.updateLoading = false;
+      state.error = action.payload;
+    },
+
+    /* DELETE */
+    deleteBranchStart: (state) => {
+      state.deleteLoading = true;
+    },
+
+    deleteBranchSuccess: (state, action: PayloadAction<string>) => {
+      state.deleteLoading = false;
+
+      state.branches = state.branches.filter(
+        (branch) => branch.id !== action.payload,
+      );
+    },
+
+    deleteBranchFailure: (state, action: PayloadAction<string>) => {
+      state.deleteLoading = false;
       state.error = action.payload;
     },
 
@@ -85,6 +157,18 @@ export const {
   createBranchStart,
   createBranchSuccess,
   createBranchFailure,
+
+  fetchSingleBranchStart,
+  fetchSingleBranchSuccess,
+  fetchSingleBranchFailure,
+
+  updateBranchStart,
+  updateBranchSuccess,
+  updateBranchFailure,
+
+  deleteBranchStart,
+  deleteBranchSuccess,
+  deleteBranchFailure,
 
   clearBranchState,
 } = branchSlice.actions;

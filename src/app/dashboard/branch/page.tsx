@@ -46,6 +46,7 @@ import { useAppSelector } from "@/src/redux/hooks";
 import { initialLimit, initialPage } from "@/src/constants/utils";
 import Loading from "@/src/components/common/Loading";
 import { useBranches } from "@/src/hooks/useBranches";
+import BranchDialogueForm from "@/src/components/branch/BranchDialogueForm";
 
 export default function BranchesPage() {
   const [page, setPage] = useState(initialPage);
@@ -59,8 +60,8 @@ export default function BranchesPage() {
 
   const [openEdit, setOpenEdit] = useState(false);
 
-  const { fetchBranches } = useBranches();
-  const { branches, fetchLoading } = useAppSelector((state) => state.branch);
+  const { fetchBranches, deleteBranch } = useBranches();
+  const { branches, fetchLoading} = useAppSelector((state) => state.branch);
 
   useEffect(() => {
     fetchBranches({
@@ -71,18 +72,18 @@ export default function BranchesPage() {
     });
   }, [fetchBranches, page, limit, search, includeDeleted]);
 
-useEffect(() => {
-  const timer = setTimeout(() => {
-    fetchBranches({
-      page,
-      limit,
-      q: search,
-      includeDeleted,
-    });
-  }, 1000);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchBranches({
+        page,
+        limit,
+        q: search,
+        includeDeleted,
+      });
+    }, 1000);
 
-  return () => clearTimeout(timer);
-}, [fetchBranches, page, limit, search, includeDeleted]);
+    return () => clearTimeout(timer);
+  }, [fetchBranches, page, limit, search, includeDeleted]);
 
   return (
     <div className="space-y-6">
@@ -104,14 +105,12 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* <BranchDialogueForm
+        <BranchDialogueForm
           branchId={editBranchId}
-          open={openEdit}
           onClose={() => {
             setEditBranchId(null);
-            setOpenEdit(false);
           }}
-        /> */}
+        />
       </div>
 
       {/* Search */}
@@ -248,7 +247,7 @@ useEffect(() => {
 
                             <DropdownMenuItem
                               className="text-destructive"
-                              // onClick={() => deleteBranch(branch.id)}
+                              onClick={() => deleteBranch(branch.id)}
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete

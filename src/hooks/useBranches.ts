@@ -8,16 +8,27 @@ import {
   createBranchStart,
   createBranchSuccess,
   createBranchFailure,
+  fetchSingleBranchStart,
+  fetchSingleBranchSuccess,
+  fetchSingleBranchFailure,
+  updateBranchStart,
+  updateBranchSuccess,
+  updateBranchFailure,
+  deleteBranchStart,
+  deleteBranchSuccess,
+  deleteBranchFailure,
 } from "@/src/redux/features/branch/branchSlice";
 import { branchService } from "../services/branch.service";
-import { ICreateBranchPayload } from "../types/branch.types";
+import {
+  ICreateBranchPayload,
+  IUpdateBranchPayload,
+} from "../types/branch.types";
 import { toast } from "sonner";
 
 export const useBranches = () => {
   const dispatch = useAppDispatch();
   const branchState = useAppSelector((state) => state.branch);
 
-  
   /* ================= FETCH ================= */
   const fetchBranches = useCallback(
     async (params?: {
@@ -50,6 +61,7 @@ export const useBranches = () => {
     [dispatch],
   );
 
+  /* ================= CREATE ================= */
   const createBranch = useCallback(
     async (payload: ICreateBranchPayload) => {
       try {
@@ -69,11 +81,77 @@ export const useBranches = () => {
     [dispatch],
   );
 
+  /* ================= GET SINGLE ================= */
+  const getSingleBranch = useCallback(
+    async (id: string) => {
+      try {
+        dispatch(fetchSingleBranchStart());
+        const response = await branchService.getSingleBranch(id);
+        dispatch(fetchSingleBranchSuccess(response));
+        return response;
+      } catch (error: any) {
+        dispatch(
+          fetchSingleBranchFailure(
+            error?.response?.data?.message || "Failed to fetch branch",
+          ),
+        );
+        throw error;
+      }
+    },
+    [dispatch],
+  );
+
+  const updateBranch = useCallback(
+    async (id: string, payload: IUpdateBranchPayload) => {
+      try {
+        dispatch(updateBranchStart());
+        const res = await branchService.updateBranchService(id, payload);
+        dispatch(updateBranchSuccess(res));
+        toast.success("Branch updated successfully");
+        return res;
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message || "Failed to update branch";
+        dispatch(updateBranchFailure(message));
+        toast.error(message);
+        throw error;
+      }
+    },
+    [dispatch],
+  );
+
+  const deleteBranch = useCallback(
+    async (id: string) => {
+      try {
+        dispatch(deleteBranchStart());
+        await branchService.deleteBranchService(id);
+        dispatch(deleteBranchSuccess(id));
+        toast.success("Branch deleted successfully");
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message || "Failed to delete branch";
+        dispatch(deleteBranchFailure(message));
+        toast.error(message);
+        throw error;
+      }
+    },
+    [dispatch],
+  );
+
   const memoizedState = useMemo(
     () => ({
       branches: branchState.branches,
       loading: branchState.fetchLoading,
       error: branchState.error,
+
+      singleBranch: branchState.singleBranch,
+      singleBranchLoading: branchState.singleBranchLoading,
+      createLoading: branchState.createLoading,
+
+      updateLoading: branchState.updateLoading,
+      deleteLoading: branchState.deleteLoading,
+
+      selectedBranch: branchState.selectedBranch,
     }),
     [branchState],
   );
@@ -81,7 +159,10 @@ export const useBranches = () => {
   return {
     fetchBranches,
     createBranch,
+    getSingleBranch,
 
+    updateBranch,
+    deleteBranch,
     ...memoizedState,
   };
 };
