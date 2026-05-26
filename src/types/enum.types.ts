@@ -8,4 +8,10 @@ export interface IEnumbState {
   error: string | null;
 
   shopPlans: string[];
+  companyTypes: string[],
+}
+
+export interface ICompanyTypeEnumResponse {
+  type: string;
+  values: string[];
 }

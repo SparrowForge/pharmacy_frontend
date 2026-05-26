@@ -43,6 +43,7 @@ import { useZones } from "@/src/hooks/useZones";
 import { useRoutes } from "@/src/hooks/useRoutes";
 import { useLines } from "@/src/hooks/useLines";
 import { useRegions } from "@/src/hooks/useRegion";
+import { useEnum } from "@/src/hooks/useEnum";
 
 export default function CompanyDialogueForm({
   companyId,
@@ -79,6 +80,12 @@ export default function CompanyDialogueForm({
   const { routes, fetchRoutes } = useRoutes();
 
   const { lines, fetchLines } = useLines();
+
+  const { companyTypes, getCompanyTypes } = useEnum();
+
+  useEffect(() => {
+    getCompanyTypes();
+  }, []);
 
   const initialFormState = {
     company_type: "",
@@ -287,13 +294,23 @@ export default function CompanyDialogueForm({
           <div className="space-y-2">
             <Label>Company Type *</Label>
 
-            <Input
+            <Select
               value={form.company_type}
-              onChange={(e) => handleChange("company_type", e.target.value)}
-              placeholder="wholesaler"
-            />
-          </div>
+              onValueChange={(value) => handleChange("company_type", value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select company type" />
+              </SelectTrigger>
 
+              <SelectContent>
+                {companyTypes?.map((type: string) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="space-y-2">
             <Label>Company Name *</Label>
 
@@ -303,7 +320,6 @@ export default function CompanyDialogueForm({
               placeholder="Company name"
             />
           </div>
-
           <div className="space-y-2">
             <Label>Code *</Label>
 
@@ -313,7 +329,6 @@ export default function CompanyDialogueForm({
               placeholder="Code"
             />
           </div>
-
           <div className="space-y-2">
             <Label>Contact Person *</Label>
 
@@ -323,7 +338,6 @@ export default function CompanyDialogueForm({
               placeholder="Contact person"
             />
           </div>
-
           <div className="space-y-2">
             <Label>Email *</Label>
 
@@ -334,7 +348,6 @@ export default function CompanyDialogueForm({
               placeholder="Email"
             />
           </div>
-
           <div className="space-y-2">
             <Label>Phone *</Label>
 
@@ -344,7 +357,6 @@ export default function CompanyDialogueForm({
               placeholder="Phone"
             />
           </div>
-
           <div className="space-y-2">
             <Label>Website</Label>
 
@@ -354,7 +366,6 @@ export default function CompanyDialogueForm({
               placeholder="Website"
             />
           </div>
-
           <div className="space-y-2">
             <Label>Established Year</Label>
 
@@ -366,7 +377,6 @@ export default function CompanyDialogueForm({
               }
             />
           </div>
-
           <div className="space-y-2 md:col-span-2">
             <Label>Address</Label>
 
@@ -376,7 +386,6 @@ export default function CompanyDialogueForm({
               onChange={(e) => handleChange("address", e.target.value)}
             />
           </div>
-
           <div className="space-y-2">
             <Label>City</Label>
 
@@ -385,7 +394,6 @@ export default function CompanyDialogueForm({
               onChange={(e) => handleChange("city", e.target.value)}
             />
           </div>
-
           <div className="space-y-2">
             <Label>Postal Code</Label>
 
@@ -394,9 +402,7 @@ export default function CompanyDialogueForm({
               onChange={(e) => handleChange("postal_code", e.target.value)}
             />
           </div>
-
           {/* COUNTRY */}
-
           <div className="space-y-2">
             <Label>Country</Label>
 
@@ -417,9 +423,7 @@ export default function CompanyDialogueForm({
               </SelectContent>
             </Select>
           </div>
-
           {/* DIVISION */}
-
           <div className="space-y-2">
             <Label>Division</Label>
 
@@ -440,9 +444,7 @@ export default function CompanyDialogueForm({
               </SelectContent>
             </Select>
           </div>
-
           {/* DISTRICT */}
-
           <div className="space-y-2">
             <Label>District</Label>
 
@@ -463,9 +465,7 @@ export default function CompanyDialogueForm({
               </SelectContent>
             </Select>
           </div>
-
           {/* THANA */}
-
           <div className="space-y-2">
             <Label>Thana</Label>
 
@@ -486,9 +486,7 @@ export default function CompanyDialogueForm({
               </SelectContent>
             </Select>
           </div>
-
           {/* ROUTE */}
-
           <div className="space-y-2">
             <Label>Route</Label>
 
@@ -509,9 +507,7 @@ export default function CompanyDialogueForm({
               </SelectContent>
             </Select>
           </div>
-
           {/* LINE */}
-
           <div className="space-y-2">
             <Label>Line</Label>
 
@@ -532,7 +528,6 @@ export default function CompanyDialogueForm({
               </SelectContent>
             </Select>
           </div>
-
           <div className="space-y-2">
             <Label>Credit Limit</Label>
 
@@ -544,7 +539,6 @@ export default function CompanyDialogueForm({
               }
             />
           </div>
-
           <div className="space-y-2">
             <Label>Payment Terms</Label>
 
@@ -553,7 +547,6 @@ export default function CompanyDialogueForm({
               onChange={(e) => handleChange("payment_terms", e.target.value)}
             />
           </div>
-
           <div className="space-y-2">
             <Label>Lead Time Days</Label>
 
@@ -565,7 +558,6 @@ export default function CompanyDialogueForm({
               }
             />
           </div>
-
           <div className="space-y-2">
             <Label>Loyalty Points</Label>
 
@@ -577,7 +569,6 @@ export default function CompanyDialogueForm({
               }
             />
           </div>
-
           <div className="space-y-2">
             <Label>Total Orders</Label>
 
@@ -589,7 +580,6 @@ export default function CompanyDialogueForm({
               }
             />
           </div>
-
           <div className="space-y-2">
             <Label>Total Spent</Label>
 
@@ -601,7 +591,6 @@ export default function CompanyDialogueForm({
               }
             />
           </div>
-
           <div className="space-y-2">
             <Label>Status</Label>
 
@@ -620,7 +609,6 @@ export default function CompanyDialogueForm({
               </SelectContent>
             </Select>
           </div>
-
           <div className="space-y-2 md:col-span-2">
             <Label>Notes</Label>
 
@@ -630,7 +618,6 @@ export default function CompanyDialogueForm({
               onChange={(e) => handleChange("notes", e.target.value)}
             />
           </div>
-
           <div className="md:col-span-2">
             <Button
               onClick={handleSubmit}

@@ -6,6 +6,9 @@ import { toast } from "sonner";
 
 import { useAppDispatch, useAppSelector } from "@/src/redux/hooks";
 import {
+  getCompanyTypeFailure,
+  getCompanyTypeStart,
+  getCompanyTypeSuccess,
   getShopPlansFailure,
   getShopPlansStart,
   getShopPlansSuccess,
@@ -30,10 +33,29 @@ export const useEnum = () => {
     }
   }, [dispatch]);
 
+  const getCompanyTypes = useCallback(async () => {
+    try {
+      dispatch(getCompanyTypeStart());
+      const response = await enumServices.getCompanyTypeService();
+      dispatch(getCompanyTypeSuccess(response.values));
+      return response.values;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message || "Failed to load company types";
+      dispatch(getCompanyTypeFailure(message));
+      toast.error(message);
+      throw error;
+    }
+  }, [dispatch]);
+
   return {
     loading: enumb.loading,
     error: enumb.error,
+
     shopPlans: enumb.shopPlans,
     getShopPlans,
+
+    companyTypes: enumb.companyTypes,
+    getCompanyTypes,
   };
 };
