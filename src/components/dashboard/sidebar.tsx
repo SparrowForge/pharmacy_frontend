@@ -26,6 +26,7 @@ import {
   ChartAreaIcon,
   ShoppingBagIcon,
   ShoppingCartIcon,
+  Home,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -102,6 +103,11 @@ const menu = [
         title: "Branch",
         href: "/dashboard/branch",
         icon: ShoppingCartIcon,
+      },
+      {
+        title: "Company",
+        href: "/dashboard/company",
+        icon: Home,
       },
       {
         title: "General Settings",
