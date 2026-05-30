@@ -13,6 +13,7 @@ import routerReducer from "./features/routes/routeSlice";
 import lineReducer from "./features/lines/lineSlice";
 import companyReducer from "./features/company/companySlice";
 import productBrandReducer from "./features/product-brand/productBrandSlice";
+import mediaFileReducer from "./features/media-files/mediaFileSlice";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -29,6 +30,7 @@ export const store = configureStore({
     lines: lineReducer,
     companies: companyReducer,
     productBrand: productBrandReducer,
+    mediaFiles: mediaFileReducer,
   },
 });
 

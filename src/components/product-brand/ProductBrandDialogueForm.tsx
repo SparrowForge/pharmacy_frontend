@@ -2,12 +2,26 @@
 
 import { useEffect, useState } from "react";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/src/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/src/components/ui/dialog";
+
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Textarea } from "@/src/components/ui/textarea";
 import { Label } from "@/src/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 
 import { Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -15,7 +29,9 @@ import { toast } from "sonner";
 import { useProductBrands } from "@/src/hooks/useProductBrands";
 import { useCompanies } from "@/src/hooks/useCompanies";
 
-export default function ProductBrandDialogForm({
+import FileUpload from "@/src/components/files/FileUpload";
+
+export default function ProductBrandDialog({
   brandId,
   onClose,
 }: {
@@ -23,7 +39,6 @@ export default function ProductBrandDialogForm({
   onClose?: () => void;
 }) {
   const [open, setOpen] = useState(false);
-
   const isEditMode = Boolean(brandId);
 
   const {
@@ -44,12 +59,15 @@ export default function ProductBrandDialogForm({
     logo_media_id: "",
   };
 
+
+
   const [form, setForm] = useState(initialState);
 
   useEffect(() => {
     fetchCompanies();
   }, [fetchCompanies]);
 
+  /* LOAD SINGLE BRAND */
   useEffect(() => {
     const load = async () => {
       if (!brandId) return;
@@ -58,11 +76,11 @@ export default function ProductBrandDialogForm({
         const res = await fetchSingleBrand(brandId);
 
         setForm({
-          name: res.name ?? "",
-          slug: res.slug ?? "",
-          description: res.description ?? "",
-          manufacturer_id: res.manufacturer_id ?? "",
-          logo_media_id: res.logo_media_id ?? "",
+          name: res.name || "",
+          slug: res.slug || "",
+          description: res.description || "",
+          manufacturer_id: res.manufacturer_id || "",
+          logo_media_id: res.logo_media_id || "",
         });
 
         setOpen(true);
@@ -79,9 +97,10 @@ export default function ProductBrandDialogForm({
   };
 
   const validate = () => {
-    if (!form.name) return "Name required";
-    if (!form.slug) return "Slug required";
-    if (!form.manufacturer_id) return "Manufacturer required";
+    if (!form.name) return "Name is required";
+    if (!form.slug) return "Slug is required";
+    if (!form.manufacturer_id) return "Manufacturer is required";
+    if (!form.logo_media_id) return "Logo is required";
     return null;
   };
 
@@ -90,16 +109,14 @@ export default function ProductBrandDialogForm({
     if (error) return toast.error(error);
 
     try {
-      const payload = {
-        ...form,
-      };
+      const payload = { ...form };
 
       if (isEditMode && brandId) {
         await updateBrand(brandId, payload);
-        toast.success("Updated");
+        toast.success("Brand updated");
       } else {
         await createBrand(payload);
-        toast.success("Created");
+        toast.success("Brand created");
       }
 
       setForm(initialState);
@@ -111,8 +128,16 @@ export default function ProductBrandDialogForm({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(val) => {
+        setOpen(val);
 
+        if (!val && !isEditMode) {
+          setForm(initialState);
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button onClick={() => setOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
@@ -121,7 +146,6 @@ export default function ProductBrandDialogForm({
       </DialogTrigger>
 
       <DialogContent className="max-w-xl">
-
         <DialogHeader>
           <DialogTitle>
             {isEditMode ? "Edit Brand" : "Create Brand"}
@@ -130,19 +154,21 @@ export default function ProductBrandDialogForm({
 
         {/* NAME */}
         <div className="space-y-2">
-          <Label>Name</Label>
+          <Label>Name *</Label>
           <Input
             value={form.name}
             onChange={(e) => handle("name", e.target.value)}
+            placeholder="Brand name"
           />
         </div>
 
         {/* SLUG */}
         <div className="space-y-2">
-          <Label>Slug</Label>
+          <Label>Slug *</Label>
           <Input
             value={form.slug}
             onChange={(e) => handle("slug", e.target.value)}
+            placeholder="brand-slug"
           />
         </div>
 
@@ -152,12 +178,13 @@ export default function ProductBrandDialogForm({
           <Textarea
             value={form.description}
             onChange={(e) => handle("description", e.target.value)}
+            placeholder="Brand description"
           />
         </div>
 
-        {/* MANUFACTURER (COMPANY DROPDOWN) */}
+        {/* MANUFACTURER DROPDOWN */}
         <div className="space-y-2">
-          <Label>Manufacturer</Label>
+          <Label>Manufacturer *</Label>
 
           <Select
             value={form.manufacturer_id}
@@ -168,24 +195,23 @@ export default function ProductBrandDialogForm({
             </SelectTrigger>
 
             <SelectContent>
-              {companies.map((c) => (
+              {companies.filter(company=>company.company_type === "manufacturer").map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   {c.name}
                 </SelectItem>
               ))}
             </SelectContent>
-
           </Select>
         </div>
 
-        {/* LOGO */}
-        <div className="space-y-2">
-          <Label>Logo Media ID</Label>
-          <Input
-            value={form.logo_media_id}
-            onChange={(e) => handle("logo_media_id", e.target.value)}
-          />
-        </div>
+        {/* FILE UPLOAD (REUSABLE COMPONENT) */}
+        <FileUpload
+          value={form.logo_media_id}
+          label="Brand Logo *"
+          onChange={(fileId) => {
+            handle("logo_media_id", fileId);
+          }}
+        />
 
         {/* SUBMIT */}
         <Button
@@ -199,12 +225,11 @@ export default function ProductBrandDialogForm({
               Saving...
             </>
           ) : isEditMode ? (
-            "Update"
+            "Update Brand"
           ) : (
-            "Create"
+            "Create Brand"
           )}
         </Button>
-
       </DialogContent>
     </Dialog>
   );
