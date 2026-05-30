@@ -83,6 +83,11 @@ const menu = [
         href: "/dashboard/product-category",
         icon: PackageOpen,
       },
+      {
+        title: "Product Unit",
+        href: "/dashboard/product-units",
+        icon: PackageOpen,
+      },
       { title: "Pricing", href: "/dashboard/pricing", icon: DollarSign },
     ],
   },
