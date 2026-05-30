@@ -73,6 +73,7 @@ const menu = [
     icon: Package,
     children: [
       { title: "Products", href: "/dashboard/medicines", icon: PackageOpen },
+      { title: "Product Brand", href: "/dashboard/product-brand", icon: PackageOpen },
       { title: "Pricing", href: "/dashboard/pricing", icon: DollarSign },
     ],
   },

@@ -12,6 +12,7 @@ import zoneReducer from "./features/zone/zoneSlice";
 import routerReducer from "./features/routes/routeSlice";
 import lineReducer from "./features/lines/lineSlice";
 import companyReducer from "./features/company/companySlice";
+import productBrandReducer from "./features/product-brand/productBrandSlice";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -27,6 +28,7 @@ export const store = configureStore({
     routes: routerReducer,
     lines: lineReducer,
     companies: companyReducer,
+    productBrand: productBrandReducer,
   },
 });
 
