@@ -116,14 +116,11 @@ export default function ProductBadgeDialogForm({
 
       if (isEditMode && badgeId) {
         await updateProductBadge(badgeId, payload);
-
         toast.success("Product badge updated successfully");
       } else {
         await createProductBadge(payload);
-
         toast.success("Product badge created successfully");
       }
-
       setForm(initialFormState);
 
       setOpen(false);

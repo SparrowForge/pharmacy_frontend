@@ -74,28 +74,33 @@ const menu = [
     children: [
       { title: "Products", href: "/dashboard/medicines", icon: PackageOpen },
       {
-        title: "Product Brand",
+        title: "Brand",
         href: "/dashboard/product-brand",
         icon: PackageOpen,
       },
       {
-        title: "Product Category",
+        title: "Category",
         href: "/dashboard/product-category",
         icon: PackageOpen,
       },
       {
-        title: "Product Unit",
+        title: "Unit",
         href: "/dashboard/product-units",
         icon: PackageOpen,
       },
       {
-        title: "Product Badge",
+        title: "Badge",
         href: "/dashboard/product-badge",
         icon: PackageOpen,
       },
       {
-        title: "Product Tag",
+        title: "Tag",
         href: "/dashboard/product-tag",
+        icon: PackageOpen,
+      },
+      {
+        title: "Image",
+        href: "/dashboard/product-image",
         icon: PackageOpen,
       },
       { title: "Pricing", href: "/dashboard/pricing", icon: DollarSign },

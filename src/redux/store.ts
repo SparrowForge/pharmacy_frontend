@@ -19,6 +19,7 @@ import productUnitReducer from "./features/product-unit/productUnit.slice";
 import productReducer from "./features/products/productSlice";
 import productBadgeReducer from "./features/product-badge/productBadge.slice";
 import productTagReducer from "./features/product-tag/productTag.slice";
+import productImageReducer from "./features/product-image/productImageSlice"
 
 export const store = configureStore({
   reducer: {
@@ -42,6 +43,7 @@ export const store = configureStore({
     products: productReducer,
     productBadge: productBadgeReducer,
     productTags: productTagReducer,
+    productImages: productImageReducer
   },
 });
 

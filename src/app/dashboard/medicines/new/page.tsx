@@ -41,6 +41,7 @@ import {
   IMedicineFormData,
 } from "@/src/constants/prodcucts.constant";
 import { useProductBadges } from "@/src/hooks/useProductBadges";
+import { useProductImages } from "@/src/hooks/useProductImages";
 
 export default function AddMedicinePage() {
   const [activeTab, setActiveTab] = useState("basic");
@@ -55,6 +56,7 @@ export default function AddMedicinePage() {
   const { units, fetchUnits } = useProductUnits();
   const { createProduct, createLoading } = useProducts();
   const { createProductBadge } = useProductBadges();
+  const { createProductImage } = useProductImages();
 
   const handleInputChange = (field: keyof IMedicineFormData, value: any) => {
     setFormData((prev) => ({
@@ -122,7 +124,18 @@ export default function AddMedicinePage() {
           product_id: res.id,
           badge: formData.badge,
         };
+        const productImagePayload = {
+          product_id: res.id,
+          media_id: formData.preview_media_id,
+          sort_order: 1,
+          is_primary: true,
+        };
+
         await createProductBadge(badgePayload);
+
+        if (formData.preview_media_id) {
+          await createProductImage(productImagePayload);
+        }
       }
 
       // toast.success("Medicine added successfully!");
