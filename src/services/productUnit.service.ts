@@ -1,51 +1,62 @@
 import axiosInstance from "./axios";
 
 import {
-  IProductUnitResponse,
+  ICreateProductUnitPayload,
+  IUpdateProductUnitPayload,
   IProductUnit,
+  IProductUnitResponse,
   IGetProductUnitsQuery,
 } from "@/src/types/productUnit.types";
 
-/* GET ALL */
-const getUnits = async (
-  params: IGetProductUnitsQuery,
+/* ================= GET ALL ================= */
+const getAllProductUnits = async (
+  params: IGetProductUnitsQuery
 ): Promise<IProductUnitResponse> => {
-  const res = await axiosInstance.get("/product_units", {
-    params,
-  });
+  const res = await axiosInstance.get<IProductUnitResponse>(
+    "/product_units",
+    { params }
+  );
 
   return res.data;
 };
 
-/* CREATE */
-const createUnit = async (payload: any): Promise<IProductUnit> => {
+/* ================= CREATE ================= */
+const createProductUnitService = async (
+  payload: ICreateProductUnitPayload
+): Promise<IProductUnit> => {
   const res = await axiosInstance.post("/product_units", payload);
   return res.data;
 };
 
-/* SINGLE */
-const getUnit = async (id: string): Promise<IProductUnit> => {
+/* ================= SINGLE ================= */
+const getSingleProductUnitService = async (
+  id: string
+): Promise<IProductUnit> => {
   const res = await axiosInstance.get(`/product_units/${id}`);
   return res.data;
 };
 
-/* UPDATE */
-const updateUnit = async (id: string, payload: any): Promise<IProductUnit> => {
+/* ================= UPDATE ================= */
+const updateProductUnitService = async (
+  id: string,
+  payload: IUpdateProductUnitPayload
+): Promise<IProductUnit> => {
   const res = await axiosInstance.patch(`/product_units/${id}`, payload);
-
   return res.data;
 };
 
-/* DELETE */
-const deleteUnit = async (id: string) => {
+/* ================= DELETE ================= */
+const deleteProductUnitService = async (
+  id: string
+): Promise<{ success: boolean; message: string; id: string }> => {
   const res = await axiosInstance.delete(`/product_units/${id}`);
   return res.data;
 };
 
 export const productUnitService = {
-  getUnits,
-  createUnit,
-  getUnit,
-  updateUnit,
-  deleteUnit,
+  getAllProductUnits,
+  createProductUnitService,
+  getSingleProductUnitService,
+  updateProductUnitService,
+  deleteProductUnitService,
 };

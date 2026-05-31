@@ -8,7 +8,7 @@ export interface IProductBadge {
 
 export interface ICreateProductBadgePayload {
   product_id: string;
-  badge: string;
+  badge: string[];
 }
 
 export interface IUpdateProductBadgePayload {

@@ -7,6 +7,7 @@ const initialState: IEnumbState = {
 
   shopPlans: [],
   companyTypes: [],
+  unitTypes: [],
 };
 
 const enumbSlice = createSlice({
@@ -47,6 +48,24 @@ const enumbSlice = createSlice({
       state.error = action.payload;
     },
 
+    /* ================= FETCH START ================= */
+    fetchProductUnitTypesStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+
+    /* ================= FETCH SUCCESS ================= */
+    fetchProductUnitTypesSuccess: (state, action: PayloadAction<string[]>) => {
+      state.loading = false;
+      state.unitTypes = action.payload;
+    },
+
+    /* ================= FETCH FAILURE ================= */
+    fetchProductUnitTypesFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
     clearEnumbError: (state) => {
       state.error = null;
     },
@@ -61,6 +80,11 @@ export const {
   getCompanyTypeStart,
   getCompanyTypeSuccess,
   getCompanyTypeFailure,
+
+  fetchProductUnitTypesStart,
+  fetchProductUnitTypesSuccess,
+  fetchProductUnitTypesFailure,
+
   clearEnumbError,
 } = enumbSlice.actions;
 

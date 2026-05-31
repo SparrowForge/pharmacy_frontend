@@ -42,21 +42,27 @@ import {
 } from "@/src/constants/prodcucts.constant";
 import { useProductBadges } from "@/src/hooks/useProductBadges";
 import { useProductImages } from "@/src/hooks/useProductImages";
+import { useProductTags } from "@/src/hooks/useProductTags";
+import { IProductUnit } from "@/src/types/productUnit.types";
 
 export default function AddMedicinePage() {
   const [activeTab, setActiveTab] = useState("basic");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const [badges, setBadges] = useState<string[]>([]);
+  const [badgeInput, setBadgeInput] = useState("");
+  const [selectedUnit, setSelectedUnit] = useState<IProductUnit>();
   const [formData, setFormData] =
     useState<IMedicineFormData>(defaultMedicineData);
 
   const { brands, fetchBrands } = useProductBrands();
   const { categories, fetchCategories } = useProductCategories();
   const { companies, fetchCompanies } = useCompanies();
-  const { units, fetchUnits } = useProductUnits();
+  const { units, fetchProductUnits } = useProductUnits();
   const { createProduct, createLoading } = useProducts();
   const { createProductBadge } = useProductBadges();
   const { createProductImage } = useProductImages();
+  const { createProductTag } = useProductTags();
 
   const handleInputChange = (field: keyof IMedicineFormData, value: any) => {
     setFormData((prev) => ({
@@ -65,18 +71,25 @@ export default function AddMedicinePage() {
     }));
   };
 
-  console.log("manufacturers", formData.manufacturer_id);
-  console.log("distributors", formData.distributor_id);
-
   const handleAddTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
       setTags([...tags, tagInput.trim()]);
       setTagInput("");
     }
   };
+  const handleAddBadge = () => {
+    if (badgeInput.trim() && !badges.includes(badgeInput.trim())) {
+      setBadges([...badges, badgeInput.trim()]);
+      setBadgeInput("");
+    }
+  };
 
   const handleRemoveTag = (tag: string) => {
     setTags(tags.filter((t) => t !== tag));
+  };
+
+  const handleRemoveBadge = (badge: string) => {
+    setBadges(tags.filter((t) => t !== badge));
   };
 
   const suppliers = companies?.filter((c) => c.company_type === "supplier");
@@ -100,7 +113,7 @@ export default function AddMedicinePage() {
       limit: 100,
     });
 
-    fetchUnits({
+    fetchProductUnits({
       page: 1,
       limit: 100,
     });
@@ -122,7 +135,11 @@ export default function AddMedicinePage() {
       if (res.id) {
         const badgePayload = {
           product_id: res.id,
-          badge: formData.badge,
+          badge: badges,
+        };
+        const tagsPaylod = {
+          product_id: res.id,
+          tag: tags,
         };
         const productImagePayload = {
           product_id: res.id,
@@ -132,6 +149,7 @@ export default function AddMedicinePage() {
         };
 
         await createProductBadge(badgePayload);
+        await createProductTag(tagsPaylod);
 
         if (formData.preview_media_id) {
           await createProductImage(productImagePayload);
@@ -143,6 +161,8 @@ export default function AddMedicinePage() {
       toast.error("Failed to save medicine");
     }
   };
+
+  console.log(units);
 
   return (
     <div className="min-h-screen bg-background">
@@ -416,30 +436,45 @@ export default function AddMedicinePage() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label>Badge *</Label>
-
+                      <div className="space-y-2">
+                        <Label>Badge</Label>
+                        <div className="flex gap-2 mb-2">
                           <Input
-                            value={formData.badge}
-                            onChange={(e) =>
-                              handleInputChange("badge", e.target.value)
-                            }
-                            placeholder="e.g. Badge"
+                            placeholder="Add a badge and press Enter"
+                            value={badgeInput}
+                            onChange={(e) => setBadgeInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleAddBadge();
+                              }
+                            }}
                           />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleAddBadge}
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
                         </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="rackNo">
-                            Rack Number (Physical Location)
-                          </Label>
-                          <Input
-                            id="rackNo"
-                            placeholder="e.g. A-12-B3"
-                            value={formData.rack_no}
-                            onChange={(e) =>
-                              handleInputChange("rack_no", e.target.value)
-                            }
-                          />
+                        <div className="flex flex-wrap gap-2">
+                          {badges.map((badge) => (
+                            <Badge
+                              key={badge}
+                              variant="secondary"
+                              className="gap-2"
+                            >
+                              {badge}
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveBadge(badge)}
+                                className="hover:text-destructive"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </Badge>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -466,47 +501,101 @@ export default function AddMedicinePage() {
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="unit_id">Units</Label>
-                        <Select
-                          value={formData.unit_id}
-                          onValueChange={(value) =>
-                            handleInputChange("unit_id", value)
-                          }
-                        >
-                          <SelectTrigger className="w-full" id="unit_id">
-                            <SelectValue placeholder="Select Units" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {units.map((unit, idx) => (
-                              <SelectItem key={idx} value={unit.id}>
-                                {unit.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="unit_id">Units</Label>
+                          <Select
+                            value={formData.unit_id}
+                            onValueChange={(value) => {
+                              const selected = units.find(
+                                (u) => String(u.id) === value,
+                              );
+
+                              handleInputChange("unit_id", value);
+                              setSelectedUnit(selected);
+                            }}
+                          >
+                            <SelectTrigger className="w-full" id="unit_id">
+                              <SelectValue placeholder="Select Units" />
+                            </SelectTrigger>
+
+                            <SelectContent>
+                              {units.map((unit) => (
+                                <SelectItem
+                                  key={unit.id}
+                                  value={String(unit.id)}
+                                >
+                                  {unit.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="unit_id">Default Unit</Label>
+                          <Select
+                            value={formData.default_unit_id}
+                            onValueChange={(value) =>
+                              handleInputChange("default_unit_id", value)
+                            }
+                          >
+                            <SelectTrigger className="w-full" id="unit_id">
+                              <SelectValue placeholder="Select default Unit" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {units
+                                .filter(
+                                  (d) =>
+                                    d.unit_type === selectedUnit?.unit_type,
+                                )
+                                .map((unit, idx) => (
+                                  <SelectItem key={idx} value={unit.id}>
+                                    {unit.name}
+                                  </SelectItem>
+                                ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Barcode */}
-                    <div className="space-y-2">
-                      <Label htmlFor="barcode">Barcode</Label>
-                      <div className="flex gap-2">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="rackNo">
+                          Rack Number (Physical Location)
+                        </Label>
                         <Input
-                          id="barcode"
-                          placeholder="Scan or enter barcode"
-                          value={formData.barcode}
+                          id="rackNo"
+                          placeholder="e.g. A-12-B3"
+                          value={formData.rack_no}
                           onChange={(e) =>
-                            handleInputChange("barcode", e.target.value)
+                            handleInputChange("rack_no", e.target.value)
                           }
-                          className="flex-1"
                         />
-                        <Button type="button" variant="outline">
-                          <Barcode className="w-4 h-4 mr-2" />
-                          Scan
-                        </Button>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="barcode">Barcode</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            id="barcode"
+                            placeholder="Scan or enter barcode"
+                            value={formData.barcode}
+                            onChange={(e) =>
+                              handleInputChange("barcode", e.target.value)
+                            }
+                            className="flex-1"
+                          />
+                          <Button type="button" variant="outline">
+                            <Barcode className="w-4 h-4 mr-2" />
+                            Scan
+                          </Button>
+                        </div>
                       </div>
                     </div>
+                    {/* Barcode */}
                   </CardContent>
                 </Card>
               </TabsContent>

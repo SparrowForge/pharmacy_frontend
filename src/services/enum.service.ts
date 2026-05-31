@@ -1,4 +1,4 @@
-import { ICompanyTypeEnumResponse, IShopPlanEnumResponse } from "../types/enum.types";
+import { ICompanyTypeEnumResponse, IProductUnitTypeResponse, IShopPlanEnumResponse } from "../types/enum.types";
 import axiosInstance from "./axios";
 
 const getShopPlansService = async (): Promise<IShopPlanEnumResponse> => {
@@ -12,7 +12,18 @@ const getCompanyTypeService = async (): Promise<ICompanyTypeEnumResponse> => {
   return response.data;
 };
 
+/* ================= GET PRODUCT UNIT TYPES ================= */
+const getProductUnitTypes = async (): Promise<IProductUnitTypeResponse> => {
+  const res = await axiosInstance.get<IProductUnitTypeResponse>(
+    "/datatypes/product_unit_type"
+  );
+
+  return res.data;
+};
+
+
 export const enumServices = {
   getShopPlansService,
-  getCompanyTypeService
+  getCompanyTypeService,
+  getProductUnitTypes
 };

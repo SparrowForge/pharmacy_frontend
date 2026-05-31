@@ -23,7 +23,7 @@ export interface IGetProductTagsQuery {
 
 export interface ICreateProductTagPayload {
   product_id: string;
-  tag: string;
+  tag: string[];
 }
 
 export type IUpdateProductTagPayload = ICreateProductTagPayload;

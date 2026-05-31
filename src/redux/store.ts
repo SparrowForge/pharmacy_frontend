@@ -15,7 +15,7 @@ import companyReducer from "./features/company/companySlice";
 import productBrandReducer from "./features/product-brand/productBrandSlice";
 import mediaFileReducer from "./features/media-files/mediaFileSlice";
 import productCategoryReducer from "./features/product-category/productCategory.slice";
-import productUnitReducer from "./features/product-unit/productUnit.slice";
+import productUnitReducer from "./features/product-unit/productUnitSlice";
 import productReducer from "./features/products/productSlice";
 import productBadgeReducer from "./features/product-badge/productBadge.slice";
 import productTagReducer from "./features/product-tag/productTag.slice";

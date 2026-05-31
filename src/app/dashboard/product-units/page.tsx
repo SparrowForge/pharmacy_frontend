@@ -2,16 +2,15 @@
 
 import { useEffect, useState } from "react";
 
-import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
-
+import { Input } from "@/src/components/ui/input";
+import { Badge } from "@/src/components/ui/badge";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
-
 import {
   Table,
   TableBody,
@@ -21,77 +20,89 @@ import {
   TableRow,
 } from "@/src/components/ui/table";
 
+import { Search, MoreHorizontal, Edit, Trash2, Package } from "lucide-react";
+
+import { useProductUnits } from "@/src/hooks/useProductUnits";
+import { initialLimit, initialPage } from "@/src/constants/utils";
+
+import Loading from "@/src/components/common/Loading";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-
-import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
-
-import Loading from "@/src/components/common/Loading";
-import ProductUnitDialog from "@/src/components/product-units/ProductUnitDialougeForm";
-
-import { useProductUnits } from "@/src/hooks/useProductUnits";
+import ProductUnitDialogForm from "@/src/components/product-units/ProductUnitDialougeForm";
 
 export default function ProductUnitsPage() {
-  const {
-    units = [],
-    page,
-    limit,
-    total,
-    loading,
-    fetchUnits,
-    deleteUnit,
-  } = useProductUnits();
-
+  const [page, setPage] = useState(initialPage);
+  const [limit] = useState(initialLimit);
   const [search, setSearch] = useState("");
   const [includeDeleted, setIncludeDeleted] = useState(false);
 
   const [editId, setEditId] = useState<string | null>(null);
-  const [openEdit, setOpenEdit] = useState(false);
 
-  /* FETCH */
+  const { fetchProductUnits, deleteProductUnit, units, fetchLoading } =
+    useProductUnits();
+
+  /* ================= FETCH ================= */
   useEffect(() => {
-    fetchUnits({
+    fetchProductUnits({
       page,
       limit,
       q: search,
       includeDeleted,
     });
-  }, [fetchUnits, page, limit, search, includeDeleted]);
+  }, [page, limit, search, includeDeleted, fetchProductUnits]);
 
   return (
     <div className="space-y-6">
       {/* HEADER */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Product Units</h1>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-primary/10 flex items-center justify-center rounded-xl">
+            <Package className="w-6 h-6 text-primary" />
+          </div>
 
-        <ProductUnitDialog
+          <div>
+            <h1 className="text-2xl font-bold">Product Units</h1>
+            <p className="text-muted-foreground">
+              Manage unit types and conversions
+            </p>
+          </div>
+        </div>
+
+        <ProductUnitDialogForm
           unitId={editId}
-          onClose={() => {
-            setEditId(null);
-            setOpenEdit(false);
-          }}
+          onClose={() => setEditId(null)}
         />
       </div>
 
       {/* SEARCH + FILTER */}
-      <div className="flex gap-4 items-center">
-        <Input
-          placeholder="Search units..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-          }}
-        />
+      <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+        <div className="relative max-w-md w-full">
+          <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+
+          <Input
+            className="pl-10"
+            placeholder="Search units..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+          />
+        </div>
 
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
             checked={includeDeleted}
-            onChange={(e) => setIncludeDeleted(e.target.checked)}
+            onChange={(e) => {
+              setIncludeDeleted(e.target.checked);
+              setPage(1);
+            }}
           />
           Include Deleted
         </label>
@@ -100,11 +111,11 @@ export default function ProductUnitsPage() {
       {/* TABLE */}
       <Card>
         <CardHeader>
-          <CardTitle>All Units</CardTitle>
+          <CardTitle>All Product Units</CardTitle>
         </CardHeader>
 
         <CardContent>
-          {loading ? (
+          {fetchLoading ? (
             <Loading text="Loading units..." />
           ) : (
             <Table>
@@ -112,61 +123,75 @@ export default function ProductUnitsPage() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Short Name</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Conversion</TableHead>
+                  <TableHead>Default</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
 
               <TableBody>
-                {units.length > 0 &&
-                  units.map((unit) => (
-                    <TableRow key={unit.id}>
-                      <TableCell className="font-medium">{unit.name}</TableCell>
+                {units?.map((unit) => (
+                  <TableRow key={unit.id}>
+                    {/* NAME */}
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{unit.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {unit.description || "No description"}
+                        </p>
+                      </div>
+                    </TableCell>
 
-                      <TableCell>{unit.short_name}</TableCell>
+                    {/* SHORT NAME */}
+                    <TableCell>{unit.short_name}</TableCell>
 
-                      <TableCell>
-                        {unit.is_delete ? (
-                          <span className="text-red-500">Deleted</span>
-                        ) : (
-                          <span className="text-green-600">Active</span>
-                        )}
-                      </TableCell>
+                    {/* TYPE */}
+                    <TableCell>
+                      <Badge variant="secondary">{unit.unit_type}</Badge>
+                    </TableCell>
 
-                      {/* ACTIONS */}
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
+                    {/* CONVERT RATE */}
+                    <TableCell>{unit.convert_rate}</TableCell>
 
-                          <DropdownMenuContent align="end">
-                            {/* EDIT */}
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setEditId(unit.id);
-                                setOpenEdit(true);
-                              }}
-                            >
-                              <Edit className="w-4 h-4 mr-2" />
-                              Edit
-                            </DropdownMenuItem>
+                    {/* DEFAULT */}
+                    <TableCell>
+                      {unit.is_deafult_unit ? (
+                        <Badge className="bg-green-100 text-green-700">
+                          Default
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline">No</Badge>
+                      )}
+                    </TableCell>
 
-                            {/* DELETE */}
-                            <DropdownMenuItem
-                              className="text-red-500"
-                              onClick={() => deleteUnit(unit.id)}
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                    {/* ACTIONS */}
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setEditId(unit.id)}>
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem
+                            className="text-red-500"
+                            onClick={() => deleteProductUnit(unit.id)}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           )}
@@ -178,30 +203,12 @@ export default function ProductUnitsPage() {
         <Button
           variant="outline"
           disabled={page === 1}
-          onClick={() =>
-            fetchUnits({
-              page: page - 1,
-              limit,
-              q: search,
-              includeDeleted,
-            })
-          }
+          onClick={() => setPage((p) => p - 1)}
         >
           Prev
         </Button>
 
-        <Button
-          variant="outline"
-          disabled={page * limit >= total}
-          onClick={() =>
-            fetchUnits({
-              page: page + 1,
-              limit,
-              q: search,
-              includeDeleted,
-            })
-          }
-        >
+        <Button variant="outline" onClick={() => setPage((p) => p + 1)}>
           Next
         </Button>
       </div>
