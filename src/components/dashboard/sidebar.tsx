@@ -93,6 +93,11 @@ const menu = [
         href: "/dashboard/product-badge",
         icon: PackageOpen,
       },
+      {
+        title: "Product Tag",
+        href: "/dashboard/product-tag",
+        icon: PackageOpen,
+      },
       { title: "Pricing", href: "/dashboard/pricing", icon: DollarSign },
     ],
   },

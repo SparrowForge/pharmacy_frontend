@@ -17,7 +17,8 @@ import mediaFileReducer from "./features/media-files/mediaFileSlice";
 import productCategoryReducer from "./features/product-category/productCategory.slice";
 import productUnitReducer from "./features/product-unit/productUnit.slice";
 import productReducer from "./features/products/productSlice";
-import productBadgeReducer from "./features/product-badge/productBadge.slice"
+import productBadgeReducer from "./features/product-badge/productBadge.slice";
+import productTagReducer from "./features/product-tag/productTag.slice";
 
 export const store = configureStore({
   reducer: {
@@ -39,7 +40,8 @@ export const store = configureStore({
     productCategories: productCategoryReducer,
     productUnits: productUnitReducer,
     products: productReducer,
-    productBadge:productBadgeReducer
+    productBadge: productBadgeReducer,
+    productTags: productTagReducer,
   },
 });
 
