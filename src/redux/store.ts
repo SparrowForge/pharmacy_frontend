@@ -16,6 +16,7 @@ import productBrandReducer from "./features/product-brand/productBrandSlice";
 import mediaFileReducer from "./features/media-files/mediaFileSlice";
 import productCategoryReducer from "./features/product-category/productCategory.slice";
 import productUnitReducer from "./features/product-unit/productUnit.slice";
+import productReducer from "./features/products/productSlice";
 
 export const store = configureStore({
   reducer: {
@@ -36,6 +37,7 @@ export const store = configureStore({
     mediaFiles: mediaFileReducer,
     productCategories: productCategoryReducer,
     productUnits: productUnitReducer,
+    products: productReducer,
   },
 });
 
