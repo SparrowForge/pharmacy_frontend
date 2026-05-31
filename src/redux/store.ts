@@ -19,8 +19,9 @@ import productUnitReducer from "./features/product-unit/productUnit.slice";
 import productReducer from "./features/products/productSlice";
 import productBadgeReducer from "./features/product-badge/productBadge.slice";
 import productTagReducer from "./features/product-tag/productTag.slice";
-import productImageReducer from "./features/product-image/productImageSlice"
-import productBatchReducer from "./features/product-batch/productBatchSlice"
+import productImageReducer from "./features/product-image/productImageSlice";
+import productBatchReducer from "./features/product-batch/productBatchSlice";
+import productOfferReducer from "./features/product-offer/productOfferSlice";
 
 export const store = configureStore({
   reducer: {
@@ -45,7 +46,8 @@ export const store = configureStore({
     productBadge: productBadgeReducer,
     productTags: productTagReducer,
     productImages: productImageReducer,
-    productBatches: productBatchReducer
+    productBatches: productBatchReducer,
+    productOffers: productOfferReducer,
   },
 });
 
