@@ -103,6 +103,11 @@ const menu = [
         href: "/dashboard/product-image",
         icon: PackageOpen,
       },
+      {
+        title: "Batch",
+        href: "/dashboard/product-batch",
+        icon: PackageOpen,
+      },
       { title: "Pricing", href: "/dashboard/pricing", icon: DollarSign },
     ],
   },
