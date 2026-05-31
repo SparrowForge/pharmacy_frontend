@@ -36,7 +36,11 @@ import { useCompanies } from "@/src/hooks/useCompanies";
 import { useProductUnits } from "@/src/hooks/useProductUnits";
 import FileUpload from "@/src/components/files/FileUpload";
 import { useProducts } from "@/src/hooks/useProducts";
-import { defaultMedicineData, IMedicineFormData } from "@/src/constants/prodcucts.constant";
+import {
+  defaultMedicineData,
+  IMedicineFormData,
+} from "@/src/constants/prodcucts.constant";
+import { useProductBadges } from "@/src/hooks/useProductBadges";
 
 export default function AddMedicinePage() {
   const [activeTab, setActiveTab] = useState("basic");
@@ -50,6 +54,7 @@ export default function AddMedicinePage() {
   const { companies, fetchCompanies } = useCompanies();
   const { units, fetchUnits } = useProductUnits();
   const { createProduct, createLoading } = useProducts();
+  const { createProductBadge } = useProductBadges();
 
   const handleInputChange = (field: keyof IMedicineFormData, value: any) => {
     setFormData((prev) => ({
@@ -111,6 +116,14 @@ export default function AddMedicinePage() {
       console.log(formData);
       const res = await createProduct(formData);
       console.log(res);
+
+      if (res.id) {
+        const badgePayload = {
+          product_id: res.id,
+          badge: formData.badge,
+        };
+        await createProductBadge(badgePayload);
+      }
 
       // toast.success("Medicine added successfully!");
     } catch (error) {
@@ -389,18 +402,32 @@ export default function AddMedicinePage() {
                           ))}
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="rackNo">
-                          Rack Number (Physical Location)
-                        </Label>
-                        <Input
-                          id="rackNo"
-                          placeholder="e.g. A-12-B3"
-                          value={formData.rack_no}
-                          onChange={(e) =>
-                            handleInputChange("rack_no", e.target.value)
-                          }
-                        />
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Badge *</Label>
+
+                          <Input
+                            value={formData.badge}
+                            onChange={(e) =>
+                              handleInputChange("badge", e.target.value)
+                            }
+                            placeholder="e.g. Badge"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="rackNo">
+                            Rack Number (Physical Location)
+                          </Label>
+                          <Input
+                            id="rackNo"
+                            placeholder="e.g. A-12-B3"
+                            value={formData.rack_no}
+                            onChange={(e) =>
+                              handleInputChange("rack_no", e.target.value)
+                            }
+                          />
+                        </div>
                       </div>
                     </div>
 

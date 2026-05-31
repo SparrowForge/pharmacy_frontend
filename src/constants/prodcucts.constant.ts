@@ -1,6 +1,7 @@
 export interface IMedicineFormData {
   allow_return: boolean;
   allow_warranty_claim: boolean;
+  badge: string;
   barcode: string;
   brand_id: string;
   bundle_offer: string;
@@ -43,6 +44,7 @@ export interface IMedicineFormData {
 export const defaultMedicineData: IMedicineFormData = {
   allow_return: false,
   allow_warranty_claim: false,
+  badge: "",
   barcode: "",
   brand_id: "",
   bundle_offer: "",
