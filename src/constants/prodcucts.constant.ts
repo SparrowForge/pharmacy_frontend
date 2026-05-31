@@ -44,7 +44,6 @@ export interface IMedicineFormData {
 export const defaultMedicineData: IMedicineFormData = {
   allow_return: false,
   allow_warranty_claim: false,
-
   barcode: "",
   brand_id: "",
   bundle_offer: "",

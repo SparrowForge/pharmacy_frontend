@@ -17,6 +17,7 @@ export interface IProduct {
   brand_id: string;
   category_id: string;
   unit_id: string;
+  default_unit_id:string
   supplier_id: string;
   manufacturer_id: string;
   distributor_id: string;
@@ -91,6 +92,7 @@ export interface ICreateProductPayload {
 
   brand_id: string;
   category_id: string;
+  default_unit_id:string
   unit_id: string;
   supplier_id: string;
   manufacturer_id: string;
