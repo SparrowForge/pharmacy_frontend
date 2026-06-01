@@ -1,13 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@/src/components/ui/button";
-import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
-import { Textarea } from "@/src/components/ui/textarea";
+
+import { ArrowLeft, Plus, Trash2, Save, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { IBranch } from "@/src/types/branch.types";
+import { usePurchaseOrders } from "@/src/hooks/usePurchaseOrders";
+import {
+  ICreatePurchaseOrderPayload,
+  IPurchaseOrder,
+} from "@/src/types/purchaseOrder.types";
 import { Badge } from "@/src/components/ui/badge";
+import { Button } from "@/src/components/ui/button";
 import {
   Card,
   CardContent,
@@ -16,13 +22,6 @@ import {
   CardTitle,
 } from "@/src/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
-import {
   Table,
   TableBody,
   TableCell,
@@ -30,57 +29,81 @@ import {
   TableHeader,
   TableRow,
 } from "@/src/components/ui/table";
-import { ArrowLeft, Plus, Trash2, Save, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { useBranches } from "@/src/hooks/useBranches";
+import { useCompanies } from "@/src/hooks/useCompanies";
+import { ICompany } from "@/src/types/company.types";
+import { Label } from "@radix-ui/react-label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
+import { Input } from "@/src/components/ui/input";
+import { Textarea } from "@/src/components/ui/textarea";
+import { useProducts } from "@/src/hooks/useProducts";
+import { useShops } from "@/src/hooks/useShops";
 
-// Sample suppliers
-const suppliers = [
-  { id: 1, name: "ABC Pharma Ltd", contact: "contact@abcpharma.com" },
-  { id: 2, name: "XYZ Medicines", contact: "info@xyzmeds.com" },
-  { id: 3, name: "Global Health Co", contact: "sales@globalhealth.com" },
-  { id: 4, name: "Prime Pharma", contact: "orders@primepharma.com" },
-];
-
-// Sample medicines for PO
-const availableMedicines = [
-  { id: 1, name: "Paracetamol 500mg", unit: "Piece", minOrder: 100 },
-  { id: 2, name: "Amoxicillin 500mg", unit: "Strip", minOrder: 10 },
-  { id: 3, name: "Cetirizine 10mg", unit: "Piece", minOrder: 100 },
-  { id: 4, name: "Omeprazole 20mg", unit: "Strip", minOrder: 5 },
-  { id: 5, name: "Vitamin D3 1000IU", unit: "Box", minOrder: 10 },
-  { id: 6, name: "Ibuprofen 400mg", unit: "Piece", minOrder: 50 },
-];
-
-interface POLineItem {
-  id: string;
-  medicineId: number;
-  medicineName: string;
-  quantity: number;
-  unit: string;
-  unitPrice: number;
-  minOrder: number;
+interface PurchaseOrderFormProps {
+  initialData?: ICreatePurchaseOrderPayload;
+  isEditing?: boolean;
+  onSuccess?: (data: ICreatePurchaseOrderPayload) => void;
 }
 
-export default function CreatePurchaseOrderPage() {
+// Sample medicines for PO
+
+export default function PurchaseOrderForm({
+  initialData,
+  isEditing = false,
+  onSuccess,
+}: PurchaseOrderFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [supplierId, setSupplierId] = useState("");
-  const [deliveryDate, setDeliveryDate] = useState("");
+  const { createLoading, createPurchaseOrder, updatePurchaseOrder } =
+    usePurchaseOrders();
+  const { fetchBranches, branches } = useBranches();
+  const { fetchCompanies, companies } = useCompanies();
+  const { fetchProducts, products } = useProducts();
+  const { shops, fetchShops } = useShops();
+
+  const [branchId, setBranchId] = useState(initialData?.branch_id || "");
+  const [supplierId, setSupplierId] = useState(initialData?.supplier_id || "");
+  const [shopId, setShopId] = useState(initialData?.shop_id || "");
+  const [deliveryDate, setDeliveryDate] = useState(
+    initialData?.expected_delivery_date || "",
+  );
   const [paymentTerms, setPaymentTerms] = useState("net30");
-  const [notes, setNotes] = useState("");
-  const [lineItems, setLineItems] = useState<POLineItem[]>([]);
+  const [notes, setNotes] = useState(initialData?.notes || "");
+  const [lineItems, setLineItems] = useState(initialData?.items || []);
   const [selectedMedicine, setSelectedMedicine] = useState("");
   const [quantity, setQuantity] = useState("");
   const [unitPrice, setUnitPrice] = useState("");
+  const [discount, setDiscount] = useState("0");
+  const [shippingCost, setShippingCost] = useState(
+    initialData?.shipping_cost?.toString() || "0",
+  );
+
+  console.log(selectedMedicine)
+
+  // Fetch data on mount
+  useEffect(() => {
+    fetchBranches();
+    fetchCompanies();
+    fetchProducts();
+    fetchShops();
+  }, [fetchBranches, fetchCompanies, fetchProducts, fetchShops]);
 
   // Calculate totals
   const subtotal = lineItems.reduce(
-    (sum, item) => sum + item.quantity * item.unitPrice,
+    (sum, item) => sum + item.quantity_purchase * item.unit_cost,
     0,
   );
-  const taxRate = 0.15; // 15% tax
-  const taxAmount = subtotal * taxRate;
-  const totalAmount = subtotal + taxAmount;
+  const totalDiscount =
+    lineItems.reduce((sum, item) => sum + Math.abs(item.discount), 0) +
+    parseFloat(discount || "0");
+  const totalTax = lineItems.reduce((sum, item) => sum + item.tax, 0);
+  const shipping = parseFloat(shippingCost || "0");
+  const totalAmount = subtotal - totalDiscount + totalTax + shipping;
 
   // Add line item
   const handleAddLineItem = () => {
@@ -89,28 +112,29 @@ export default function CreatePurchaseOrderPage() {
       return;
     }
 
-    const medicine = availableMedicines.find(
-      (m) => m.id === parseInt(selectedMedicine),
-    );
-    if (!medicine) return;
+    const qty = parseInt(quantity);
+    const price = parseFloat(unitPrice);
 
-    const newItem: POLineItem = {
-      id: Date.now().toString(),
-      medicineId: medicine.id,
-      medicineName: medicine.name,
-      quantity: parseInt(quantity),
-      unit: medicine.unit,
-      unitPrice: parseFloat(unitPrice),
-      minOrder: medicine.minOrder,
-    };
-
-    // Validate minimum order quantity
-    if (newItem.quantity < newItem.minOrder) {
+    if (qty < medicine.minOrder) {
       toast.error(
-        `Minimum order quantity is ${newItem.minOrder} ${medicine.unit}(s)`,
+        `Minimum order quantity is ${medicine.minOrder} ${medicine.unit}(s)`,
       );
       return;
     }
+
+    const newItem = {
+      id: Date.now().toString(),
+      product_id: selectedMedicine,
+      product_batch_id: "",
+      purchase_unit_id: "",
+      quantity_purchase: qty,
+      unit_cost: price,
+      discount: 0,
+      tax: price * qty * 0.15,
+      expected_expiry_date: "",
+      batch_number: "",
+      product_name: medicine.name,
+    };
 
     setLineItems([...lineItems, newItem]);
     setSelectedMedicine("");
@@ -124,8 +148,12 @@ export default function CreatePurchaseOrderPage() {
     setLineItems(lineItems.filter((item) => item.id !== id));
   };
 
-  // Submit PO
-  const handleSubmitOrder = async () => {
+  // Submit
+  const handleSubmit = async () => {
+    if (!branchId) {
+      toast.error("Please select a branch");
+      return;
+    }
     if (!supplierId) {
       toast.error("Please select a supplier");
       return;
@@ -139,29 +167,42 @@ export default function CreatePurchaseOrderPage() {
       return;
     }
 
-    setIsLoading(true);
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+    const poData: IPurchaseOrder = {
+      po_number: initialData?.po_number || `PO-${Date.now()}`,
+      supplier_id: supplierId,
+      shop_id: "1",
+      branch_id: branchId,
+      status: initialData?.status || "draft",
+      phar_payment_status: initialData?.phar_payment_status || "pending",
+      discount_amount: totalDiscount,
+      tax_amount: totalTax,
+      shipping_cost: shipping,
+      expected_delivery_date: deliveryDate,
+      delivery_date: initialData?.delivery_date,
+      notes,
+      items: lineItems,
+    };
 
-      const poNumber = `PO-${new Date().getFullYear()}-${Math.floor(Math.random() * 9999)}`;
-      toast.success(`Purchase Order ${poNumber} created successfully`);
+    const result =
+      isEditing && initialData?.po_number
+        ? await updatePurchaseOrder(initialData.po_number, poData)
+        : await createPurchaseOrder(poData);
 
-      // Reset form
-      setSupplierId("");
-      setDeliveryDate("");
-      setPaymentTerms("net30");
-      setNotes("");
-      setLineItems([]);
-
-      // Redirect after 1 second
-      setTimeout(() => {
-        router.push("/dashboard/purchase-orders");
-      }, 1000);
-    } catch (error) {
-      toast.error("Failed to create purchase order");
-    } finally {
-      setIsLoading(false);
+    if (result) {
+      toast.success(
+        `Purchase Order ${isEditing ? "updated" : "created"} successfully`,
+      );
+      if (onSuccess) {
+        onSuccess(result);
+      } else {
+        setTimeout(() => {
+          router.push("/dashboard/purchase-orders");
+        }, 1000);
+      }
+    } else {
+      toast.error(
+        `Failed to ${isEditing ? "update" : "create"} purchase order`,
+      );
     }
   };
 
@@ -176,10 +217,10 @@ export default function CreatePurchaseOrderPage() {
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Create Purchase Order
+            {isEditing ? "Edit" : "Create"} Purchase Order
           </h1>
           <p className="text-muted-foreground">
-            Add items and confirm the order details
+            {isEditing ? "Update" : "Add"} items and confirm the order details
           </p>
         </div>
       </div>
@@ -187,37 +228,70 @@ export default function CreatePurchaseOrderPage() {
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Supplier Selection */}
+          {/* Branch & Supplier Selection */}
           <Card className="border-border">
             <CardHeader>
               <CardTitle>Supplier Information</CardTitle>
               <CardDescription>
-                Select supplier and delivery details
+                Select branch, supplier and delivery details
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="supplier">Supplier *</Label>
-                <Select value={supplierId} onValueChange={setSupplierId}>
-                  <SelectTrigger id="supplier">
-                    <SelectValue placeholder="Select supplier" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {suppliers.map((supplier) => (
-                      <SelectItem
-                        key={supplier.id}
-                        value={supplier.id.toString()}
-                      >
-                        <div>
-                          <div className="font-medium">{supplier.name}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {supplier.contact}
+              
+              <div className="grid sm:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="shop">Shop *</Label>
+                  <Select value={shopId} onValueChange={setShopId}>
+                    <SelectTrigger id="shop" className="w-full">
+                      <SelectValue placeholder="Select Shop" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {shops.map((shop) => (
+                        <SelectItem key={shop.id} value={shop.id}>
+                          <div>
+                            <div className="font-medium">{shop.name}</div>
                           </div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="branch">Branch *</Label>
+                  <Select value={branchId} onValueChange={setBranchId}>
+                    <SelectTrigger id="branch" className="w-full">
+                      <SelectValue placeholder="Select branch" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {branches.map((branch) => (
+                        <SelectItem key={branch.id} value={branch.id}>
+                          {branch.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="supplier">Supplier *</Label>
+                  <Select value={supplierId} onValueChange={setSupplierId}>
+                    <SelectTrigger id="supplier" className="w-full">
+                      <SelectValue placeholder="Select supplier" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {companies
+                        .filter((item) => item.company_type === "supplier")
+                        .map((supplier) => (
+                          <SelectItem key={supplier.id} value={supplier.id}>
+                            <div>
+                              <div className="font-medium">{supplier.name}</div>
+                            </div>
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-4">
@@ -231,19 +305,15 @@ export default function CreatePurchaseOrderPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="payment">Payment Terms</Label>
-                  <Select value={paymentTerms} onValueChange={setPaymentTerms}>
-                    <SelectTrigger id="payment">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cod">Cash on Delivery</SelectItem>
-                      <SelectItem value="net15">Net 15 Days</SelectItem>
-                      <SelectItem value="net30">Net 30 Days</SelectItem>
-                      <SelectItem value="net60">Net 60 Days</SelectItem>
-                      <SelectItem value="prepaid">Prepaid</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="shipping">Shipping Cost</Label>
+                  <Input
+                    id="shipping"
+                    type="number"
+                    placeholder="0.00"
+                    value={shippingCost}
+                    onChange={(e) => setShippingCost(e.target.value)}
+                    step="0.01"
+                  />
                 </div>
               </div>
 
@@ -266,6 +336,7 @@ export default function CreatePurchaseOrderPage() {
               <CardTitle>Add Items</CardTitle>
               <CardDescription>Select medicines and quantities</CardDescription>
             </CardHeader>
+
             <CardContent className="space-y-4">
               <div className="grid sm:grid-cols-4 gap-3">
                 <div className="space-y-2">
@@ -274,12 +345,12 @@ export default function CreatePurchaseOrderPage() {
                     value={selectedMedicine}
                     onValueChange={setSelectedMedicine}
                   >
-                    <SelectTrigger id="medicine">
+                    <SelectTrigger id="medicine" className="w-full">
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
                     <SelectContent>
-                      {availableMedicines.map((med) => (
-                        <SelectItem key={med.id} value={med.id.toString()}>
+                      {products.map((med) => (
+                        <SelectItem key={med.id} value={med}>
                           {med.name}
                         </SelectItem>
                       ))}
@@ -345,21 +416,22 @@ export default function CreatePurchaseOrderPage() {
                       {lineItems.map((item) => (
                         <TableRow key={item.id}>
                           <TableCell>
-                            <div>
-                              <p className="font-medium">{item.medicineName}</p>
-                              <p className="text-xs text-muted-foreground">
-                                Min order: {item.minOrder} {item.unit}
-                              </p>
-                            </div>
+                            <p className="font-medium">
+                              {item.product_name ||
+                                `Product ${item.product_id}`}
+                            </p>
                           </TableCell>
                           <TableCell className="text-right">
-                            {item.quantity} {item.unit}
+                            {item.quantity_purchase}
                           </TableCell>
                           <TableCell className="text-right">
-                            ${item.unitPrice.toFixed(2)}
+                            ${item.unit_cost.toFixed(2)}
                           </TableCell>
                           <TableCell className="text-right font-semibold">
-                            ${(item.quantity * item.unitPrice).toFixed(2)}
+                            $
+                            {(item.quantity_purchase * item.unit_cost).toFixed(
+                              2,
+                            )}
                           </TableCell>
                           <TableCell>
                             <Button
@@ -395,7 +467,10 @@ export default function CreatePurchaseOrderPage() {
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Total Units:{" "}
-                  {lineItems.reduce((sum, item) => sum + item.quantity, 0)}
+                  {lineItems.reduce(
+                    (sum, item) => sum + item.quantity_purchase,
+                    0,
+                  )}
                 </p>
               </div>
 
@@ -405,10 +480,24 @@ export default function CreatePurchaseOrderPage() {
                   <span>Subtotal:</span>
                   <span className="font-medium">${subtotal.toFixed(2)}</span>
                 </div>
+                {totalDiscount > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Discount:</span>
+                    <span className="font-medium">
+                      -${totalDiscount.toFixed(2)}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between">
-                  <span>Tax (15%):</span>
-                  <span className="font-medium">${taxAmount.toFixed(2)}</span>
+                  <span>Tax:</span>
+                  <span className="font-medium">${totalTax.toFixed(2)}</span>
                 </div>
+                {shipping !== 0 && (
+                  <div className="flex justify-between">
+                    <span>Shipping:</span>
+                    <span className="font-medium">${shipping.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between pt-2 border-t text-base font-bold">
                   <span>Total:</span>
                   <span>${totalAmount.toFixed(2)}</span>
@@ -417,25 +506,25 @@ export default function CreatePurchaseOrderPage() {
 
               {/* Status Badge */}
               <Badge variant="outline" className="w-full justify-center py-1">
-                Status: Draft
+                Status: {isEditing ? "Editing" : "Draft"}
               </Badge>
 
               {/* Action Buttons */}
               <div className="space-y-2 pt-4">
                 <Button
-                  onClick={handleSubmitOrder}
-                  disabled={isLoading || lineItems.length === 0}
+                  onClick={handleSubmit}
+                  disabled={createLoading || lineItems.length === 0}
                   className="w-full bg-primary hover:bg-primary/90"
                 >
-                  {isLoading ? (
+                  {createLoading ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Creating...
+                      {isEditing ? "Updating..." : "Creating..."}
                     </>
                   ) : (
                     <>
                       <Save className="w-4 h-4 mr-2" />
-                      Create Order
+                      {isEditing ? "Update Order" : "Create Order"}
                     </>
                   )}
                 </Button>

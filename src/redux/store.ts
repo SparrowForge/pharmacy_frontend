@@ -22,6 +22,7 @@ import productTagReducer from "./features/product-tag/productTag.slice";
 import productImageReducer from "./features/product-image/productImageSlice";
 import productBatchReducer from "./features/product-batch/productBatchSlice";
 import productOfferReducer from "./features/product-offer/productOfferSlice";
+import purchaseOrderReducer from "./features/purchase-order/purchaseOrderSlice";
 
 export const store = configureStore({
   reducer: {
@@ -48,6 +49,7 @@ export const store = configureStore({
     productImages: productImageReducer,
     productBatches: productBatchReducer,
     productOffers: productOfferReducer,
+    purchaseOrders: purchaseOrderReducer,
   },
 });
 
