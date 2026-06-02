@@ -72,17 +72,19 @@ const menu = [
     title: "Inventory",
     icon: Package,
     children: [
-      { title: "Products", href: "/dashboard/medicines", icon: PackageOpen },
-      {
-        title: "Brand",
-        href: "/dashboard/product-brand",
-        icon: PackageOpen,
-      },
       {
         title: "Category",
         href: "/dashboard/product-category",
         icon: PackageOpen,
       },
+
+      {
+        title: "Brand",
+        href: "/dashboard/product-brand",
+        icon: PackageOpen,
+      },
+      { title: "Products", href: "/dashboard/medicines", icon: PackageOpen },
+
       {
         title: "Unit",
         href: "/dashboard/product-units",
@@ -136,6 +138,11 @@ const menu = [
     icon: Settings,
     children: [
       {
+        title: "Company",
+        href: "/dashboard/company",
+        icon: Home,
+      },
+      {
         title: "Shops",
         href: "/dashboard/shops",
         icon: ShoppingBagIcon,
@@ -145,11 +152,7 @@ const menu = [
         href: "/dashboard/branch",
         icon: ShoppingCartIcon,
       },
-      {
-        title: "Company",
-        href: "/dashboard/company",
-        icon: Home,
-      },
+
       {
         title: "General Settings",
         href: "/dashboard/settings",
