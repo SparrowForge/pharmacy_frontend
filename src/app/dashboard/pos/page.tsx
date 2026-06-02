@@ -39,6 +39,10 @@ import {
   Printer,
   Package,
   X,
+  Building2,
+  Receipt,
+  FileText,
+  CircleHelp,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { toast } from "sonner";
@@ -47,8 +51,7 @@ import { InvoicePrint } from "@/src/components/pos/invoice-print";
 import { useProducts } from "@/src/hooks/useProducts";
 import { initialLimit, initialPage } from "@/src/constants/utils";
 import { useProductCategories } from "@/src/hooks/useProductCategories";
-
-
+import { useEnum } from "@/src/hooks/useEnum";
 
 interface CartItem {
   id: string;
@@ -68,6 +71,15 @@ interface Transaction {
 }
 
 export default function POSPage() {
+  const paymentMethodIcons = {
+    cash: Banknote,
+    card: CreditCard,
+    mobile: Smartphone,
+    bank_transfer: Building2,
+    check: Receipt,
+    credit: FileText,
+    other: CircleHelp,
+  };
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [barcodeInput, setBarcodeInput] = useState("");
@@ -100,9 +112,17 @@ export default function POSPage() {
   const [search, setSearch] = useState("");
   const [includeDeleted, setIncludeDeleted] = useState(false);
 
-  const { fetchProducts, products, fetchLoading } =
-    useProducts();
-  const {fetchCategories, categories} = useProductCategories()
+  const { fetchProducts, products, fetchLoading } = useProducts();
+  const { fetchCategories, categories } = useProductCategories();
+  const {
+    fetchSalesStatus,
+    salesStatus,
+    fetchPaymentMethodTypes,
+    paymentMethodTypes,
+  } = useEnum();
+  const [status, setStatus] = useState("");
+
+  console.log("paymentMethodTypes", paymentMethodTypes);
 
   // Handle barcode scan
   const handleBarcodeScan = (barcode: string) => {
@@ -318,8 +338,10 @@ export default function POSPage() {
       q: search,
       includeDeleted,
     });
-    fetchCategories()
-  }, [page, limit, search, includeDeleted, fetchProducts]);
+    fetchCategories();
+    fetchSalesStatus();
+    fetchPaymentMethodTypes();
+  }, [page, limit, search, includeDeleted, fetchProducts, fetchSalesStatus]);
 
 
 
@@ -415,24 +437,43 @@ export default function POSPage() {
                   </div>
                 </div>
 
-                {/* Category Filter */}
-                <div className="space-y-2">
-                  <Label className="text-xs">Category</Label>
-                  <Select
-                    value={selectedCategory}
-                    onValueChange={setSelectedCategory}
-                  >
-                    <SelectTrigger className="h-9 text-sm w-1/2">
-                      <SelectValue placeholder="Select Category"/>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.name}>
-                          {cat.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs">Category</Label>
+                    <Select
+                      value={selectedCategory}
+                      onValueChange={setSelectedCategory}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select Category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.name}>
+                            {cat.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Status*</Label>
+
+                    <Select value={status} onValueChange={setStatus}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        {salesStatus?.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -746,31 +787,27 @@ export default function POSPage() {
             {/* Payment Method - Icon-Based Buttons */}
             <div className="space-y-2">
               <Label>Payment Method *</Label>
-              <div className="grid grid-cols-3 gap-2">
-                <Button
-                  variant={paymentMethod === "cash" ? "default" : "outline"}
-                  onClick={() => setPaymentMethod("cash")}
-                  className="h-auto flex-col gap-2 p-3"
-                >
-                  <Banknote className="w-5 h-5" />
-                  <span className="text-xs">Cash</span>
-                </Button>
-                <Button
-                  variant={paymentMethod === "card" ? "default" : "outline"}
-                  onClick={() => setPaymentMethod("card")}
-                  className="h-auto flex-col gap-2 p-3"
-                >
-                  <CreditCard className="w-5 h-5" />
-                  <span className="text-xs">Card</span>
-                </Button>
-                <Button
-                  variant={paymentMethod === "mobile" ? "default" : "outline"}
-                  onClick={() => setPaymentMethod("mobile")}
-                  className="h-auto flex-col gap-2 p-3"
-                >
-                  <Smartphone className="w-5 h-5" />
-                  <span className="text-xs">Mobile</span>
-                </Button>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {paymentMethodTypes?.map((method) => {
+                  const Icon =
+                    paymentMethodIcons[
+                      method as keyof typeof paymentMethodIcons
+                    ] || CircleHelp;
+
+                  return (
+                    <Button
+                      key={method}
+                      variant={paymentMethod === method ? "default" : "outline"}
+                      onClick={() => setPaymentMethod(method)}
+                      className="h-auto flex-col gap-2 p-3"
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="text-xs capitalize">
+                        {method.replace(/_/g, " ")}
+                      </span>
+                    </Button>
+                  );
+                })}
               </div>
             </div>
 

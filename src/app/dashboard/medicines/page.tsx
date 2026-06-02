@@ -92,7 +92,7 @@ export default function ProductsPage() {
           </Button> */}
 
           <Button asChild className="bg-primary hover:bg-primary/90">
-            <Link href="/dashboard/products/new">
+            <Link href="/dashboard/medicines/new">
               <Plus className="w-4 h-4 mr-2" />
               Add Product
             </Link>

@@ -1,4 +1,4 @@
-import { ICompanyTypeEnumResponse, IProductUnitTypeResponse, IShopPlanEnumResponse } from "../types/enum.types";
+import { ICompanyTypeEnumResponse, IPaymentMethodTypeResponse, IProductUnitTypeResponse, IPurchaseOrderStatusResponse, ISalesStatusEnumTypeResponse, IShopPlanEnumResponse, IPaymentStatusResponse} from "../types/enum.types";
 import axiosInstance from "./axios";
 
 const getShopPlansService = async (): Promise<IShopPlanEnumResponse> => {
@@ -20,10 +20,48 @@ const getProductUnitTypes = async (): Promise<IProductUnitTypeResponse> => {
 
   return res.data;
 };
+/* ================= GET SALES STATUS TYPES ================= */
+const getSalesStatus = async (): Promise<ISalesStatusEnumTypeResponse> => {
+  const res = await axiosInstance.get<ISalesStatusEnumTypeResponse>(
+    "/datatypes/_sales_status"
+  );
+
+  return res.data;
+};
+/* ================= GET SALES STATUS TYPES ================= */
+const getPaymentMethodTypes = async (): Promise<IPaymentMethodTypeResponse> => {
+  const res = await axiosInstance.get<IPaymentMethodTypeResponse>(
+    "/datatypes/payment_method_type"
+  );
+
+  return res.data;
+};
+
+/* ================= GET SALES STATUS TYPES ================= */
+const getPurchaseOrderStatuses = async (): Promise<IPurchaseOrderStatusResponse> => {
+  const res = await axiosInstance.get<IPurchaseOrderStatusResponse>(
+    "/datatypes/purchase_order_status"
+  );
+
+  return res.data;
+};
+
+/* ================= GET SALES STATUS TYPES ================= */
+const getPaymentStatuses = async (): Promise<IPaymentStatusResponse> => {
+  const res = await axiosInstance.get<IPaymentStatusResponse>(
+    "/datatypes/_payment_status"
+  );
+
+  return res.data;
+};
 
 
 export const enumServices = {
   getShopPlansService,
   getCompanyTypeService,
-  getProductUnitTypes
+  getProductUnitTypes,
+  getSalesStatus,
+  getPaymentMethodTypes,
+  getPurchaseOrderStatuses,
+  getPaymentStatuses,
 };

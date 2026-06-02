@@ -11,6 +11,7 @@ import { usePurchaseOrders } from "@/src/hooks/usePurchaseOrders";
 import {
   ICreatePurchaseOrderPayload,
   IPurchaseOrder,
+  IPurchaseOrderItem,
 } from "@/src/types/purchaseOrder.types";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
@@ -44,11 +45,12 @@ import { Input } from "@/src/components/ui/input";
 import { Textarea } from "@/src/components/ui/textarea";
 import { useProducts } from "@/src/hooks/useProducts";
 import { useShops } from "@/src/hooks/useShops";
+import { useEnum } from "@/src/hooks/useEnum";
 
 interface PurchaseOrderFormProps {
-  initialData?: ICreatePurchaseOrderPayload;
+  initialData?: IPurchaseOrder;
   isEditing?: boolean;
-  onSuccess?: (data: ICreatePurchaseOrderPayload) => void;
+  onSuccess?: (data: IPurchaseOrder) => void;
 }
 
 // Sample medicines for PO
@@ -66,24 +68,45 @@ export default function PurchaseOrderForm({
   const { fetchProducts, products } = useProducts();
   const { shops, fetchShops } = useShops();
 
+
   const [branchId, setBranchId] = useState(initialData?.branch_id || "");
   const [supplierId, setSupplierId] = useState(initialData?.supplier_id || "");
   const [shopId, setShopId] = useState(initialData?.shop_id || "");
   const [deliveryDate, setDeliveryDate] = useState(
     initialData?.expected_delivery_date || "",
   );
-  const [paymentTerms, setPaymentTerms] = useState("net30");
+  const [expectedDeliveryDate, setExpectedDeliveryDate] = useState(
+    initialData?.expected_delivery_date || "",
+  );
   const [notes, setNotes] = useState(initialData?.notes || "");
-  const [lineItems, setLineItems] = useState(initialData?.items || []);
+  const [lineItems, setLineItems] = useState<IPurchaseOrderItem[]>(
+    initialData?.items || [],
+  );
   const [selectedMedicine, setSelectedMedicine] = useState("");
   const [quantity, setQuantity] = useState("");
   const [unitPrice, setUnitPrice] = useState("");
   const [discount, setDiscount] = useState("0");
+
   const [shippingCost, setShippingCost] = useState(
     initialData?.shipping_cost?.toString() || "0",
   );
+  const {
+    fetchPurchaseOrderStatuses,
+    purchaseOrderStatuses,
+    fetchPaymentStatuses,
+    paymentStatuses,
+  } = useEnum();
+  const [status, setStatus] = useState(initialData?.status || "partial");
+  const [paymentStatus, setPaymentStatus] = useState(
+    initialData?.phar_payment_status || "pending",
+  );
+  const [batchNumber, setBatchNumber] = useState("");
+  const [poNumber, setPoNumber] = useState("");
 
-  console.log(selectedMedicine)
+  const [expiryDate, setExpiryDate] = useState("");
+  const [itemDiscount, setItemDiscount] = useState("0");
+  const [itemTax, setItemTax] = useState("0");
+  const [selectedUnitId, setSelectedUnitId] = useState("");
 
   // Fetch data on mount
   useEffect(() => {
@@ -91,7 +114,15 @@ export default function PurchaseOrderForm({
     fetchCompanies();
     fetchProducts();
     fetchShops();
-  }, [fetchBranches, fetchCompanies, fetchProducts, fetchShops]);
+    fetchPurchaseOrderStatuses();
+    fetchPaymentStatuses();
+  }, [
+    fetchBranches,
+    fetchCompanies,
+    fetchProducts,
+    fetchShops,
+    fetchPurchaseOrderStatuses,
+  ]);
 
   // Calculate totals
   const subtotal = lineItems.reduce(
@@ -101,51 +132,83 @@ export default function PurchaseOrderForm({
   const totalDiscount =
     lineItems.reduce((sum, item) => sum + Math.abs(item.discount), 0) +
     parseFloat(discount || "0");
-  const totalTax = lineItems.reduce((sum, item) => sum + item.tax, 0);
+  const totalTax =
+    lineItems.reduce((sum, item) => sum + Number(item.tax || 0), 0) +
+    Number(itemTax || 0);
   const shipping = parseFloat(shippingCost || "0");
   const totalAmount = subtotal - totalDiscount + totalTax + shipping;
 
   // Add line item
   const handleAddLineItem = () => {
-    if (!selectedMedicine || !quantity || !unitPrice) {
-      toast.error("Please fill all fields");
+    if (!selectedMedicine) {
+      toast.error("Select a product");
       return;
     }
 
-    const qty = parseInt(quantity);
-    const price = parseFloat(unitPrice);
+    const product = products.find((p) => p.id === selectedMedicine);
 
-    if (qty < medicine.minOrder) {
-      toast.error(
-        `Minimum order quantity is ${medicine.minOrder} ${medicine.unit}(s)`,
-      );
+    if (!product) {
+      toast.error("Product not found");
       return;
     }
 
-    const newItem = {
-      id: Date.now().toString(),
-      product_id: selectedMedicine,
-      product_batch_id: "",
-      purchase_unit_id: "",
+    const qty = Number(quantity);
+    const cost = Number(unitPrice);
+
+    if (qty <= 0) {
+      toast.error("Invalid quantity");
+      return;
+    }
+
+    if (cost <= 0) {
+      toast.error("Invalid unit price");
+      return;
+    }
+
+    const newItem: IPurchaseOrderItem = {
+      product_id: product.id,
+
+      product_batch_id: "", // or null if backend allows
+      purchase_unit_id: selectedUnitId || product.unit_id,
+
       quantity_purchase: qty,
-      unit_cost: price,
-      discount: 0,
-      tax: price * qty * 0.15,
-      expected_expiry_date: "",
-      batch_number: "",
-      product_name: medicine.name,
+      unit_cost: cost,
+
+      discount: Number(itemDiscount || 0),
+      tax: Number(itemTax || 0),
+
+      batch_number: batchNumber,
+      expected_expiry_date: expiryDate,
     };
 
-    setLineItems([...lineItems, newItem]);
+    setLineItems((prev) => [...prev, newItem]);
+
+    // reset
     setSelectedMedicine("");
     setQuantity("");
     setUnitPrice("");
-    toast.success("Item added to order");
+    setBatchNumber("");
+    setExpiryDate("");
+    setItemDiscount("0");
+    setItemTax("0");
+    setSelectedUnitId("");
+  };
+  // Remove line item
+  const handleRemoveLineItem = (index: number) => {
+    setLineItems((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Remove line item
-  const handleRemoveLineItem = (id: string) => {
-    setLineItems(lineItems.filter((item) => item.id !== id));
+  const generateInvoiceNumber = (shopCode: string, lastNumber = 0) => {
+    const date = new Date();
+
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+
+    const dateStr = `${yyyy}${mm}${dd}`;
+    const seq = String(lastNumber + 1).padStart(4, "0");
+
+    return `${shopCode}-${dateStr}-${seq}`;
   };
 
   // Submit
@@ -167,43 +230,33 @@ export default function PurchaseOrderForm({
       return;
     }
 
-    const poData: IPurchaseOrder = {
-      po_number: initialData?.po_number || `PO-${Date.now()}`,
-      supplier_id: supplierId,
-      shop_id: "1",
+    const shop = shops.find((s) => s.id === shopId);
+
+    const generatedPO = generateInvoiceNumber(
+      shop?.name || "SHOP",
+      0, // replace later with backend last number
+    );
+
+    setPoNumber(generatedPO);
+
+    const payload: ICreatePurchaseOrderPayload = {
+      po_number: poNumber,
+      shop_id: shopId,
       branch_id: branchId,
-      status: initialData?.status || "draft",
-      phar_payment_status: initialData?.phar_payment_status || "pending",
-      discount_amount: totalDiscount,
-      tax_amount: totalTax,
-      shipping_cost: shipping,
-      expected_delivery_date: deliveryDate,
-      delivery_date: initialData?.delivery_date,
+      supplier_id: supplierId,
+      expected_delivery_date: expectedDeliveryDate,
+      phar_payment_status: paymentStatus,
+      status,
+      delivery_date: deliveryDate,
+      discount_amount: parseFloat(discount || "0"),
+      tax_amount: parseFloat(itemTax || "0"),
+      shipping_cost: parseFloat(shippingCost || "0"),
       notes,
       items: lineItems,
     };
 
-    const result =
-      isEditing && initialData?.po_number
-        ? await updatePurchaseOrder(initialData.po_number, poData)
-        : await createPurchaseOrder(poData);
-
-    if (result) {
-      toast.success(
-        `Purchase Order ${isEditing ? "updated" : "created"} successfully`,
-      );
-      if (onSuccess) {
-        onSuccess(result);
-      } else {
-        setTimeout(() => {
-          router.push("/dashboard/purchase-orders");
-        }, 1000);
-      }
-    } else {
-      toast.error(
-        `Failed to ${isEditing ? "update" : "create"} purchase order`,
-      );
-    }
+    console.log("Submitting payload:", payload);
+    await createPurchaseOrder(payload)
   };
 
   return (
@@ -236,8 +289,8 @@ export default function PurchaseOrderForm({
                 Select branch, supplier and delivery details
               </CardDescription>
             </CardHeader>
+
             <CardContent className="space-y-4">
-              
               <div className="grid sm:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="shop">Shop *</Label>
@@ -296,7 +349,7 @@ export default function PurchaseOrderForm({
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="delivery">Expected Delivery Date *</Label>
+                  <Label htmlFor="delivery"> Delivery Date *</Label>
                   <Input
                     id="delivery"
                     type="date"
@@ -305,15 +358,90 @@ export default function PurchaseOrderForm({
                   />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="expectedDeliveryDate">
+                    Expected Delivery Date *
+                  </Label>
+                  <Input
+                    id="expectedDeliveryDate"
+                    type="date"
+                    value={expectedDeliveryDate}
+                    onChange={(e) => setExpectedDeliveryDate(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-3 gap-4">
+                <div className="space-y-2">
                   <Label htmlFor="shipping">Shipping Cost</Label>
                   <Input
                     id="shipping"
                     type="number"
-                    placeholder="0.00"
                     value={shippingCost}
                     onChange={(e) => setShippingCost(e.target.value)}
-                    step="0.01"
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="discount">Discount *</Label>
+                  <Input
+                    id="discount"
+                    type="number"
+                    value={discount}
+                    placeholder=""
+                    onChange={(e) => setDiscount(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="tax">Tax</Label>
+                  <Input
+                    id="tax"
+                    type="number"
+                    value={itemTax}
+                    onChange={(e) => setItemTax(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Status*</Label>
+
+                  <Select
+                    value={status}
+                    onValueChange={(value) => setStatus(value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      {purchaseOrderStatuses?.map((type: string) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label> Payment Status*</Label>
+
+                  <Select
+                    value={paymentStatus}
+                    onValueChange={(value) => setPaymentStatus(value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      {paymentStatuses?.map((type: string) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -350,7 +478,7 @@ export default function PurchaseOrderForm({
                     </SelectTrigger>
                     <SelectContent>
                       {products.map((med) => (
-                        <SelectItem key={med.id} value={med}>
+                        <SelectItem key={med.id} value={med.id}>
                           {med.name}
                         </SelectItem>
                       ))}
@@ -413,12 +541,11 @@ export default function PurchaseOrderForm({
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {lineItems.map((item) => (
-                        <TableRow key={item.id}>
+                      {lineItems.map((item, index) => (
+                        <TableRow key={item.product_id}>
                           <TableCell>
                             <p className="font-medium">
-                              {item.product_name ||
-                                `Product ${item.product_id}`}
+                              {item.product_id}
                             </p>
                           </TableCell>
                           <TableCell className="text-right">
@@ -438,7 +565,7 @@ export default function PurchaseOrderForm({
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 text-destructive hover:text-destructive"
-                              onClick={() => handleRemoveLineItem(item.id)}
+                              onClick={() => handleRemoveLineItem(index)}
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -506,7 +633,7 @@ export default function PurchaseOrderForm({
 
               {/* Status Badge */}
               <Badge variant="outline" className="w-full justify-center py-1">
-                Status: {isEditing ? "Editing" : "Draft"}
+                Status: {status && status}
               </Badge>
 
               {/* Action Buttons */}

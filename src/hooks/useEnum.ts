@@ -6,9 +6,21 @@ import { toast } from "sonner";
 
 import { useAppDispatch, useAppSelector } from "@/src/redux/hooks";
 import {
+  fetchPaymentMethodTypeFailure,
+  fetchPaymentMethodTypeStart,
+  fetchPaymentMethodTypeSuccess,
+  fetchPaymentStatusesFailure,
+  fetchPaymentStatusesStart,
+  fetchPaymentStatusesSuccess,
   fetchProductUnitTypesFailure,
   fetchProductUnitTypesStart,
   fetchProductUnitTypesSuccess,
+  fetchPurchaseOrderStatusesFailure,
+  fetchPurchaseOrderStatusesStart,
+  fetchPurchaseOrderStatusesSuccess,
+  fetchSalesSattusFailure,
+  fetchSalesStatusStart,
+  fetchSalesStatusSuccess,
   getCompanyTypeFailure,
   getCompanyTypeStart,
   getCompanyTypeSuccess,
@@ -17,6 +29,7 @@ import {
   getShopPlansSuccess,
 } from "../redux/features/enum/enumSlice";
 import { enumServices } from "../services/enum.service";
+import { fetchBatchesSuccess } from "../redux/features/product-batch/productBatchSlice";
 
 export const useEnum = () => {
   const dispatch = useAppDispatch();
@@ -73,6 +86,99 @@ export const useEnum = () => {
     }
   }, [dispatch]);
 
+  /* ================= FETCH ================= */
+  const fetchSalesStatus = useCallback(async () => {
+    try {
+      dispatch(fetchSalesStatusStart());
+
+      const res = await enumServices.getSalesStatus();
+      console.log(res);
+
+      dispatch(fetchSalesStatusSuccess(res.values));
+
+      return res.values;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message || "Failed to fetch sales status types";
+
+      dispatch(fetchSalesSattusFailure(message));
+
+      toast.error(message);
+
+      throw error;
+    }
+  }, [dispatch]);
+
+  /* ================= FETCH ================= */
+  const fetchPaymentMethodTypes = useCallback(async () => {
+    try {
+      dispatch(fetchPaymentMethodTypeStart());
+
+      const res = await enumServices.getPaymentMethodTypes();
+      console.log(res);
+
+      dispatch(fetchPaymentMethodTypeSuccess(res.values));
+
+      return res.values;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message || "Failed to fetch sales status types";
+
+      dispatch(fetchPaymentMethodTypeFailure(message));
+
+      toast.error(message);
+
+      throw error;
+    }
+  }, [dispatch]);
+
+  /* ================= FETCH ================= */
+  const fetchPurchaseOrderStatuses = useCallback(async () => {
+    try {
+      dispatch(fetchPurchaseOrderStatusesStart());
+
+      const res = await enumServices.getPurchaseOrderStatuses();
+      console.log(res);
+
+      dispatch(fetchPurchaseOrderStatusesSuccess(res.values));
+
+      return res.values;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        "Failed to fetch purchase order statuses";
+
+      dispatch(fetchPurchaseOrderStatusesFailure(message));
+
+      toast.error(message);
+
+      throw error;
+    }
+  }, [dispatch]);
+
+  /* ================= FETCH ================= */
+  const fetchPaymentStatuses = useCallback(async () => {
+    try {
+      dispatch(fetchPaymentStatusesStart());
+
+      const res = await enumServices.getPaymentStatuses();
+      console.log(res);
+
+      dispatch(fetchPaymentStatusesSuccess(res.values));
+
+      return res.values;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message || "Failed to fetch payment statuses";
+
+      dispatch(fetchPaymentStatusesFailure(message));
+
+      toast.error(message);
+
+      throw error;
+    }
+  }, [dispatch]);
+
   return {
     loading: enumb.loading,
     error: enumb.error,
@@ -84,6 +190,18 @@ export const useEnum = () => {
     getCompanyTypes,
 
     unitTypes: enumb.unitTypes,
-    fetchProductUnitTypes
+    fetchProductUnitTypes,
+
+    salesStatus: enumb.salesStatus,
+    fetchSalesStatus,
+
+    paymentMethodTypes: enumb.paymentMethodTypes,
+    fetchPaymentMethodTypes,
+
+    purchaseOrderStatuses: enumb.purchaseOrderStatuses,
+    fetchPurchaseOrderStatuses,
+
+    paymentStatuses: enumb.paymentStatuses,
+    fetchPaymentStatuses,
   };
 };

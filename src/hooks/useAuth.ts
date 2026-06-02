@@ -38,9 +38,11 @@ import {
 } from "../redux/features/auth/authSlice";
 
 import { authService } from "../services/auth.service";
+import { useRouter } from "next/navigation";
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const auth = useAppSelector((state) => state.auth);
 
@@ -224,6 +226,7 @@ export const useAuth = () => {
     localStorage.removeItem("user");
 
     toast.success("Logged out successfully");
+    router.push("/login");
   }, [dispatch]);
 
   /* ---------------- STATE  ---------------- */
