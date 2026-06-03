@@ -12,6 +12,8 @@ import {
   createPurchaseOrderReceiveStart,
   createPurchaseOrderReceiveSuccess,
   createPurchaseOrderReceiveFailure,
+  fetchPurchaseReceiptsStart,
+  fetchPurchaseReceiptsSuccess,
 } from "@/src/redux/features/purchase-order/purchaseOrderReceiveSlice";
 
 import { IReceivePurchaseOrderPayload } from "@/src/types/purchaseOrderReceive.types";
@@ -53,8 +55,30 @@ export const usePurchaseOrderReceive = () => {
     [dispatch, router],
   );
 
+  const fetchPurchaseReceipts = useCallback(
+    async (page = 1, limit = 10) => {
+      try {
+        dispatch(fetchPurchaseReceiptsStart());
+        const res = await purchaseOrderReceiveService.getPurchaseReceipts(
+          page,
+          limit,
+        );
+        dispatch(fetchPurchaseReceiptsSuccess(res));
+        return res;
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message || "Failed to fetch purchase receipts";
+        dispatch(createPurchaseOrderReceiveFailure(message));
+        toast.error(message);
+        throw error;
+      }
+    },
+    [dispatch],
+  );
+
   return {
     receivePurchaseOrder,
+    fetchPurchaseReceipts,
     ...state,
   };
 };

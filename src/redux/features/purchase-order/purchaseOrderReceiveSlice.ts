@@ -67,6 +67,33 @@ const purchaseOrderReceiveSlice = createSlice({
       state.createLoading = false;
       state.error = action.payload;
     },
+
+
+    fetchPurchaseReceiptsStart: (state) => {
+      state.fetchLoading = true;
+      state.error = null;
+    },
+
+    fetchPurchaseReceiptsSuccess: (
+      state,
+      action: PayloadAction<{
+        data: IReceivePurchaseOrderResponse["data"][];
+        page: number;
+        limit: number;
+        total: number;
+      }>,
+    ) => {
+      state.fetchLoading = false; 
+      state.purchaseOrderReceive = action.payload.data;
+      state.page = action.payload.page;
+      state.limit = action.payload.limit;
+      state.total = action.payload.total;
+    },
+
+    fetchPurchaseReceiptsFailure: (state, action: PayloadAction<string>) => {
+      state.fetchLoading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -74,6 +101,10 @@ export const {
   createPurchaseOrderReceiveStart,
   createPurchaseOrderReceiveSuccess,
   createPurchaseOrderReceiveFailure,
+
+  fetchPurchaseReceiptsStart,
+  fetchPurchaseReceiptsSuccess,
+  fetchPurchaseReceiptsFailure,
 } = purchaseOrderReceiveSlice.actions;
 
 export default purchaseOrderReceiveSlice.reducer;

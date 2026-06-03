@@ -21,6 +21,27 @@ export interface IReceivePurchaseOrderPayload {
   items: IPurchaseOrderReceiveItem[];
 }
 
+export interface IPurchaseReceipt {
+  id: string;
+  receipt_number: string;
+  purchase_order_id: string;
+  received_at: string; // ISO date string
+  received_by: string;
+  status: "received" | "pending" | "cancelled" | string;
+  total_amount: string; // keep string if API returns decimal as string
+  notes: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface IPurchaseReceiptsResponse {
+  entity: "purchase_receipts";
+  page: number;
+  limit: number;
+  total: number;
+  data: IPurchaseReceipt[];
+}
+
 export interface IReceivePurchaseOrderResponse {
   success: boolean;
   message: string;
