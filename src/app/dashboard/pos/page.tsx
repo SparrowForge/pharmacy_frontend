@@ -52,14 +52,21 @@ import { useProducts } from "@/src/hooks/useProducts";
 import { initialLimit, initialPage } from "@/src/constants/utils";
 import { useProductCategories } from "@/src/hooks/useProductCategories";
 import { useEnum } from "@/src/hooks/useEnum";
+import Loading from "@/src/components/common/Loading";
+import { useCompanies } from "@/src/hooks/useCompanies";
+import CustomerForm from "@/src/components/pos/CustomerForm";
+import { useShops } from "@/src/hooks/useShops";
+import { useBranches } from "@/src/hooks/useBranches";
 
 interface CartItem {
-  id: string;
   name: string;
-  selling_price: number;
-  quantity: number;
-  unit: string; // Product Unit ID or Unit Name
-  stock: number;
+  product_id: string;
+  product_batch_id?: string;
+  sales_unit_id: string;
+  sales_qty: number;
+  unit_price: number;
+  discount: number
+  tax:number
 }
 
 interface Transaction {
@@ -80,7 +87,8 @@ export default function POSPage() {
     credit: FileText,
     other: CircleHelp,
   };
-  const [searchQuery, setSearchQuery] = useState("");
+  const [shopId, setShopId] = useState("");
+  const [branchId, setBranchId] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [barcodeInput, setBarcodeInput] = useState("");
   const [discountType, setDiscountType] = useState<"percentage" | "fixed">(
@@ -120,9 +128,14 @@ export default function POSPage() {
     fetchPaymentMethodTypes,
     paymentMethodTypes,
   } = useEnum();
-  const [status, setStatus] = useState("");
+  const { companies, fetchCompanies, createCompany } = useCompanies();
+  const { fetchShops, shops } = useShops();
+  const { fetchBranches, branches } = useBranches();
 
-  console.log("paymentMethodTypes", paymentMethodTypes);
+  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+  const [customerModalOpen, setCustomerModalOpen] = useState(false);
+
+  const [status, setStatus] = useState("");
 
   // Handle barcode scan
   const handleBarcodeScan = (barcode: string) => {
@@ -341,9 +354,25 @@ export default function POSPage() {
     fetchCategories();
     fetchSalesStatus();
     fetchPaymentMethodTypes();
-  }, [page, limit, search, includeDeleted, fetchProducts, fetchSalesStatus]);
-
-
+    fetchCompanies();
+    fetchShops();
+    fetchBranches();
+  }, [
+    page,
+    limit,
+    search,
+    includeDeleted,
+    fetchProducts,
+    fetchSalesStatus,
+    fetchPaymentMethodTypes,
+    fetchCategories,
+    fetchCompanies,
+    fetchShops,
+    fetchBranches,
+  ]);
+  const customerOptions = companies.filter(
+    (comp) => comp.company_type === "customer",
+  );
 
   return (
     <div className="flex flex-col gap-6 h-[calc(100vh-7rem)]">
@@ -475,6 +504,44 @@ export default function POSPage() {
                     </Select>
                   </div>
                 </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="shop">Shop *</Label>
+                    <Select value={shopId} onValueChange={setShopId}>
+                      <SelectTrigger id="shop" className="w-full">
+                        <SelectValue placeholder="Select Shop" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {shops.map((shop) => (
+                          <SelectItem key={shop.id} value={shop.id}>
+                            <div>
+                              <div className="font-medium">{shop.name}</div>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="branch">Branch *</Label>
+                    <Select value={branchId} onValueChange={setBranchId}>
+                      <SelectTrigger id="branch" className="w-full">
+                        <SelectValue placeholder="Select branch" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {branches.map((branch) => (
+                          <SelectItem key={branch.id} value={branch.id}>
+                            {branch.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -487,48 +554,58 @@ export default function POSPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex-1 overflow-hidden p-0">
-              <ScrollArea className="h-full w-full">
-                <div className="p-4">
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
-                    {products.map((product) => (
-                      <Button
-                        key={product.id}
-                        onClick={() => addToCart(product)}
-                        variant="outline"
-                        className="h-auto justify-start p-3 hover:bg-primary/10 flex-col items-start"
-                        disabled={product.current_stock === 0}
-                      >
-                        <div className="text-left w-full">
-                          <div className="font-semibold text-xs line-clamp-2">
-                            {product.name}
-                          </div>
+              {products.length > 0 ? (
+                <ScrollArea className="h-full w-full">
+                  <div className="p-4">
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                      {fetchLoading ? (
+                        <Loading text="Loading products..." />
+                      ) : (
+                        products.map((product) => (
+                          <Button
+                            key={product.id}
+                            onClick={() => addToCart(product)}
+                            variant="outline"
+                            className="h-auto justify-start p-3 hover:bg-primary/10 flex-col items-start"
+                            disabled={product.current_stock === 0}
+                          >
+                            <div className="text-left w-full">
+                              <div className="font-semibold text-xs line-clamp-2">
+                                {product.name}
+                              </div>
 
-                          <div className="text-xs text-muted-foreground line-clamp-1 mt-1">
-                            {product.generic_name || "-"}
-                          </div>
+                              <div className="text-xs text-muted-foreground line-clamp-1 mt-1">
+                                {product.generic_name || "-"}
+                              </div>
 
-                          <div className="flex justify-between items-center mt-2 gap-1">
-                            <Badge variant="secondary" className="text-xs">
-                              ${Number(product.purchase_price).toFixed(2)}
-                            </Badge>
+                              <div className="flex justify-between items-center mt-2 gap-1">
+                                <Badge variant="secondary" className="text-xs">
+                                  ${Number(product.purchase_price).toFixed(2)}
+                                </Badge>
 
-                            <span
-                              className={cn(
-                                "text-xs font-medium",
-                                product.current_stock < 50
-                                  ? "text-orange-600"
-                                  : "text-green-600",
-                              )}
-                            >
-                              {product.current_stock}
-                            </span>
-                          </div>
-                        </div>
-                      </Button>
-                    ))}
+                                <span
+                                  className={cn(
+                                    "text-xs font-medium",
+                                    product.current_stock < 50
+                                      ? "text-orange-600"
+                                      : "text-green-600",
+                                  )}
+                                >
+                                  {product.current_stock}
+                                </span>
+                              </div>
+                            </div>
+                          </Button>
+                        ))
+                      )}
+                    </div>
                   </div>
-                </div>
-              </ScrollArea>
+                </ScrollArea>
+              ) : (
+                <p className="text-muted-foreground text-sm p-4">
+                  No products available.
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -546,9 +623,9 @@ export default function POSPage() {
             {cart.length > 0 && (
               <CardContent className="p-4">
                 <div className="grid grid-cols-2 gap-3">
-                  {cart.map((item) => (
+                  {cart.map((item, index) => (
                     <div
-                      key={item.id}
+                      key={item.product_id}
                       className="flex flex-col gap-2 p-3 rounded-lg bg-muted/50 border border-border"
                     >
                       <div className="flex justify-between items-start gap-2">
@@ -558,7 +635,7 @@ export default function POSPage() {
                           </p>
 
                           <p className="text-xs text-muted-foreground mt-1">
-                            ${Number(item.selling_price).toFixed(2)}
+                            ${Number(item.unit_price).toFixed(2)}
                           </p>
                         </div>
 
@@ -566,7 +643,7 @@ export default function POSPage() {
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6 text-destructive hover:text-destructive flex-shrink-0"
-                          onClick={() => removeFromCart(String(item.id))}
+                          onClick={() => removeFromCart(index)}
                         >
                           <Trash2 className="w-2.5 h-2.5" />
                         </Button>
@@ -577,13 +654,13 @@ export default function POSPage() {
                           variant="outline"
                           size="icon"
                           className="h-6 w-6 flex-shrink-0 p-0"
-                          onClick={() => updateQuantity(item.id, -1)}
+                          onClick={() => updateQuantity(item.product_id, -1)}
                         >
                           <Minus className="w-2 h-2" />
                         </Button>
 
                         <span className="font-semibold w-5 text-center">
-                          {item.quantity}
+                          {item.sales_qty}
                         </span>
 
                         <Button
@@ -646,13 +723,45 @@ export default function POSPage() {
             <CardContent className="space-y-3">
               {/* Customer Name */}
               <div className="space-y-1">
-                <Label className="text-xs">Customer Name (Optional)</Label>
-                <Input
-                  placeholder="Customer name"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  className="h-8 text-sm"
-                />
+                <Label className="text-xs">Customer Name</Label>
+
+                <div className="flex gap-2">
+                  <Select
+                    value={selectedCustomer?.id?.toString() || ""}
+                    onValueChange={(value) => {
+                      const customer = customerOptions.find(
+                        (item) => item.id.toString() === value,
+                      );
+                      setSelectedCustomer(customer || null);
+                    }}
+                  >
+                    <SelectTrigger className="h-8 flex-1">
+                      <SelectValue placeholder="Select customer" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      {customerOptions.map((customer) => (
+                        <SelectItem
+                          key={customer.id}
+                          value={customer.id.toString()}
+                        >
+                          {customer.name}
+                          {customer.phone ? ` (${customer.phone})` : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setCustomerModalOpen(true)}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
 
               {/* Discount */}
@@ -893,6 +1002,21 @@ export default function POSPage() {
               New Transaction
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={customerModalOpen} onOpenChange={setCustomerModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Customer</DialogTitle>
+          </DialogHeader>
+
+          <CustomerForm
+            onSuccess={(customer) => {
+              setSelectedCustomer(customer);
+              setCustomerModalOpen(false);
+            }}
+          />
         </DialogContent>
       </Dialog>
     </div>

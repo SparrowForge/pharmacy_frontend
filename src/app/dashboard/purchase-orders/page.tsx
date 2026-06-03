@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
@@ -28,56 +29,48 @@ import {
   TableHeader,
   TableRow,
 } from "@/src/components/ui/table";
-import { Plus, Search, Eye, Download, Trash2 } from "lucide-react";
-import { toast } from "sonner";
 
-// Sample PO data
-const samplePOs = [
-  {
-    id: "PO-2025-001",
-    supplier: "ABC Pharma Ltd",
-    items: 12,
-    total: 5250.0,
-    date: "2025-05-02",
-    status: "pending",
-  },
-  {
-    id: "PO-2025-002",
-    supplier: "XYZ Medicines",
-    items: 8,
-    total: 3100.5,
-    date: "2025-05-02",
-    status: "confirmed",
-  },
-  {
-    id: "PO-2025-003",
-    supplier: "Global Health Co",
-    items: 15,
-    total: 7800.0,
-    date: "2025-05-01",
-    status: "received",
-  },
-  {
-    id: "PO-2025-004",
-    supplier: "Prime Pharma",
-    items: 5,
-    total: 2200.0,
-    date: "2025-04-30",
-    status: "cancelled",
-  },
-];
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/src/components/ui/dropdown-menu";
+
+import {
+  MoreHorizontal,
+  Plus,
+  Search,
+  Eye,
+  Download,
+  Trash2,
+  LoaderIcon,
+} from "lucide-react";
+import { usePurchaseOrders } from "@/src/hooks/usePurchaseOrders";
+import { useCompanies } from "@/src/hooks/useCompanies";
+import Loading from "@/src/components/common/Loading";
+
+// hooks (replace with your actual paths)
 
 export default function PurchaseOrdersPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [supplierId, setSupplierId] = useState("all");
+  const [isDeletedIncluded, setIsDeletedIncluded] = useState(false);
+  const {   fetchPurchaseOrders, fetchLoading, purchaseOrders, deletePurchaseOrder } = usePurchaseOrders();
+  const { companies, fetchCompanies } = useCompanies();
 
-  const filteredPOs = samplePOs.filter((po) => {
-    const matchesSearch =
-      po.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      po.supplier.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || po.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+
+  const suppliers = companies?.filter((c: any) => c.company_type === "supplier");
+  
+  useEffect(() => {
+    fetchCompanies();
+    fetchPurchaseOrders({
+      q: searchQuery,
+      supplierId: supplierId === "all" ? undefined : supplierId,
+      includeDeleted: isDeletedIncluded,
+    })
+  }, [searchQuery, supplierId, isDeletedIncluded]);
+  
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -94,19 +87,20 @@ export default function PurchaseOrdersPage() {
     }
   };
 
+
+
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
-            Purchase Orders
-          </h1>
+          <h1 className="text-2xl font-bold">Purchase Orders</h1>
           <p className="text-muted-foreground">
             Manage supplier orders and inventory procurement
           </p>
         </div>
-        <Button asChild className="bg-primary hover:bg-primary/90">
+
+        <Button asChild>
           <Link href="/dashboard/purchase-orders/new">
             <Plus className="w-4 h-4 mr-2" />
             Create Order
@@ -115,49 +109,64 @@ export default function PurchaseOrdersPage() {
       </div>
 
       {/* Filters */}
-      <Card className="border-border">
+      <Card>
         <CardContent className="pt-6">
-          <div className="flex gap-4 items-end">
-            <div className="flex-1">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Search */}
+            <div>
               <Label className="text-sm mb-2 block">Search</Label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search PO number or supplier name..."
+                  placeholder="Search PO number..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
                 />
               </div>
             </div>
-            <div className="w-48">
-              <Label className="text-sm mb-2 block">Status</Label>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+
+            {/* Supplier Filter */}
+            <div>
+              <Label className="text-sm mb-2 block">Supplier</Label>
+              <Select value={supplierId} onValueChange={setSupplierId}>
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="All Suppliers" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Orders</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="confirmed">Confirmed</SelectItem>
-                  <SelectItem value="received">Received</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                  <SelectItem value="all">All Suppliers</SelectItem>
+
+                  {suppliers?.map((s: any) => (
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Deleted Toggle */}
+            <div className="flex items-center gap-2 mt-6">
+              <input
+                type="checkbox"
+                checked={isDeletedIncluded}
+                onChange={(e) => setIsDeletedIncluded(e.target.checked)}
+              />
+              <Label>Include Deleted</Label>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Purchase Orders Table */}
-      <Card className="border-border">
+      {/* Table */}
+      <Card>
         <CardHeader>
-          <CardTitle>All Purchase Orders</CardTitle>
+          <CardTitle>Purchase Orders</CardTitle>
           <CardDescription>
-            Total: {filteredPOs.length} orders | Total Value: $
-            {filteredPOs.reduce((sum, po) => sum + po.total, 0).toFixed(2)}
+            Total: 
           </CardDescription>
         </CardHeader>
+
         <CardContent>
           <div className="overflow-x-auto">
             <Table>
@@ -166,59 +175,79 @@ export default function PurchaseOrdersPage() {
                   <TableHead>PO Number</TableHead>
                   <TableHead>Supplier</TableHead>
                   <TableHead className="text-right">Items</TableHead>
-                  <TableHead className="text-right">Total Amount</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
+
               <TableBody>
-                {filteredPOs.length === 0 ? (
+                {fetchLoading ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={7}
-                      className="text-center py-8 text-muted-foreground"
-                    >
+                    <TableCell colSpan={7} className="text-center py-8">
+                     <LoaderIcon className="animate-spin text-center" /> Loading purchase orders...
+                    </TableCell>
+                  </TableRow>
+                ) : purchaseOrders.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8">
                       No purchase orders found
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredPOs.map((po) => (
+                  purchaseOrders.map((po: any) => (
                     <TableRow key={po.id}>
-                      <TableCell className="font-medium">{po.id}</TableCell>
-                      <TableCell>{po.supplier}</TableCell>
-                      <TableCell className="text-right">{po.items}</TableCell>
+                      <TableCell className="font-medium">
+                        {po.po_number}
+                      </TableCell>
+
+                      <TableCell>{po.supplier_name}</TableCell>
+
+                      <TableCell className="text-right">
+                        {po.item_count}
+                      </TableCell>
+
                       <TableCell className="text-right font-semibold">
-                        ${po.total.toFixed(2)}
+                        ৳{Number(po.total_amount).toFixed(2)}
                       </TableCell>
+
                       <TableCell>
-                        {new Date(po.date).toLocaleDateString()}
+                        {new Date(po.placed_at).toLocaleDateString()}
                       </TableCell>
+
                       <TableCell>
-                        <Badge
-                          className={getStatusColor(po.status)}
-                          variant="outline"
-                        >
-                          {po.status.charAt(0).toUpperCase() +
-                            po.status.slice(1)}
+                        <Badge className={getStatusColor(po.status)}>
+                          {po.status}
                         </Badge>
                       </TableCell>
+
+                      {/* 3 DOT ACTIONS */}
                       <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button size="sm" variant="outline">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            <Download className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem>
+                              <Eye className="w-4 h-4 mr-2" />
+                              Receive Items
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem>
+                              <Download className="w-4 h-4 mr-2" />
+                              Download
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem onClick={() => deletePurchaseOrder(po.id)} className="text-red-600">
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))

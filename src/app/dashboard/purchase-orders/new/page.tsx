@@ -68,7 +68,6 @@ export default function PurchaseOrderForm({
   const { fetchProducts, products } = useProducts();
   const { shops, fetchShops } = useShops();
 
-
   const [branchId, setBranchId] = useState(initialData?.branch_id || "");
   const [supplierId, setSupplierId] = useState(initialData?.supplier_id || "");
   const [shopId, setShopId] = useState(initialData?.shop_id || "");
@@ -168,7 +167,7 @@ export default function PurchaseOrderForm({
     const newItem: IPurchaseOrderItem = {
       product_id: product.id,
 
-      product_batch_id: "", // or null if backend allows
+      product_batch_id: null, // or null if backend allows
       purchase_unit_id: selectedUnitId || product.unit_id,
 
       quantity_purchase: qty,
@@ -177,8 +176,8 @@ export default function PurchaseOrderForm({
       discount: Number(itemDiscount || 0),
       tax: Number(itemTax || 0),
 
-      batch_number: batchNumber,
-      expected_expiry_date: expiryDate,
+      batch_number: batchNumber ,
+      expected_expiry_date: null,
     };
 
     setLineItems((prev) => [...prev, newItem]);
@@ -198,7 +197,7 @@ export default function PurchaseOrderForm({
     setLineItems((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const generateInvoiceNumber = (shopCode: string, lastNumber = 0) => {
+  const generatePoNumber = (shopCode: string, lastNumber = 0) => {
     const date = new Date();
 
     const yyyy = date.getFullYear();
@@ -232,7 +231,7 @@ export default function PurchaseOrderForm({
 
     const shop = shops.find((s) => s.id === shopId);
 
-    const generatedPO = generateInvoiceNumber(
+    const generatedPO = generatePoNumber(
       shop?.name || "SHOP",
       0, // replace later with backend last number
     );
@@ -245,8 +244,8 @@ export default function PurchaseOrderForm({
       branch_id: branchId,
       supplier_id: supplierId,
       expected_delivery_date: expectedDeliveryDate,
-      phar_payment_status: paymentStatus,
-      status,
+      phar_payment_status: "pending",
+      status: "pending",
       delivery_date: deliveryDate,
       discount_amount: parseFloat(discount || "0"),
       tax_amount: parseFloat(itemTax || "0"),
@@ -255,8 +254,8 @@ export default function PurchaseOrderForm({
       items: lineItems,
     };
 
-    console.log("Submitting payload:", payload);
-    await createPurchaseOrder(payload)
+
+    await createPurchaseOrder(payload);
   };
 
   return (
@@ -402,48 +401,7 @@ export default function PurchaseOrderForm({
                 </div>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Status*</Label>
-
-                  <Select
-                    value={status}
-                    onValueChange={(value) => setStatus(value)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-
-                    <SelectContent>
-                      {purchaseOrderStatuses?.map((type: string) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label> Payment Status*</Label>
-
-                  <Select
-                    value={paymentStatus}
-                    onValueChange={(value) => setPaymentStatus(value)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-
-                    <SelectContent>
-                      {paymentStatuses?.map((type: string) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+              
 
               <div className="space-y-2">
                 <Label htmlFor="notes">Special Notes / Instructions</Label>
@@ -544,9 +502,7 @@ export default function PurchaseOrderForm({
                       {lineItems.map((item, index) => (
                         <TableRow key={item.product_id}>
                           <TableCell>
-                            <p className="font-medium">
-                              {item.product_id}
-                            </p>
+                            <p className="font-medium">{item.product_id}</p>
                           </TableCell>
                           <TableCell className="text-right">
                             {item.quantity_purchase}

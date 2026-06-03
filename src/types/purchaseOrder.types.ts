@@ -1,6 +1,6 @@
 export interface IPurchaseOrderItem {
   product_id: string;
-  product_batch_id: string;
+  product_batch_id: string | null; // or null if backend allows
   purchase_unit_id: string;
 
   quantity_purchase: number;
@@ -8,7 +8,7 @@ export interface IPurchaseOrderItem {
   discount: number;
   tax: number;
 
-  expected_expiry_date: string;
+  expected_expiry_date: string | null;
   batch_number: string;
 }
 

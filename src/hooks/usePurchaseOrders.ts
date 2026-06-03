@@ -27,8 +27,10 @@ import {
   ICreatePurchaseOrderPayload,
   IUpdatePurchaseOrderPayload,
 } from "@/src/types/purchaseOrder.types";
+import { useRouter } from "next/navigation";
 
 export const usePurchaseOrders = () => {
+  const router = useRouter()
   const dispatch = useAppDispatch();
 
   const purchaseOrderState = useAppSelector((state) => state.purchaseOrders);
@@ -75,6 +77,7 @@ export const usePurchaseOrders = () => {
         dispatch(createPurchaseOrderSuccess(res));
 
         toast.success("Purchase order created successfully");
+        router.push(`/dashboard/purchase-orders`);
 
         return res;
       } catch (error: any) {
