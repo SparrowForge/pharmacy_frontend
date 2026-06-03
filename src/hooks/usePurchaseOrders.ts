@@ -30,7 +30,7 @@ import {
 import { useRouter } from "next/navigation";
 
 export const usePurchaseOrders = () => {
-  const router = useRouter()
+  const router = useRouter();
   const dispatch = useAppDispatch();
 
   const purchaseOrderState = useAppSelector((state) => state.purchaseOrders);
@@ -102,21 +102,25 @@ export const usePurchaseOrders = () => {
         const res =
           await purchaseOrderService.getSinglePurchaseOrderService(id);
 
-        dispatch(fetchSinglePurchaseOrderSuccess(res));
+        // IMPORTANT: usually Axios response → use res.data
+        const data = res;
 
-        return res;
-      } catch (error: any) {
+        dispatch(fetchSinglePurchaseOrderSuccess(data));
+
+        return data;
+      } catch (error: unknown) {
         const message =
-          error?.response?.data?.message || "Failed to fetch purchase order";
+          (error as any)?.response?.data?.message ||
+          "Failed to fetch purchase order";
 
         dispatch(fetchSinglePurchaseOrderFailure(message));
 
         toast.error(message);
 
-        throw error;
+        throw new Error(message);
       }
     },
-    [dispatch],
+    [dispatch, toast, purchaseOrderService],
   );
 
   const updatePurchaseOrder = useCallback(

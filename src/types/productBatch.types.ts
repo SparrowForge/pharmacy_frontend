@@ -42,6 +42,7 @@ export interface IGetProductBatchesQuery {
   page?: number;
   limit?: number;
   q?: string;
+  product_id?: string;
   includeDeleted?: boolean;
 }
 

@@ -23,6 +23,7 @@ import productImageReducer from "./features/product-image/productImageSlice";
 import productBatchReducer from "./features/product-batch/productBatchSlice";
 import productOfferReducer from "./features/product-offer/productOfferSlice";
 import purchaseOrderReducer from "./features/purchase-order/purchaseOrderSlice";
+import purchaseOrderReceiveReducer from "./features/purchase-order/purchaseOrderReceiveSlice";
 
 export const store = configureStore({
   reducer: {
@@ -50,6 +51,7 @@ export const store = configureStore({
     productBatches: productBatchReducer,
     productOffers: productOfferReducer,
     purchaseOrders: purchaseOrderReducer,
+    purchaseOrderReceive: purchaseOrderReceiveReducer,
   },
 });
 

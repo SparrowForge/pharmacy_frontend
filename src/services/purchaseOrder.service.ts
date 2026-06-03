@@ -4,6 +4,7 @@ import {
   ICreatePurchaseOrderPayload,
   IDeletePurchaseOrderResponse,
   IGetPurchaseOrdersQuery,
+  IGetSinglePurchaseOrder,
   IPurchaseOrder,
   IPurchaseOrderResponse,
   IUpdatePurchaseOrderPayload,
@@ -29,8 +30,10 @@ const createPurchaseOrderService = async (
 
 const getSinglePurchaseOrderService = async (
   id: string,
-): Promise<IPurchaseOrder> => {
-  const response = await axiosInstance.get(`/purchase_orders/${id}`);
+): Promise<IGetSinglePurchaseOrder> => {
+  const response = await axiosInstance.get<IGetSinglePurchaseOrder>(
+    `/purchase_orders/${id}`,
+  );
 
   return response.data;
 };

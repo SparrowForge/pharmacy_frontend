@@ -38,6 +38,7 @@ export const useProductBatches = () => {
       limit?: number;
       q?: string;
       includeDeleted?: boolean;
+      product_id?: string;
     }) => {
       try {
         dispatch(fetchBatchesStart());
@@ -46,6 +47,7 @@ export const useProductBatches = () => {
           page: params?.page ?? 1,
           limit: params?.limit ?? 10,
           q: params?.q ?? "",
+          product_id: params?.product_id ?? "",
           includeDeleted: params?.includeDeleted ?? false,
         });
 

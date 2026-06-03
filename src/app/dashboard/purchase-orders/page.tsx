@@ -174,7 +174,8 @@ export default function PurchaseOrdersPage() {
                 <TableRow>
                   <TableHead>PO Number</TableHead>
                   <TableHead>Supplier</TableHead>
-                  <TableHead className="text-right">Items</TableHead>
+                  <TableHead className="text-right">Total Quantity</TableHead>
+                  <TableHead className="text-right">Received Quantity</TableHead>
                   <TableHead className="text-right">Total</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Status</TableHead>
@@ -205,7 +206,11 @@ export default function PurchaseOrdersPage() {
                       <TableCell>{po.supplier_name}</TableCell>
 
                       <TableCell className="text-right">
-                        {po.item_count}
+                        {po.totalqty}
+                      </TableCell>
+                      
+                      <TableCell className="text-right">
+                        {po.totalreceiveqty}
                       </TableCell>
 
                       <TableCell className="text-right font-semibold">
@@ -232,10 +237,12 @@ export default function PurchaseOrdersPage() {
                           </DropdownMenuTrigger>
 
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                              <Eye className="w-4 h-4 mr-2" />
-                              Receive Items
-                            </DropdownMenuItem>
+                            <Link href={`/dashboard/purchase-receive/new/${po.id}`} passHref>
+                              <DropdownMenuItem>
+                                <Eye className="w-4 h-4 mr-2" />
+                                Receive Items
+                              </DropdownMenuItem>
+                            </Link>
 
                             <DropdownMenuItem>
                               <Download className="w-4 h-4 mr-2" />

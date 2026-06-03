@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { IPurchaseOrder } from "@/src/types/purchaseOrder.types";
+import { IGetSinglePurchaseOrder, IPurchaseOrder } from "@/src/types/purchaseOrder.types";
 
 interface IPurchaseOrderState {
   purchaseOrders: IPurchaseOrder[];
@@ -10,7 +10,7 @@ interface IPurchaseOrderState {
   updateLoading: boolean;
   deleteLoading: boolean;
 
-  singlePurchaseOrder: IPurchaseOrder | null;
+  singlePurchaseOrder: IGetSinglePurchaseOrder | null;
   singlePurchaseOrderLoading: boolean;
   singlePurchaseOrderError: string | null;
 
@@ -100,7 +100,7 @@ const purchaseOrderSlice = createSlice({
 
     fetchSinglePurchaseOrderSuccess: (
       state,
-      action: PayloadAction<IPurchaseOrder>,
+      action: PayloadAction<IGetSinglePurchaseOrder>,
     ) => {
       state.singlePurchaseOrderLoading = false;
       state.singlePurchaseOrder = action.payload;
