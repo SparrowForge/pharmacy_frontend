@@ -60,7 +60,6 @@ export default function PurchaseOrderForm({
   isEditing = false,
   onSuccess,
 }: PurchaseOrderFormProps) {
-  const router = useRouter();
   const { createLoading, createPurchaseOrder, updatePurchaseOrder } =
     usePurchaseOrders();
   const { fetchBranches, branches } = useBranches();
@@ -96,9 +95,6 @@ export default function PurchaseOrderForm({
     paymentStatuses,
   } = useEnum();
   const [status, setStatus] = useState(initialData?.status || "partial");
-  const [paymentStatus, setPaymentStatus] = useState(
-    initialData?.phar_payment_status || "pending",
-  );
   const [batchNumber, setBatchNumber] = useState("");
   const [poNumber, setPoNumber] = useState("");
 

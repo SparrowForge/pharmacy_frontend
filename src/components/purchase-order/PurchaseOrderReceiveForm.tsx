@@ -25,7 +25,11 @@ import Loading from "../common/Loading";
 
 export default function PurchaseOrderReceiveForm() {
   const { id } = useParams();
-  const { singlePurchaseOrder, fetchSinglePurchaseOrder, singlePurchaseOrderLoading } = usePurchaseOrders();
+  const {
+    singlePurchaseOrder,
+    fetchSinglePurchaseOrder,
+    singlePurchaseOrderLoading,
+  } = usePurchaseOrders();
   const { receivePurchaseOrder, createLoading } = usePurchaseOrderReceive();
   const { purchaseOrderStatuses, fetchPurchaseOrderStatuses } = useEnum();
   const { batches, fetchProductBatches } = useProductBatches();
@@ -34,6 +38,7 @@ export default function PurchaseOrderReceiveForm() {
     received_at: new Date().toISOString(),
     status: "received",
     notes: "",
+    purchase_order_id: "",
     items: [],
   });
 
@@ -107,11 +112,13 @@ export default function PurchaseOrderReceiveForm() {
     return batchesByProduct[productId] || [];
   };
   const handleSubmit = async () => {
+    if (!id) return;
     const payload: IReceivePurchaseOrderPayload = {
       ...formData,
+      purchase_order_id: String(id),
     };
 
-    await receivePurchaseOrder(String(id), payload);
+    await receivePurchaseOrder(payload);
   };
 
   console.log("Form Data:", singlePurchaseOrder, batches);
@@ -146,7 +153,7 @@ export default function PurchaseOrderReceiveForm() {
   }, [batches, singlePurchaseOrder]);
 
   if (singlePurchaseOrderLoading) {
-    return <Loading text="Loading Data ..." />
+    return <Loading text="Loading Data ..." />;
   }
 
   return (

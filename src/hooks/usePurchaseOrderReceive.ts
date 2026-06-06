@@ -25,12 +25,12 @@ export const usePurchaseOrderReceive = () => {
   const state = useAppSelector((state) => state.purchaseOrderReceive);
 
   const receivePurchaseOrder = useCallback(
-    async (id: string, payload: IReceivePurchaseOrderPayload) => {
+    async ( payload: IReceivePurchaseOrderPayload) => {
       try {
         dispatch(createPurchaseOrderReceiveStart());
 
         const res = await purchaseOrderReceiveService.receivePurchaseOrder(
-          id,
+        
           payload,
         );
 
@@ -38,7 +38,7 @@ export const usePurchaseOrderReceive = () => {
 
         toast.success(res?.message || "Purchase order received successfully");
 
-        router.push("/dashboard/purchase-reciev");
+        router.push("/dashboard/purchase-receive");
 
         return res;
       } catch (error: any) {

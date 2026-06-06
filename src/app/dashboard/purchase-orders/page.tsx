@@ -56,21 +56,26 @@ export default function PurchaseOrdersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [supplierId, setSupplierId] = useState("all");
   const [isDeletedIncluded, setIsDeletedIncluded] = useState(false);
-  const {   fetchPurchaseOrders, fetchLoading, purchaseOrders, deletePurchaseOrder } = usePurchaseOrders();
+  const {
+    fetchPurchaseOrders,
+    fetchLoading,
+    purchaseOrders,
+    deletePurchaseOrder,
+  } = usePurchaseOrders();
   const { companies, fetchCompanies } = useCompanies();
 
+  const suppliers = companies?.filter(
+    (c: any) => c.company_type === "supplier",
+  );
 
-  const suppliers = companies?.filter((c: any) => c.company_type === "supplier");
-  
   useEffect(() => {
     fetchCompanies();
     fetchPurchaseOrders({
       q: searchQuery,
       supplierId: supplierId === "all" ? undefined : supplierId,
       includeDeleted: isDeletedIncluded,
-    })
+    });
   }, [searchQuery, supplierId, isDeletedIncluded]);
-  
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -86,8 +91,6 @@ export default function PurchaseOrdersPage() {
         return "bg-gray-100 text-gray-800";
     }
   };
-
-
 
   return (
     <div className="space-y-6">
@@ -162,9 +165,7 @@ export default function PurchaseOrdersPage() {
       <Card>
         <CardHeader>
           <CardTitle>Purchase Orders</CardTitle>
-          <CardDescription>
-            Total: 
-          </CardDescription>
+          <CardDescription>Total:</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -175,7 +176,9 @@ export default function PurchaseOrdersPage() {
                   <TableHead>PO Number</TableHead>
                   <TableHead>Supplier</TableHead>
                   <TableHead className="text-right">Total Quantity</TableHead>
-                  <TableHead className="text-right">Received Quantity</TableHead>
+                  <TableHead className="text-right">
+                    Received Quantity
+                  </TableHead>
                   <TableHead className="text-right">Total</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Status</TableHead>
@@ -187,7 +190,8 @@ export default function PurchaseOrdersPage() {
                 {fetchLoading ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-8">
-                     <LoaderIcon className="animate-spin text-center" /> Loading purchase orders...
+                      <LoaderIcon className="animate-spin text-center" />{" "}
+                      Loading purchase orders...
                     </TableCell>
                   </TableRow>
                 ) : purchaseOrders.length === 0 ? (
@@ -208,7 +212,7 @@ export default function PurchaseOrdersPage() {
                       <TableCell className="text-right">
                         {po.totalqty}
                       </TableCell>
-                      
+
                       <TableCell className="text-right">
                         {po.totalreceiveqty}
                       </TableCell>
@@ -237,19 +241,27 @@ export default function PurchaseOrdersPage() {
                           </DropdownMenuTrigger>
 
                           <DropdownMenuContent align="end">
-                            <Link href={`/dashboard/purchase-receive/new/${po.id}`} passHref>
-                              <DropdownMenuItem>
-                                <Eye className="w-4 h-4 mr-2" />
-                                Receive Items
-                              </DropdownMenuItem>
-                            </Link>
+                            {po.status !== "received" && (
+                              <Link
+                                href={`/dashboard/purchase-receive/new/${po.id}`}
+                                passHref
+                              >
+                                <DropdownMenuItem>
+                                  <Eye className="w-4 h-4 mr-2" />
+                                  Receive Items
+                                </DropdownMenuItem>
+                              </Link>
+                            )}
 
                             <DropdownMenuItem>
                               <Download className="w-4 h-4 mr-2" />
                               Download
                             </DropdownMenuItem>
 
-                            <DropdownMenuItem onClick={() => deletePurchaseOrder(po.id)} className="text-red-600">
+                            <DropdownMenuItem
+                              onClick={() => deletePurchaseOrder(po.id)}
+                              className="text-red-600"
+                            >
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete
                             </DropdownMenuItem>

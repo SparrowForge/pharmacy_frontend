@@ -64,7 +64,7 @@ const menu = [
         icon: ClipboardList,
       },
       { title: "Receive", href: "/dashboard/purchase-receive", icon: Package },
-      { title: "Purchase Return", href: "/dashboard/returns", icon: RotateCcw },
+      { title: "Purchase Return", href: "/dashboard/purchase-return", icon: RotateCcw },
     ],
   },
 

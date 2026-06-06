@@ -17,6 +17,7 @@ export interface IReceivePurchaseOrderPayload {
   received_at: string; // ISO string
   status: string;
   notes?: string;
+  purchase_order_id: string;
 
   items: IPurchaseOrderReceiveItem[];
 }

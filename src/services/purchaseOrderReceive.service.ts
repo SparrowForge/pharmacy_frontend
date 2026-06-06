@@ -9,11 +9,11 @@ import {
 } from "@/src/types/purchaseOrderReceive.types";
 
 const receivePurchaseOrder = async (
-  id: string,
+
   payload: IReceivePurchaseOrderPayload,
 ): Promise<IReceivePurchaseOrderResponse> => {
   const response = await axiosInstance.post(
-    `/purchase_orders/${id}/receive`,
+    `/purchase_receipts`,
     payload,
   );
 
