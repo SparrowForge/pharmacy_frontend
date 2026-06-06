@@ -24,7 +24,8 @@ import productBatchReducer from "./features/product-batch/productBatchSlice";
 import productOfferReducer from "./features/product-offer/productOfferSlice";
 import purchaseOrderReducer from "./features/purchase-order/purchaseOrderSlice";
 import purchaseOrderReceiveReducer from "./features/purchase-order/purchaseOrderReceiveSlice";
-import  purchaseReturnReducer  from "./features/purchase-order/purchaseReturnSlice";
+import purchaseReturnReducer from "./features/purchase-order/purchaseReturnSlice";
+import stockReportReducer from "./features/stock-report/stockReportSlice";
 
 export const store = configureStore({
   reducer: {
@@ -54,6 +55,7 @@ export const store = configureStore({
     purchaseOrders: purchaseOrderReducer,
     purchaseOrderReceive: purchaseOrderReceiveReducer,
     purchaseReturns: purchaseReturnReducer,
+    stockReport: stockReportReducer,
   },
 });
 

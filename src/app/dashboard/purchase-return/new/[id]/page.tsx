@@ -80,7 +80,7 @@ export default function PurchaseOrderReturnForm() {
       items: singlePurchaseOrder.items.map((item) => ({
         purchase_order_item_id: item.id,
         product_batch_id: item.product_batch_id || "",
-        return_unit_id: "",
+        return_unit_id: item.purchase_unit_id || "",
         return_qty: 0,
         unit_cost: Number(item.unit_cost),
         reason: "",
@@ -165,19 +165,7 @@ export default function PurchaseOrderReturnForm() {
     <div className="space-y-6 p-4">
       {/* Header */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label>Return Number</Label>
-          <Input
-            value={formData.return_number}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                return_number: e.target.value,
-              }))
-            }
-            placeholder="Enter return number"
-          />
-        </div>
+        
 
         <div>
           <Label>Status</Label>
@@ -263,16 +251,7 @@ export default function PurchaseOrderReturnForm() {
                   <Input value={poItem.quantity_purchase} disabled />
                 </div>
 
-                <div>
-                  <Label>Return Unit ID</Label>
-                  <Input
-                    value={returnItem.return_unit_id || ""}
-                    onChange={(e) =>
-                      updateItem(index, "return_unit_id", e.target.value)
-                    }
-                    placeholder="Enter return unit ID"
-                  />
-                </div>
+                
 
                 <div>
                   <Label>Return Quantity</Label>
