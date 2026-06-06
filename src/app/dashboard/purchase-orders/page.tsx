@@ -253,6 +253,17 @@ export default function PurchaseOrdersPage() {
                               </Link>
                             )}
 
+
+                              <Link
+                                href={`/dashboard/purchase-return/new/${po.id}`}
+                                passHref
+                              >
+                                <DropdownMenuItem>
+                                  <Eye className="w-4 h-4 mr-2" />
+                                  Return Items
+                                </DropdownMenuItem>
+                              </Link>
+
                             <DropdownMenuItem>
                               <Download className="w-4 h-4 mr-2" />
                               Download
