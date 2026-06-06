@@ -41,23 +41,23 @@ export default function PurchaseOrderReturnForm() {
     singlePurchaseOrderLoading,
   } = usePurchaseOrders();
   const { createPurchaseReturn, createLoading } = usePurchaseReturn();
-  const { purchaseOrderStatuses, fetchPurchaseOrderStatuses } = useEnum();
+  const { returnPurchaseStatuses, fetchReturnPurchaseStatuses } = useEnum();
   const { batches, fetchProductBatches } = useProductBatches();
   const [formData, setFormData] = useState<ICreatePurchaseReturnPayload>({
     return_number: "",
     purchase_order_id: "",
-    status: "pending",
+    status: "completed",
     reason: "",
     notes: "",
     items: [],
   });
 
   useEffect(() => {
-    fetchPurchaseOrderStatuses();
+    fetchReturnPurchaseStatuses();
     if (id) {
       fetchSinglePurchaseOrder(String(id));
     }
-  }, [id, fetchPurchaseOrderStatuses, fetchSinglePurchaseOrder]);
+  }, [id, fetchReturnPurchaseStatuses, fetchSinglePurchaseOrder]);
 
   useEffect(() => {
     if (!singlePurchaseOrder?.items?.length) return;
@@ -165,8 +165,6 @@ export default function PurchaseOrderReturnForm() {
     <div className="space-y-6 p-4">
       {/* Header */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-
         <div>
           <Label>Status</Label>
 
@@ -184,7 +182,7 @@ export default function PurchaseOrderReturnForm() {
             </SelectTrigger>
 
             <SelectContent>
-              {purchaseOrderStatuses.map((status: string) => (
+              {returnPurchaseStatuses.map((status: string) => (
                 <SelectItem key={status} value={status}>
                   {status}
                 </SelectItem>
@@ -250,8 +248,6 @@ export default function PurchaseOrderReturnForm() {
                   <Label>Ordered Quantity</Label>
                   <Input value={poItem.quantity_purchase} disabled />
                 </div>
-
-                
 
                 <div>
                   <Label>Return Quantity</Label>

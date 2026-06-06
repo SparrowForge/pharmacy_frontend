@@ -18,6 +18,9 @@ import {
   fetchPurchaseOrderStatusesFailure,
   fetchPurchaseOrderStatusesStart,
   fetchPurchaseOrderStatusesSuccess,
+  fetchReturnPurchaseStatusesFailure,
+  fetchReturnPurchaseStatusesStart,
+  fetchReturnPurchaseStatusesSuccess,
   fetchSalesSattusFailure,
   fetchSalesStatusStart,
   fetchSalesStatusSuccess,
@@ -179,6 +182,30 @@ export const useEnum = () => {
     }
   }, [dispatch]);
 
+  /* ================= FETCH ================= */
+  const fetchReturnPurchaseStatuses = useCallback(async () => {
+    try {
+      dispatch(fetchReturnPurchaseStatusesStart());
+
+      const res = await enumServices.getReturnPurchaseStatuses();
+      console.log(res);
+
+      dispatch(fetchReturnPurchaseStatusesSuccess(res.values));
+
+      return res.values;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        "Failed to fetch return purchase statuses";
+
+      dispatch(fetchReturnPurchaseStatusesFailure(message));
+
+      toast.error(message);
+
+      throw error;
+    }
+  }, [dispatch]);
+
   return {
     loading: enumb.loading,
     error: enumb.error,
@@ -203,5 +230,8 @@ export const useEnum = () => {
 
     paymentStatuses: enumb.paymentStatuses,
     fetchPaymentStatuses,
+
+    returnPurchaseStatuses: enumb.returnPurchaseStatuses,
+    fetchReturnPurchaseStatuses,
   };
 };

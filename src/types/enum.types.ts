@@ -32,6 +32,10 @@ export interface IPaymentStatusResponse {
   type: string;
   values: string[];
 }
+export interface IReturnPurchase {
+  type: string;
+  values: string[];
+}
 
 export interface IEnumbState {
   loading: boolean;
@@ -44,4 +48,5 @@ export interface IEnumbState {
   paymentMethodTypes: string[];
   purchaseOrderStatuses: string[];
   paymentStatuses: string[];
+  returnPurchaseStatuses: string[];
 }
