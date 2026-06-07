@@ -23,7 +23,7 @@ const getProductUnitTypes = async (): Promise<IProductUnitTypeResponse> => {
 /* ================= GET SALES STATUS TYPES ================= */
 const getSalesStatus = async (): Promise<ISalesStatusEnumTypeResponse> => {
   const res = await axiosInstance.get<ISalesStatusEnumTypeResponse>(
-    "/datatypes/_sales_status"
+    "/datatypes/sales_status"
   );
 
   return res.data;
