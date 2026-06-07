@@ -1,6 +1,6 @@
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
+  IGetPurchaseReturnParams,
   IPurchaseReturn,
   IPurchaseReturnResponse,
 } from "@/src/types/purchaseReturn.types";
@@ -19,6 +19,7 @@ interface IPurchaseReturnState {
   page: number;
   limit: number;
   total: number;
+  filters: IGetPurchaseReturnParams;
 }
 
 const initialState: IPurchaseReturnState = {
@@ -35,6 +36,20 @@ const initialState: IPurchaseReturnState = {
   page: 1,
   limit: 10,
   total: 0,
+  filters: {
+    page: 1,
+    limit: 10,
+
+    q: "",
+
+    includeDeleted: false,
+
+    status: "",
+
+    supplierId: "",
+
+    purchaseOrderId: "",
+  },
 };
 
 const purchaseReturnSlice = createSlice({
@@ -55,21 +70,28 @@ const purchaseReturnSlice = createSlice({
       state.purchaseReturns.unshift(action.payload.data as any);
     },
 
-    createPurchaseReturnFailure: (
-      state,
-      action: PayloadAction<string>,
-    ) => {
+    createPurchaseReturnFailure: (state, action: PayloadAction<string>) => {
       state.createLoading = false;
       state.error = action.payload;
     },
 
     // FETCH
-    fetchPurchaseReturnStart: (state) => {
+    setPurchaseReturnFilters: (
+      state,
+      action: PayloadAction<Partial<IGetPurchaseReturnParams>>,
+    ) => {
+      state.filters = {
+        ...state.filters,
+        ...action.payload,
+      };
+    },
+
+    fetchPurchaseReturnsStart: (state) => {
       state.fetchLoading = true;
       state.error = null;
     },
 
-    fetchPurchaseReturnSuccess: (
+    fetchPurchaseReturnsSuccess: (
       state,
       action: PayloadAction<{
         data: IPurchaseReturn[];
@@ -79,16 +101,15 @@ const purchaseReturnSlice = createSlice({
       }>,
     ) => {
       state.fetchLoading = false;
+
       state.purchaseReturns = action.payload.data;
+
       state.page = action.payload.page;
       state.limit = action.payload.limit;
       state.total = action.payload.total;
     },
 
-    fetchPurchaseReturnFailure: (
-      state,
-      action: PayloadAction<string>,
-    ) => {
+    fetchPurchaseReturnsFailure: (state, action: PayloadAction<string>) => {
       state.fetchLoading = false;
       state.error = action.payload;
     },
@@ -100,10 +121,10 @@ export const {
   createPurchaseReturnSuccess,
   createPurchaseReturnFailure,
 
-  fetchPurchaseReturnStart,
-  fetchPurchaseReturnSuccess,
-  fetchPurchaseReturnFailure,
+  setPurchaseReturnFilters,
+  fetchPurchaseReturnsStart,
+  fetchPurchaseReturnsSuccess,
+  fetchPurchaseReturnsFailure,
 } = purchaseReturnSlice.actions;
 
 export default purchaseReturnSlice.reducer;
-

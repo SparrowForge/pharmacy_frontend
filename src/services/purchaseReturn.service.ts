@@ -1,8 +1,9 @@
 import axiosInstance from "./axios";
 import {
   ICreatePurchaseReturnPayload,
+  IGetPurchaseReturnParams,
   IPurchaseReturnResponse,
-  IPurchaseReturnsResponse,
+
 } from "@/src/types/purchaseReturn.types";
 
 const createPurchaseReturn = async (
@@ -16,12 +17,24 @@ const createPurchaseReturn = async (
   return response.data;
 };
 
-const getPurchaseReturns = async (
-  page = 1,
-  limit = 10,
-): Promise<IPurchaseReturnsResponse> => {
-  const response = await axiosInstance.get(`/purchase_return`, {
-    params: { page, limit },
+const getPurchaseReturnsService = async (
+  params: IGetPurchaseReturnParams,
+): Promise<IPurchaseReturnResponse> => {
+  const response = await axiosInstance.get("/purchase_return", {
+    params: {
+      page: params.page,
+      limit: params.limit,
+
+      q: params.q,
+
+      includeDeleted: params.includeDeleted,
+
+      status: params.status,
+
+      supplierId: params.supplierId,
+
+      purchaseOrderId: params.purchaseOrderId,
+    },
   });
 
   return response.data;
@@ -29,5 +42,5 @@ const getPurchaseReturns = async (
 
 export const purchaseReturnService = {
   createPurchaseReturn,
-  getPurchaseReturns,
+  getPurchaseReturnsService,
 };

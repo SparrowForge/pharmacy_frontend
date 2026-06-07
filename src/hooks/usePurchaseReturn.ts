@@ -11,12 +11,12 @@ import {
   createPurchaseReturnStart,
   createPurchaseReturnSuccess,
   createPurchaseReturnFailure,
-  fetchPurchaseReturnStart,
-  fetchPurchaseReturnSuccess,
-  fetchPurchaseReturnFailure,
+  fetchPurchaseReturnsStart,
+  fetchPurchaseReturnsSuccess,
+  fetchPurchaseReturnsFailure,
 } from "@/src/redux/features/purchase-order/purchaseReturnSlice";
 
-import { ICreatePurchaseReturnPayload } from "@/src/types/purchaseReturn.types";
+import { ICreatePurchaseReturnPayload, IGetPurchaseReturnParams } from "@/src/types/purchaseReturn.types";
 
 export const usePurchaseReturn = () => {
   const dispatch = useAppDispatch();
@@ -33,7 +33,7 @@ export const usePurchaseReturn = () => {
 
         dispatch(createPurchaseReturnSuccess(res));
 
-        toast.success(res?.message || "Purchase return created");
+        toast.success(res?.data &&  "Purchase return created");
 
         router.push("/dashboard/purchase-return");
 
@@ -52,31 +52,38 @@ export const usePurchaseReturn = () => {
     [dispatch, router],
   );
 
-  const fetchPurchaseReturns = useCallback(
-    async (page = 1, limit = 10) => {
+    const fetchPurchaseReturns = useCallback(
+    async (params?: IGetPurchaseReturnParams) => {
       try {
-        dispatch(fetchPurchaseReturnStart());
+        dispatch(fetchPurchaseReturnsStart());
 
-        const res = await purchaseReturnService.getPurchaseReturns(
-          page,
-          limit,
+        const query = params || state.filters;
+
+        const res = await purchaseReturnService.getPurchaseReturnsService(query);
+
+        dispatch(
+          fetchPurchaseReturnsSuccess({
+            data: res.data,
+            page: res.page,
+            limit: res.limit,
+            total: res.total,
+          }),
         );
-
-        dispatch(fetchPurchaseReturnSuccess(res));
 
         return res;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message || "Failed to fetch returns";
+          error?.response?.data?.message ||
+          "Failed to fetch purchase returns";
 
-        dispatch(fetchPurchaseReturnFailure(message));
+        dispatch(fetchPurchaseReturnsFailure(message));
 
         toast.error(message);
 
         throw error;
       }
     },
-    [dispatch],
+    [dispatch, state.filters],
   );
 
   return {

@@ -19,28 +19,53 @@ export interface ICreatePurchaseReturnPayload {
 
 export interface IPurchaseReturn {
   id: string;
-  purchase_order_id: string;
   return_number: string;
+  purchase_order_id: string;
+  supplier_id: string;
+  shop_id: string;
+  branch_id: string;
+
   status: string;
+  total_amount: number;
+
   reason: string;
   notes: string;
+
+  created_by: string;
+  processed_by: string;
+
+  processed_at: string;
   created_at: string;
   updated_at: string;
+
+  is_delete: boolean;
+
+  supplier_name: string;
+  po_number: string;
+
+  item_count: number;
+  total_return_stock: number;
 }
 
 export interface IPurchaseReturnResponse {
-  success: boolean;
-  message: string;
-  data: {
-    id: string;
-    status: string;
-  };
-}
-
-export interface IPurchaseReturnsResponse {
   entity: "purchase_returns";
   page: number;
   limit: number;
   total: number;
   data: IPurchaseReturn[];
+}
+
+export interface IGetPurchaseReturnParams {
+  page?: number;
+  limit?: number;
+
+  q?: string;
+
+  includeDeleted?: boolean;
+
+  status?: string;
+
+  supplierId?: string;
+
+  purchaseOrderId?: string;
 }
