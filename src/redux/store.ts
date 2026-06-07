@@ -26,7 +26,8 @@ import purchaseOrderReducer from "./features/purchase-order/purchaseOrderSlice";
 import purchaseOrderReceiveReducer from "./features/purchase-order/purchaseOrderReceiveSlice";
 import purchaseReturnReducer from "./features/purchase-order/purchaseReturnSlice";
 import stockReportReducer from "./features/stock-report/stockReportSlice";
-import  salesInvoiceReducer  from "./features/sales-invoices/salesInvoiceSlice";
+import salesInvoiceReducer from "./features/sales-invoices/salesInvoiceSlice";
+import discountCodeReducer from "./features/discount-codes/discountCodeSlice";
 
 export const store = configureStore({
   reducer: {
@@ -58,6 +59,7 @@ export const store = configureStore({
     purchaseReturns: purchaseReturnReducer,
     stockReport: stockReportReducer,
     salesInvoices: salesInvoiceReducer,
+    discountCodes: discountCodeReducer,
   },
 });
 

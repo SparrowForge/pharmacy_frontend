@@ -152,6 +152,11 @@ const menu = [
         href: "/dashboard/branch",
         icon: ShoppingCartIcon,
       },
+      {
+        title: "Discount Codes",
+        href: "/dashboard/discount-codes",
+        icon: Sparkles,
+      },
 
       {
         title: "General Settings",
