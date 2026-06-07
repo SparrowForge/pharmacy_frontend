@@ -157,6 +157,11 @@ const menu = [
         href: "/dashboard/discount-codes",
         icon: Sparkles,
       },
+      {
+        title: "Payment Methods",
+        href: "/dashboard/payment-methods",
+        icon: DollarSign,
+      },
 
       {
         title: "General Settings",
