@@ -13,6 +13,7 @@ const initialState: IEnumbState = {
   purchaseOrderStatuses: [],
   paymentStatuses: [],
   returnPurchaseStatuses: [],
+  saleTypes: [],
 };
 
 const enumbSlice = createSlice({
@@ -156,6 +157,23 @@ const enumbSlice = createSlice({
       state.error = action.payload;
     },
 
+
+      /* ================= FETCH SALE TYPES ================= */  
+    fetchSaleTypesStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+
+    fetchSaleTypesSuccess: (state, action: PayloadAction<string[]>) => {
+      state.loading = false;
+      state.saleTypes = action.payload;
+    },
+
+    fetchSaleTypesFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
     clearEnumbError: (state) => {
       state.error = null;
     },
@@ -194,6 +212,10 @@ export const {
   fetchReturnPurchaseStatusesStart,
   fetchReturnPurchaseStatusesSuccess,
   fetchReturnPurchaseStatusesFailure,
+
+  fetchSaleTypesStart,
+  fetchSaleTypesSuccess,
+  fetchSaleTypesFailure,
 
   clearEnumbError,
 } = enumbSlice.actions;

@@ -24,6 +24,9 @@ import {
   fetchSalesSattusFailure,
   fetchSalesStatusStart,
   fetchSalesStatusSuccess,
+  fetchSaleTypesFailure,
+  fetchSaleTypesStart,
+  fetchSaleTypesSuccess,
   getCompanyTypeFailure,
   getCompanyTypeStart,
   getCompanyTypeSuccess,
@@ -206,6 +209,28 @@ export const useEnum = () => {
     }
   }, [dispatch]);
 
+  const fetchSaleTypes = useCallback(async () => {
+    try {
+      dispatch(fetchSaleTypesStart());
+
+      const res = await enumServices.getSaleTypes();
+      console.log(res);
+
+      dispatch(fetchSaleTypesSuccess(res.values));
+
+      return res.values;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message || "Failed to fetch sale types";
+
+      dispatch(fetchSaleTypesFailure(message));
+
+      toast.error(message);
+
+      throw error;
+    }
+  }, [dispatch]);
+
   return {
     loading: enumb.loading,
     error: enumb.error,
@@ -233,5 +258,8 @@ export const useEnum = () => {
 
     returnPurchaseStatuses: enumb.returnPurchaseStatuses,
     fetchReturnPurchaseStatuses,
+
+    saleTypes: enumb.saleTypes,
+    fetchSaleTypes,
   };
 };

@@ -89,6 +89,7 @@ export default function POSPage() {
   };
   const [shopId, setShopId] = useState("");
   const [branchId, setBranchId] = useState("");
+  const [saleType, setSaleTypes] = useState("cash");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [barcodeInput, setBarcodeInput] = useState("");
   const [discountType, setDiscountType] = useState<"percentage" | "fixed">(
@@ -127,6 +128,8 @@ export default function POSPage() {
     salesStatus,
     fetchPaymentMethodTypes,
     paymentMethodTypes,
+    saleTypes,
+    fetchSaleTypes
   } = useEnum();
   const { companies, fetchCompanies, createCompany } = useCompanies();
   const { fetchShops, shops } = useShops();
@@ -353,6 +356,7 @@ export default function POSPage() {
     });
     fetchCategories();
     fetchSalesStatus();
+    fetchSaleTypes();
     fetchPaymentMethodTypes();
     fetchCompanies();
     fetchShops();
@@ -364,6 +368,7 @@ export default function POSPage() {
     includeDeleted,
     fetchProducts,
     fetchSalesStatus,
+    fetchSaleTypes,
     fetchPaymentMethodTypes,
     fetchCategories,
     fetchCompanies,
@@ -534,6 +539,22 @@ export default function POSPage() {
                         {branches.map((branch) => (
                           <SelectItem key={branch.id} value={branch.id}>
                             {branch.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="saleType">Sale Types *</Label>
+                    <Select value={saleType} onValueChange={setSaleTypes}>
+                      <SelectTrigger id="saleType" className="w-full">
+                        <SelectValue placeholder="Select Sale Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {saleTypes?.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
                           </SelectItem>
                         ))}
                       </SelectContent>
