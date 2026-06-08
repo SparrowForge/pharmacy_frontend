@@ -8,7 +8,7 @@ const getShopPlansService = async (): Promise<IShopPlanEnumResponse> => {
 };
 
 const getCompanyTypeService = async (): Promise<ICompanyTypeEnumResponse> => {
-  const response = await axiosInstance.get("/datatypes/_company_type");
+  const response = await axiosInstance.get("/datatypes/company_type");
   return response.data;
 };
 
@@ -49,7 +49,7 @@ const getPurchaseOrderStatuses = async (): Promise<IPurchaseOrderStatusResponse>
 /* ================= GET SALES STATUS TYPES ================= */
 const getPaymentStatuses = async (): Promise<IPaymentStatusResponse> => {
   const res = await axiosInstance.get<IPaymentStatusResponse>(
-    "/datatypes/_payment_status"
+    "/datatypes/payment_status"
   );
 
   return res.data;

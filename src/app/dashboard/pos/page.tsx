@@ -37,10 +37,10 @@ import {
 } from "@/src/components/ui/dialog";
 import { useSalesInvoice } from "@/src/hooks/useSalesInvoice";
 import { useProductBatches } from "@/src/hooks/useProductBatches";
+import { usePurchaseOrderReceive } from "@/src/hooks/usePurchaseOrderReceive";
 
 interface CartItem {
   product_id: string;
-  name: string;
   product_batch_id?: string;
   sales_unit_id: string;
   sales_qty: number;
@@ -58,9 +58,12 @@ export default function POSPage() {
   const { saleTypes, fetchSaleTypes, salesStatus, fetchSalesStatus } =
     useEnum();
   const { companies, fetchCompanies } = useCompanies();
-  const { createSalesInvoice, createLoading } = useSalesInvoice()
-  const {batches, fetchProductBatches} = useProductBatches()
-
+  const {
+    fetchAvailablePurchaseReceiptItems,
+    availableItems,
+    availableItemsLoading,
+  } = usePurchaseOrderReceive();
+  const { createSalesInvoice, createLoading } = useSalesInvoice();
 
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
   const [customerModalOpen, setCustomerModalOpen] = useState(false);
@@ -87,7 +90,6 @@ export default function POSPage() {
   const [paidAmount, setPaidAmount] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
-
   // Transaction Tabs
   const [transactions, setTransactions] = useState<
     Array<{ id: string; cart: CartItem[]; discount: any }>
@@ -103,10 +105,10 @@ export default function POSPage() {
   const taxAmount = cart.reduce((sum, item) => sum + item.tax, 0);
   const total = subtotal - discountAmount + taxAmount;
 
-
   // Add to cart
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = async (product: any) => {
     const existingItem = cart.find((item) => item.product_id === product.id);
+    await fetchAvailablePurchaseReceiptItems(product.id);
 
     if (existingItem) {
       setCart(
@@ -124,9 +126,8 @@ export default function POSPage() {
         ...cart,
         {
           product_id: product.id,
-          name: product.name,
-          product_batch_id: "",
-          sales_unit_id: product.unit_id,
+          product_batch_id: availableItems[0]?.product_batch_id,
+          sales_unit_id: null,
           sales_qty: 1,
           unit_price: parseFloat(product.selling_price),
           discount: 0,
@@ -175,8 +176,8 @@ export default function POSPage() {
 
   // Complete payment
   const handleCompletePayment = async () => {
-    if (!paymentMethod) {
-      toast.error("Please select payment method");
+    if (!paymentMethod && !selectedCustomer) {
+      toast.error("Please select payment method or customer");
       return;
     }
 
@@ -208,11 +209,11 @@ export default function POSPage() {
           {
             payment_method_id: paymentMethod,
             amount: parseFloat(paidAmount) || 0,
-            company_id: "",
+            company_id: null,
             shop_id: shopId,
             branch_id: branchId,
-            reference_type: "",
-            reference_id: "",
+            reference_type: null,
+            reference_id: null,
             status: "pending",
             paid_at: new Date().toISOString(),
             notes: "",
@@ -221,10 +222,10 @@ export default function POSPage() {
         items: cart,
       };
 
-      // await createSalesInvoice(invoicePayload)
+      await createSalesInvoice(invoicePayload)
       // API call here
       console.log("[v0] Submitting Invoice:", invoicePayload);
-      toast.success("Invoice created successfully!");
+      // toast.success("Invoice created successfully!");
       // handleClearCart();
     } catch (error) {
       console.error("[v0] Payment error:", error);
@@ -262,7 +263,8 @@ export default function POSPage() {
     (comp) => comp.company_type === "customer",
   );
 
-  console.log("Cart ITEM",cart)
+  console.log("Cart ITEM", cart);
+  console.log("Available Product", availableItems[0]?.product_batch_id);
 
   return (
     <div className="flex flex-col gap-4 h-[calc(100vh-7rem)] bg-background">
@@ -324,7 +326,6 @@ export default function POSPage() {
         {/* Right Panel - Cart & Payment */}
         <ScrollArea className="w-96 flex flex-col gap-4 overflow-hidden">
           <div className="flex flex-col gap-4 pr-4">
-
             {/* Customer  */}
             <Card>
               <CardContent>

@@ -135,16 +135,16 @@ export default function PurchaseReceiptsPage() {
 
               <TableBody>
                 {purchaseOrderReceive?.length ? (
-                  purchaseOrderReceive.map((item: any) => (
+                  purchaseOrderReceive?.map((item: any) => (
                     <TableRow key={item.id}>
                       {/* Receipt */}
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <FileText className="w-4 h-4 text-primary" />
                           <div>
-                            <p className="font-medium">{item.receipt_number}</p>
+                            <p className="font-medium">{item?.receipt_number}</p>
                             <p className="text-xs text-muted-foreground">
-                              ID: {item.id.slice(0, 8)}
+                              ID: {item?.id.slice(0, 8)}
                             </p>
                           </div>
                         </div>
@@ -152,32 +152,32 @@ export default function PurchaseReceiptsPage() {
 
                       {/* PO */}
                       <TableCell className="text-sm text-muted-foreground">
-                        {item.purchase_order_id.slice(0, 8)}...
+                        {item?.purchase_order_id.slice(0, 8)}...
                       </TableCell>
 
                       {/* STATUS */}
                       <TableCell>
                         <Badge
                           className={cn(
-                            item.status === "received"
+                            item?.status === "received"
                               ? "bg-green-100 text-green-700"
                               : "bg-yellow-100 text-yellow-700",
                           )}
                         >
-                          {item.status}
+                          {item?.status}
                         </Badge>
                       </TableCell>
 
                       {/* TOTAL */}
                       <TableCell className="flex items-center gap-1">
                         <DollarSign className="w-4 h-4 text-muted-foreground" />
-                        {item.total_amount}
+                        {item?.total_amount}
                       </TableCell>
 
                       {/* DATE */}
                       <TableCell className="flex items-center gap-1 text-sm text-muted-foreground">
                         <Calendar className="w-4 h-4" />
-                        {new Date(item.received_at).toLocaleDateString()}
+                        {new Date(item?.received_at).toLocaleDateString()}
                       </TableCell>
 
                       {/* ACTIONS */}

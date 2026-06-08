@@ -1,4 +1,5 @@
 import {
+  IAvailablePurchaseReceiptItem,
   IPurchaseOrderReceiveItem,
   IReceivePurchaseOrderResponse,
 } from "@/src/types/purchaseOrderReceive.types";
@@ -6,6 +7,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface IPurchaseOrderReceiveState {
   purchaseOrderReceive: IReceivePurchaseOrderResponse["data"][];
+
+  availableItems: IAvailablePurchaseReceiptItem[];
+  availableItemsLoading: boolean;
 
   fetchLoading: boolean;
   createLoading: boolean;
@@ -24,6 +28,9 @@ interface IPurchaseOrderReceiveState {
 }
 const initialState: IPurchaseOrderReceiveState = {
   purchaseOrderReceive: [],
+
+  availableItems: [],
+  availableItemsLoading: false,
 
   fetchLoading: false,
   createLoading: false,
@@ -46,6 +53,7 @@ const purchaseOrderReceiveSlice = createSlice({
   initialState,
 
   reducers: {
+    // Create
     createPurchaseOrderReceiveStart: (state) => {
       state.createLoading = true;
       state.error = null;
@@ -68,12 +76,12 @@ const purchaseOrderReceiveSlice = createSlice({
       state.error = action.payload;
     },
 
-
     fetchPurchaseReceiptsStart: (state) => {
       state.fetchLoading = true;
       state.error = null;
     },
 
+    // Fetch Receive Item
     fetchPurchaseReceiptsSuccess: (
       state,
       action: PayloadAction<{
@@ -83,7 +91,7 @@ const purchaseOrderReceiveSlice = createSlice({
         total: number;
       }>,
     ) => {
-      state.fetchLoading = false; 
+      state.fetchLoading = false;
       state.purchaseOrderReceive = action.payload.data;
       state.page = action.payload.page;
       state.limit = action.payload.limit;
@@ -92,6 +100,24 @@ const purchaseOrderReceiveSlice = createSlice({
 
     fetchPurchaseReceiptsFailure: (state, action: PayloadAction<string>) => {
       state.fetchLoading = false;
+      state.error = action.payload;
+    },
+
+    fetchAvailableItemsStart: (state) => {
+      state.availableItemsLoading = true;
+    },
+
+    // Fetch available items
+    fetchAvailableItemsSuccess: (
+      state,
+      action: PayloadAction<IAvailablePurchaseReceiptItem[]>,
+    ) => {
+      state.availableItemsLoading = false;
+      state.availableItems = action.payload;
+    },
+
+    fetchAvailableItemsFailure: (state, action: PayloadAction<string>) => {
+      state.availableItemsLoading = false;
       state.error = action.payload;
     },
   },
@@ -105,6 +131,10 @@ export const {
   fetchPurchaseReceiptsStart,
   fetchPurchaseReceiptsSuccess,
   fetchPurchaseReceiptsFailure,
+
+  fetchAvailableItemsStart,
+  fetchAvailableItemsSuccess,
+  fetchAvailableItemsFailure,
 } = purchaseOrderReceiveSlice.actions;
 
 export default purchaseOrderReceiveSlice.reducer;

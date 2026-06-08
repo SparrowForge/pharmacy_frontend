@@ -35,7 +35,7 @@ export function ProductList({
   const endIndex = startIndex + itemsPerPage;
   const paginatedProducts = products.slice(startIndex, endIndex);
 
-  console.log("Products", products)
+
   return (
     <Card className="border-border flex-1 flex flex-col min-h-0">
       <CardHeader className="pb-3 border-b flex items-center justify-between flex-row">

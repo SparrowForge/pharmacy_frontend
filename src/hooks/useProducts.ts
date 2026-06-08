@@ -27,8 +27,10 @@ import {
   ICreateProductPayload,
   IUpdateProductPayload,
 } from "../types/product.types";
+import { useRouter } from "next/navigation";
 
 export const useProducts = () => {
+  const router = useRouter()
   const dispatch = useAppDispatch();
 
   const productState = useAppSelector((state) => state.products);
@@ -72,6 +74,7 @@ export const useProducts = () => {
         dispatch(createProductSuccess(res));
 
         toast.success("Product created successfully");
+        router.push("/dashboard/medicines")
 
         return res;
       } catch (error: any) {

@@ -170,7 +170,7 @@ export default function AddMedicinePage() {
         {/* Page Header */}
         <div className="flex items-center gap-4 mb-6">
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/">
+            <Link href="/dashboard/medicines">
               <ArrowLeft className="w-5 h-5" />
             </Link>
           </Button>

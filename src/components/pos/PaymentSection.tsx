@@ -3,7 +3,12 @@
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -13,6 +18,7 @@ import {
 } from "@/src/components/ui/select";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/src/components/ui/alert";
+import { useSalesInvoice } from "@/src/hooks/useSalesInvoice";
 
 interface PaymentMethod {
   id: string;
@@ -45,10 +51,12 @@ export function PaymentSection({
 }: PaymentSectionProps) {
   const paidAmountNum = parseFloat(paidAmount) || 0;
   const change = paidAmountNum - total;
-  const isPaymentValid = 
-    saleType === "credit" 
-      ? selectedMethod !== "" 
+  const isPaymentValid =
+    saleType === "credit"
+      ? selectedMethod !== ""
       : selectedMethod !== "" && paidAmountNum >= total;
+
+  const { createLoading } = useSalesInvoice();
 
   return (
     <Card className="border-border">
@@ -59,7 +67,9 @@ export function PaymentSection({
         {/* Sale Type Info */}
         <div className="p-2 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded">
           <p className="text-xs font-semibold text-blue-900 dark:text-blue-100 capitalize">
-            {saleType === "credit" ? "Credit Sale - Payment Optional" : "Cash Sale - Full Payment Required"}
+            {saleType === "credit"
+              ? "Credit Sale - Payment Optional"
+              : "Cash Sale - Full Payment Required"}
           </p>
         </div>
 
@@ -104,12 +114,16 @@ export function PaymentSection({
               </div>
               <div className="flex justify-between text-sm">
                 <span>Paid:</span>
-                <span className="font-semibold">${paidAmountNum.toFixed(2)}</span>
+                <span className="font-semibold">
+                  ${paidAmountNum.toFixed(2)}
+                </span>
               </div>
               {change !== 0 && (
-                <div className={`flex justify-between text-sm font-semibold ${
-                  change >= 0 ? 'text-green-600' : 'text-destructive'
-                }`}>
+                <div
+                  className={`flex justify-between text-sm font-semibold ${
+                    change >= 0 ? "text-green-600" : "text-destructive"
+                  }`}
+                >
                   <span>Change:</span>
                   <span>${Math.abs(change).toFixed(2)}</span>
                 </div>
@@ -121,7 +135,8 @@ export function PaymentSection({
               <Alert className="bg-destructive/10 border-destructive/30">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription className="text-xs">
-                  Insufficient payment. Require ${(total - paidAmountNum).toFixed(2)} more.
+                  Insufficient payment. Require $
+                  {(total - paidAmountNum).toFixed(2)} more.
                 </AlertDescription>
               </Alert>
             )}
@@ -144,7 +159,14 @@ export function PaymentSection({
           disabled={!isPaymentValid || isProcessing}
           className="w-full h-10 font-semibold"
         >
-          {isProcessing ? "Processing..." : "Complete Payment"}
+          {createLoading || isProcessing ? (
+            <div className="flex items-center gap-2">
+              <span className="animate-spin">⏳</span>
+              Completing...
+            </div>
+          ) : (
+            "Complete Payment"
+          )}
         </Button>
       </CardContent>
     </Card>

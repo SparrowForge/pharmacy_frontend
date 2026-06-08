@@ -3,6 +3,8 @@
 import axiosInstance from "./axios";
 
 import {
+  IAvailablePurchaseReceiptItemsResponse,
+  IGetAvailablePurchaseReceiptItemsQuery,
   IPurchaseReceiptsResponse,
   IReceivePurchaseOrderPayload,
   IReceivePurchaseOrderResponse,
@@ -31,7 +33,24 @@ export const getPurchaseReceiptsService = async (
   return response.data;
 };
 
+
+
+const getAvailablePurchaseReceiptItemsService = async (
+  params: IGetAvailablePurchaseReceiptItemsQuery,
+): Promise<IAvailablePurchaseReceiptItemsResponse> => {
+  const response =
+    await axiosInstance.get<IAvailablePurchaseReceiptItemsResponse>(
+      "/purchase_receipts/available-items",
+      {
+        params,
+      },
+    );
+
+  return response.data;
+};
+
 export const purchaseOrderReceiveService = {
   receivePurchaseOrder,
   getPurchaseReceipts: getPurchaseReceiptsService,
+  getAvailablePurchaseReceiptItemsService
 };

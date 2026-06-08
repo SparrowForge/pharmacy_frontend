@@ -14,6 +14,9 @@ import {
   createPurchaseOrderReceiveFailure,
   fetchPurchaseReceiptsStart,
   fetchPurchaseReceiptsSuccess,
+  fetchAvailableItemsStart,
+  fetchAvailableItemsSuccess,
+  fetchAvailableItemsFailure,
 } from "@/src/redux/features/purchase-order/purchaseOrderReceiveSlice";
 
 import { IReceivePurchaseOrderPayload } from "@/src/types/purchaseOrderReceive.types";
@@ -25,14 +28,12 @@ export const usePurchaseOrderReceive = () => {
   const state = useAppSelector((state) => state.purchaseOrderReceive);
 
   const receivePurchaseOrder = useCallback(
-    async ( payload: IReceivePurchaseOrderPayload) => {
+    async (payload: IReceivePurchaseOrderPayload) => {
       try {
         dispatch(createPurchaseOrderReceiveStart());
 
-        const res = await purchaseOrderReceiveService.receivePurchaseOrder(
-        
-          payload,
-        );
+        const res =
+          await purchaseOrderReceiveService.receivePurchaseOrder(payload);
 
         dispatch(createPurchaseOrderReceiveSuccess(res));
 
@@ -76,9 +77,41 @@ export const usePurchaseOrderReceive = () => {
     [dispatch],
   );
 
+  const fetchAvailablePurchaseReceiptItems = useCallback(
+    async (productId: string) => {
+      try {
+        dispatch(fetchAvailableItemsStart());
+
+        const res =
+          await purchaseOrderReceiveService.getAvailablePurchaseReceiptItemsService(
+            {
+              product_id: productId,
+            },
+          );
+
+        dispatch(fetchAvailableItemsSuccess(res.items));
+
+        return res.items;
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message ||
+          "Failed to fetch available receipt items";
+
+        dispatch(fetchAvailableItemsFailure(message));
+
+        toast.error(message);
+
+        throw error;
+      }
+    },
+    [dispatch],
+  );
+
   return {
     receivePurchaseOrder,
     fetchPurchaseReceipts,
+
+    fetchAvailablePurchaseReceiptItems,
     ...state,
   };
 };
