@@ -1,4 +1,4 @@
-import { ICompanyTypeEnumResponse, IPaymentMethodTypeResponse, IProductUnitTypeResponse, IPurchaseOrderStatusResponse, ISalesStatusEnumTypeResponse, IShopPlanEnumResponse, IPaymentStatusResponse, IReturnPurchase, ISaleTypes} from "../types/enum.types";
+import { ICompanyTypeEnumResponse, IPaymentMethodTypeResponse, IProductUnitTypeResponse, IPurchaseOrderStatusResponse, ISalesStatusEnumTypeResponse, IShopPlanEnumResponse, IPaymentStatusResponse, IReturnPurchase, ISaleTypes, IDiscountTypes} from "../types/enum.types";
 import axiosInstance from "./axios";
 
 const getShopPlansService = async (): Promise<IShopPlanEnumResponse> => {
@@ -73,6 +73,15 @@ const getSaleTypes = async (): Promise<ISaleTypes> => {
   return res.data;
 };
 
+/* ================= GET DISCOUNT TYPES ================= */
+const getDiscountTypes = async (): Promise<IDiscountTypes> => {
+  const res = await axiosInstance.get<IDiscountTypes>(
+    "/datatypes/discount_type"
+  );
+
+  return res.data;
+};
+
 export const enumServices = {
   getShopPlansService,
   getCompanyTypeService,
@@ -82,5 +91,6 @@ export const enumServices = {
   getPurchaseOrderStatuses,
   getPaymentStatuses,
   getReturnPurchaseStatuses,
-  getSaleTypes
+  getSaleTypes,
+  getDiscountTypes,
 };

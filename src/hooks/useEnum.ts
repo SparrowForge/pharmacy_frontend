@@ -6,6 +6,9 @@ import { toast } from "sonner";
 
 import { useAppDispatch, useAppSelector } from "@/src/redux/hooks";
 import {
+  fetchDiscountTypesFailure,
+  fetchDiscountTypesStart,
+  fetchDiscountTypesSuccess,
   fetchPaymentMethodTypeFailure,
   fetchPaymentMethodTypeStart,
   fetchPaymentMethodTypeSuccess,
@@ -231,6 +234,28 @@ export const useEnum = () => {
     }
   }, [dispatch]);
 
+  const fetchDiscountTypes = useCallback(async () => {
+    try {
+      dispatch(fetchDiscountTypesStart());
+
+      const res = await enumServices.getDiscountTypes();
+      console.log(res);
+
+      dispatch(fetchDiscountTypesSuccess(res.values));
+
+      return res.values;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message || "Failed to fetch discount types";
+
+      dispatch(fetchDiscountTypesFailure(message));
+
+      toast.error(message);
+
+      throw error;
+    }
+  }, [dispatch]);
+
   return {
     loading: enumb.loading,
     error: enumb.error,
@@ -261,5 +286,8 @@ export const useEnum = () => {
 
     saleTypes: enumb.saleTypes,
     fetchSaleTypes,
+
+    discountTypes: enumb.discountTypes,
+    fetchDiscountTypes,
   };
 };
