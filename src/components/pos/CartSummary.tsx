@@ -78,7 +78,7 @@ export function CartSummary({
         ) : (
           <>
             {/* Items List */}
-            <ScrollArea className="flex-1 w-full border-b">
+            <ScrollArea className="flex-1 w-90 border-b">
               <div className="p-3 space-y-2">
                 {cart.map((item) => (
                   <CartItem

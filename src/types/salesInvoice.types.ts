@@ -2,12 +2,11 @@ export interface ISalesInvoicePayment {
   payment_method_id: string;
   amount: number;
 
-  company_id: string;
   shop_id: string;
   branch_id: string;
 
   reference_type: string;
-  reference_id: string;
+  reference_id: string | null;
 
   status: string;
   paid_at: string;
@@ -17,7 +16,7 @@ export interface ISalesInvoicePayment {
 
 export interface ISalesInvoiceItem {
   product_id: string;
-  product_batch_id: string;
+  product_batch_id?: string ;
   sales_unit_id: string;
 
   sales_qty: number;

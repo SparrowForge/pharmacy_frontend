@@ -11,7 +11,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/components/ui/select";
-import { Search, Barcode } from "lucide-react";
+import { Search, Barcode, Calendar, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useCompanies } from "@/src/hooks/useCompanies";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import CustomerForm from "./CustomerForm";
 
 interface FiltersSectionProps {
   search: string;
@@ -34,6 +38,18 @@ interface FiltersSectionProps {
   saleType: string;
   onSaleTypeChange: (value: string) => void;
   saleTypes: string[];
+  startDate: string;
+  onStartDateChange: (value: string) => void;
+  endDate: string;
+  onEndDateChange: (value: string) => void;
+  selectedCustomer: {
+    id: string | number;
+    name: string;
+    phone?: string;
+  } | null;
+  onSelectedCustomerChange: (
+    value: { id: string | number; name: string; phone?: string } | null,
+  ) => void;
 }
 
 export function FiltersSection({
@@ -57,147 +73,260 @@ export function FiltersSection({
   saleType,
   onSaleTypeChange,
   saleTypes,
+  startDate,
+  onStartDateChange,
+  endDate,
+  onEndDateChange,
+  selectedCustomer,
+  onSelectedCustomerChange,
 }: FiltersSectionProps) {
-  return (
-    <Card className="border-border sticky top-0 z-10">
-      <CardContent className="p-4 space-y-3">
-        {/* Search Bar */}
-        <div className="space-y-2">
-          <Label className="text-xs">Search Product</Label>
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Medicine name, SKU..."
-              value={search}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-8 h-9 text-sm"
-            />
-          </div>
-        </div>
+  const { companies, fetchCompanies } = useCompanies();
+  const [customerModalOpen, setCustomerModalOpen] = useState(false);
+  const customerOptions = companies.filter(
+    (c) => c.company_type === "customer",
+  );
 
-        {/* Barcode Scan */}
-        <div className="space-y-2">
-          <Label className="text-xs">Barcode Scan</Label>
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Barcode className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+  useEffect(() => {
+    fetchCompanies();
+  }, []);
+  return (
+    <>
+      <Card className="border-border sticky top-0 z-10">
+        <CardContent className="p-4 space-y-3">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                Start Date
+              </label>
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-muted-foreground" />
+                <Input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => onStartDateChange(e.target.value)}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+
+            {/* End Date */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                End Date
+              </label>
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-muted-foreground" />
+                <Input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => onEndDateChange(e.target.value)}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="space-y-2">
+            <Label className="text-xs">Search Product</Label>
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Scan barcode..."
-                value={barcodeInput}
-                onChange={(e) => onBarcodeInputChange(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    onBarcodeSubmit();
-                  }
-                }}
+                placeholder="Medicine name, SKU..."
+                value={search}
+                onChange={(e) => onSearchChange(e.target.value)}
                 className="pl-8 h-9 text-sm"
               />
             </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={onBarcodeSubmit}
-              className="h-9"
-            >
-              <Barcode className="w-4 h-4" />
-            </Button>
           </div>
-        </div>
 
-        {/* Category and Status */}
-        <div className="grid grid-cols-2 gap-3">
+          {/* Barcode Scan */}
           <div className="space-y-2">
-            <Label className="text-xs">Category</Label>
-            <Select value={selectedCategory} onValueChange={onCategoryChange}>
-              <SelectTrigger className="h-9 text-sm w-full">
-                <SelectValue placeholder="All Categories" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All Categories</SelectItem>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.name}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label className="text-xs">Barcode Scan</Label>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Barcode className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Scan barcode..."
+                  value={barcodeInput}
+                  onChange={(e) => onBarcodeInputChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      onBarcodeSubmit();
+                    }
+                  }}
+                  className="pl-8 h-9 text-sm"
+                />
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={onBarcodeSubmit}
+                className="h-9"
+              >
+                <Barcode className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-xs">Status</Label>
-            <Select value={status} onValueChange={onStatusChange}>
-              <SelectTrigger className="h-9 text-sm w-full">
-                <SelectValue placeholder="Select Status" />
-              </SelectTrigger>
-              <SelectContent>
-                {statuses.map((st) => (
-                  <SelectItem key={st} value={st}>
-                    {st}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label className="text-xs">Category</Label>
+              <Select value={selectedCategory} onValueChange={onCategoryChange}>
+                <SelectTrigger className="h-9 text-sm w-full">
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Categories</SelectItem>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* Shop and Branch */}
-        <div className="grid sm:grid-cols-2 gap-3">
-          <div className="space-y-2">
-            <Label htmlFor="shop" className="text-xs">
-              Shop *
-            </Label>
-            <Select value={shopId} onValueChange={onShopChange}>
-              <SelectTrigger id="shop" className="h-9 text-sm w-full">
-                <SelectValue placeholder="Select Shop" />
-              </SelectTrigger>
-              <SelectContent>
-                {shops.map((shop) => (
-                  <SelectItem key={shop.id} value={shop.id}>
-                    {shop.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="space-y-2">
+              <Label className="text-xs">Status</Label>
+              <Select value={status} onValueChange={onStatusChange}>
+                <SelectTrigger className="h-9 text-sm w-full">
+                  <SelectValue placeholder="Select Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {statuses.map((st) => (
+                    <SelectItem key={st} value={st}>
+                      {st}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card title="General" className="border-border sticky top-0 z-10">
+        <CardContent className="p-4 space-y-3">
+          {/* Category and Status */}
+
+          {/* Shop and Branch */}
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="shop" className="text-xs">
+                Shop *
+              </Label>
+              <Select value={shopId} onValueChange={onShopChange}>
+                <SelectTrigger id="shop" className="h-9 text-sm w-full">
+                  <SelectValue placeholder="Select Shop" />
+                </SelectTrigger>
+                <SelectContent>
+                  {shops.map((shop) => (
+                    <SelectItem key={shop.id} value={shop.id}>
+                      {shop.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="branch" className="text-xs">
+                Branch *
+              </Label>
+              <Select value={branchId} onValueChange={onBranchChange}>
+                <SelectTrigger id="branch" className="h-9 text-sm w-full">
+                  <SelectValue placeholder="Select Branch" />
+                </SelectTrigger>
+                <SelectContent>
+                  {branches.map((branch) => (
+                    <SelectItem key={branch.id} value={branch.id}>
+                      {branch.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="branch" className="text-xs">
-              Branch *
-            </Label>
-            <Select value={branchId} onValueChange={onBranchChange}>
-              <SelectTrigger id="branch" className="h-9 text-sm w-full">
-                <SelectValue placeholder="Select Branch" />
-              </SelectTrigger>
-              <SelectContent>
-                {branches.map((branch) => (
-                  <SelectItem key={branch.id} value={branch.id}>
-                    {branch.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+          {/* Sale Type and Select Customer */}
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="saleType" className="text-xs">
+                Sale Type *
+              </Label>
+              <Select value={saleType} onValueChange={onSaleTypeChange}>
+                <SelectTrigger id="saleType" className="h-9 text-sm w-full">
+                  <SelectValue placeholder="Select Sale Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {saleTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Customer</Label>
 
-        {/* Sale Type */}
-        <div className="space-y-2">
-          <Label htmlFor="saleType" className="text-xs">
-            Sale Type *
-          </Label>
-          <Select value={saleType} onValueChange={onSaleTypeChange}>
-            <SelectTrigger id="saleType" className="h-9 text-sm w-full">
-              <SelectValue placeholder="Select Sale Type" />
-            </SelectTrigger>
-            <SelectContent>
-              {saleTypes.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </CardContent>
-    </Card>
+              <div className="flex gap-2">
+                <Select
+                  value={selectedCustomer?.id?.toString() || ""}
+                  onValueChange={(value) => {
+                    const customer = customerOptions.find(
+                      (item) => item.id.toString() === value,
+                    );
+                    onSelectedCustomerChange(customer || null);
+                  }}
+                >
+                  <SelectTrigger className="h-8 flex-1">
+                    <SelectValue placeholder="Select customer" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {customerOptions.map((customer) => (
+                      <SelectItem
+                        key={customer.id}
+                        value={customer.id.toString()}
+                      >
+                        {customer.name}
+                        {customer.phone ? ` (${customer.phone})` : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => setCustomerModalOpen(true)}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Dialog open={customerModalOpen} onOpenChange={setCustomerModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Customer</DialogTitle>
+          </DialogHeader>
+
+          <CustomerForm
+            onSuccess={(customer) => {
+              onSelectedCustomerChange(customer);
+              setCustomerModalOpen(false);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

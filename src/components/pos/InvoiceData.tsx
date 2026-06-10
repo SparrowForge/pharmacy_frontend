@@ -12,11 +12,10 @@ export interface InvoiceItem {
 export interface PaymentRecord {
   payment_method_id: string;
   amount: number;
-  company_id: string;
   shop_id: string;
   branch_id: string;
   reference_type: string;
-  reference_id: string;
+  reference_id: string | null;
   status: string;
   paid_at: string;
   notes: string;
@@ -28,7 +27,7 @@ export interface InvoicePayload {
   shop_id: string;
   branch_id: string;
   status: string;
-  sale_type: "credit" | "cash";
+  sale_type: string;
   discount_amount: number;
   tax_amount: number;
   paid_amount: number;

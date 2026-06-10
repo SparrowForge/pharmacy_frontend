@@ -304,10 +304,10 @@ export default function StockReportPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
+              {/* <ResponsiveContainer width="100%" height={300}>
                 <BarChart
                   data={data
-                    .sort((a, b) => b.closing_stock - a.closing_stock)
+                    ?.sort((a, b) => b.closing_stock - a.closing_stock)
                     .slice(0, 5)
                     .map((item) => ({
                       name: item.name.substring(0, 15),
@@ -321,7 +321,7 @@ export default function StockReportPage() {
                   <Tooltip />
                   <Bar dataKey="stock" fill="#06b6d4" name="Stock Level" />
                 </BarChart>
-              </ResponsiveContainer>
+              </ResponsiveContainer> */}
             </CardContent>
           </Card>
         </div>
