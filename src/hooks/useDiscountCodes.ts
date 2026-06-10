@@ -43,7 +43,6 @@ export const useDiscountCodes = () => {
   );
 
   /* ================= FETCH ALL ================= */
-
   const fetchDiscountCodes = useCallback(
     async (params?: {
       page?: number;
@@ -76,7 +75,6 @@ export const useDiscountCodes = () => {
   );
 
   /* ================= CREATE ================= */
-
   const createDiscountCode = useCallback(
     async (payload: ICreateDiscountCodePayload) => {
       try {
@@ -108,7 +106,6 @@ export const useDiscountCodes = () => {
   );
 
   /* ================= SINGLE ================= */
-
   const fetchSingleDiscountCode = useCallback(
     async (id: string) => {
       try {
@@ -138,7 +135,6 @@ export const useDiscountCodes = () => {
   );
 
   /* ================= UPDATE ================= */
-
   const updateDiscountCode = useCallback(
     async (
       id: string,
@@ -174,7 +170,6 @@ export const useDiscountCodes = () => {
   );
 
   /* ================= DELETE ================= */
-
   const deleteDiscountCode = useCallback(
     async (id: string) => {
       try {
@@ -206,6 +201,8 @@ export const useDiscountCodes = () => {
     },
     [dispatch],
   );
+
+  
 
   return {
     fetchDiscountCodes,

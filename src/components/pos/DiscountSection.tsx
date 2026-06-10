@@ -9,6 +9,7 @@ import { Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { IDiscountCode } from "@/src/types/discountCode.types";
 import { useDiscountCodes } from "@/src/hooks/useDiscountCodes";
+import { discountCodeService } from "@/src/services/discountCode.service";
 
 interface DiscountSectionProps {
   subtotal: number;
@@ -37,7 +38,7 @@ export function DiscountSection({
   const [validatedCode, setValidatedCode] = useState<IDiscountCode | null>(
     null,
   );
-const { fetchDiscountCodes, discountCodes } = useDiscountCodes();
+
 
 const handleApplyDiscount = async () => {
   if (!code.trim()) {
@@ -48,14 +49,14 @@ const handleApplyDiscount = async () => {
   setLoading(true);
 
   try {
-    await fetchDiscountCodes({ q: code });
+   const response = await discountCodeService.getAllDiscountCodes({q:code})
 
-    const discountCode = discountCodes?.find(
+    const discountCode = response?.data?.find(
       (item) => item.code.toLowerCase() === code.toLowerCase(),
     );
 
     console.log(discountCode)
-    console.log(discountCodes)
+
 
     if (!discountCode?.id) {
       toast.error("Invalid discount code");
