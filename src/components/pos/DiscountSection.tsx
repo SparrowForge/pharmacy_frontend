@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/src/components/ui/card";
 import { Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { IDiscountCode } from "@/src/types/discountCode.types";
+import { useDiscountCodes } from "@/src/hooks/useDiscountCodes";
 
 interface DiscountSectionProps {
   subtotal: number;
@@ -36,86 +37,83 @@ export function DiscountSection({
   const [validatedCode, setValidatedCode] = useState<IDiscountCode | null>(
     null,
   );
+const { fetchDiscountCodes, discountCodes } = useDiscountCodes();
 
-  const handleApplyDiscount = async () => {
-    if (!code.trim()) {
-      toast.error("Please enter a discount code");
+const handleApplyDiscount = async () => {
+  if (!code.trim()) {
+    toast.error("Please enter a discount code");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    await fetchDiscountCodes({ q: code });
+
+    const discountCode = discountCodes?.find(
+      (item) => item.code.toLowerCase() === code.toLowerCase(),
+    );
+
+    console.log(discountCode)
+    console.log(discountCodes)
+
+    if (!discountCode?.id) {
+      toast.error("Invalid discount code");
       return;
     }
 
-    setLoading(true);
-    try {
-      // API call to fetch discount code
-      const response = await fetch(`/api/discount-codes?q=${code}`);
-      const data = await response.json();
-
-      console.log("[v0] Discount API Response:", data);
-
-      if (!data.data || data.data.length === 0) {
-        toast.error("Invalid discount code");
-        setLoading(false);
-        return;
-      }
-
-      const discountCode = data.data[0];
-
-      // Validate discount code
-      if (!discountCode.is_active) {
-        toast.error("This discount code is inactive");
-        setLoading(false);
-        return;
-      }
-
-      const now = new Date();
-      const validFrom = new Date(discountCode.valid_from);
-      const validUntil = new Date(discountCode.valid_until);
-
-      if (now < validFrom || now > validUntil) {
-        toast.error("This discount code has expired");
-        setLoading(false);
-        return;
-      }
-
-      if (discountCode.usage_count >= discountCode.max_usage) {
-        toast.error("This discount code has reached its usage limit");
-        setLoading(false);
-        return;
-      }
-
-      if (subtotal < parseFloat(discountCode.min_purchase_amount)) {
-        toast.error(
-          `Minimum purchase amount of $${discountCode.min_purchase_amount} required`,
-        );
-        setLoading(false);
-        return;
-      }
-
-      // Calculate discount amount
-      let discountAmount = 0;
-      if (discountCode.phar_discount_type === "percentage") {
-        discountAmount =
-          (subtotal * parseFloat(discountCode.discount_value)) / 100;
-      } else {
-        discountAmount = parseFloat(discountCode.discount_value);
-      }
-
-      setValidatedCode(discountCode);
-      onApplyDiscount({
-        code: discountCode.code,
-        type: discountCode.phar_discount_type,
-        value: parseFloat(discountCode.discount_value),
-        amount: discountAmount,
-      });
-
-      toast.success(`Discount applied: ${discountCode.code}`);
-    } catch (error) {
-      console.error("[v0] Error applying discount:", error);
-      toast.error("Failed to apply discount code");
-    } finally {
-      setLoading(false);
+    if (!discountCode.is_active) {
+      toast.error("This discount code is inactive");
+      return;
     }
-  };
 
+    const now = new Date();
+    const validFrom = new Date(discountCode.valid_from);
+    const validUntil = new Date(discountCode.valid_until);
+
+    if (now < validFrom || now > validUntil) {
+      toast.error("This discount code has expired");
+      return;
+    }
+
+    if (discountCode.usage_count >= discountCode.max_usage) {
+      toast.error("This discount code has reached its usage limit");
+      return;
+    }
+
+    if (subtotal < Number(discountCode.min_purchase_amount)) {
+      toast.error(
+        `Minimum purchase amount of $${discountCode.min_purchase_amount} required`,
+      );
+      return;
+    }
+
+    let discountAmount = 0;
+
+    if (discountCode.phar_discount_type === "percentage") {
+      discountAmount =
+        (subtotal * Number(discountCode.discount_value)) / 100;
+    } else {
+      discountAmount = Number(discountCode.discount_value);
+    }
+
+    setValidatedCode(discountCode);
+
+    onApplyDiscount({
+      code: discountCode.code,
+      type: discountCode.phar_discount_type,
+      value: Number(discountCode.discount_value),
+      amount: discountAmount,
+    });
+
+    toast.success(`Discount applied: ${discountCode.code}`);
+  } catch (error) {
+    console.error("Error applying discount:", error);
+    toast.error("Failed to apply discount code");
+  } finally {
+    setLoading(false);
+  }
+};
   const handleClearDiscount = () => {
     setCode("");
     setValidatedCode(null);
