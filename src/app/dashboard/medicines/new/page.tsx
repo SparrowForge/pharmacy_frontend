@@ -46,7 +46,9 @@ import { useProductTags } from "@/src/hooks/useProductTags";
 import { IProductUnit } from "@/src/types/productUnit.types";
 
 export default function AddMedicinePage() {
-  const [activeTab, setActiveTab] = useState("basic");
+  const tabOrder = ["basic", "business", "seo"] as const;
+  type TabType = (typeof tabOrder)[number];
+  const [activeTab, setActiveTab] = useState<TabType>("basic");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [badges, setBadges] = useState<string[]>([]);
@@ -124,6 +126,23 @@ export default function AddMedicinePage() {
     });
   }, []);
 
+  const goNext = () => {
+    const currentIndex = tabOrder.indexOf(activeTab);
+    if (currentIndex < tabOrder.length - 1) {
+      setActiveTab(tabOrder[currentIndex + 1]);
+    }
+  };
+
+  const goPrev = () => {
+    const currentIndex = tabOrder.indexOf(activeTab);
+    if (currentIndex > 0) {
+      setActiveTab(tabOrder[currentIndex - 1]);
+    }
+  };
+
+  const isLastTab = activeTab === tabOrder[tabOrder.length - 1];
+  const isFirstTab = activeTab === tabOrder[0];
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -162,8 +181,6 @@ export default function AddMedicinePage() {
     }
   };
 
-  console.log(units);
-
   return (
     <div className="min-h-screen bg-background">
       <div className="">
@@ -189,7 +206,7 @@ export default function AddMedicinePage() {
             {/* Tabs for Different Sections */}
             <Tabs
               value={activeTab}
-              onValueChange={setActiveTab}
+              onValueChange={(value) => setActiveTab(value as TabType)}
               className="w-full"
             >
               <TabsList className="grid w-full grid-cols-3">
@@ -534,7 +551,7 @@ export default function AddMedicinePage() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="unit_id">Default Unit</Label>
+                          <Label htmlFor="unit_id">Selling Unit</Label>
                           <Select
                             value={formData.default_unit_id}
                             onValueChange={(value) =>
@@ -901,23 +918,25 @@ export default function AddMedicinePage() {
                             </SelectContent>
                           </Select>
                         </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="returnPeriod">
-                            Return Period (Days)
-                          </Label>
-                          <Input
-                            id="returnPeriod"
-                            type="number"
-                            placeholder="30"
-                            value={formData.return_period_days}
-                            onChange={(e) =>
-                              handleInputChange(
-                                "return_period_days",
-                                parseFloat(e.target.value) || 0,
-                              )
-                            }
-                          />
-                        </div>
+                        {formData.allow_return === true && (
+                          <div className="space-y-2">
+                            <Label htmlFor="returnPeriod">
+                              Return Period (Days)
+                            </Label>
+                            <Input
+                              id="returnPeriod"
+                              type="number"
+                              placeholder="30"
+                              value={formData.return_period_days}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "return_period_days",
+                                  parseFloat(e.target.value) || 0,
+                                )
+                              }
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -1040,23 +1059,42 @@ export default function AddMedicinePage() {
             </Tabs>
 
             {/* Bottom Actions */}
-            <div className="flex gap-3">
-              <Button type="submit" className="flex-1" disabled={createLoading}>
-                {createLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Medicine
-                  </>
+            <div className="flex gap-3 justify-between">
+              <div className="flex gap-2">
+                {!isFirstTab && (
+                  <Button type="button" variant="outline" onClick={goPrev}>
+                    Previous
+                  </Button>
                 )}
-              </Button>
-              <Button type="button" variant="outline" asChild>
-                <Link href="/">Cancel</Link>
-              </Button>
+
+                {!isLastTab && (
+                  <Button type="button" onClick={goNext}>
+                    Next
+                  </Button>
+                )}
+              </div>
+
+              {isLastTab && (
+                <Button type="submit" disabled={createLoading}>
+                  {createLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Medicine
+                    </>
+                  )}
+                </Button>
+              )}
+
+              {isLastTab && (
+                <Button type="button" variant="outline" asChild>
+                  <Link href="/dashboard/medicines">Cancel</Link>
+                </Button>
+              )}
             </div>
           </div>
         </form>
