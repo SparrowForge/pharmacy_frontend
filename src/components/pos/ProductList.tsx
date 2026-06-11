@@ -18,12 +18,14 @@ interface ProductListProps {
   products: IStockReportItem[];
   loading?: boolean;
   onAddToCart: (product: IStockReportItem) => void;
+  search:string
 }
 
 export function ProductList({
   products,
   loading = false,
   onAddToCart,
+  search
 }: ProductListProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -37,11 +39,19 @@ export function ProductList({
     setCurrentPage(1);
   }, [products]);
 
+  const filteredProducts = useMemo(() => {
+  if (!search.trim()) return products;
+
+  return products.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
+}, [products, search]);
+
   const paginatedProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return products.slice(startIndex, endIndex);
-  }, [products, currentPage]);
+    return filteredProducts.slice(startIndex, endIndex);
+  }, [filteredProducts, currentPage]);
 
   return (
     <Card className="border-border flex-1 flex flex-col min-h-0">

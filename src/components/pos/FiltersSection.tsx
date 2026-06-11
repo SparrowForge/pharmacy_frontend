@@ -38,10 +38,6 @@ interface FiltersSectionProps {
   saleType: string;
   onSaleTypeChange: (value: string) => void;
   saleTypes: string[];
-  startDate: string;
-  onStartDateChange: (value: string) => void;
-  endDate: string;
-  onEndDateChange: (value: string) => void;
   selectedCustomer: {
     id: string | number;
     name: string;
@@ -73,10 +69,6 @@ export function FiltersSection({
   saleType,
   onSaleTypeChange,
   saleTypes,
-  startDate,
-  onStartDateChange,
-  endDate,
-  onEndDateChange,
   selectedCustomer,
   onSelectedCustomerChange,
 }: FiltersSectionProps) {
@@ -93,39 +85,7 @@ export function FiltersSection({
     <>
       <Card className="border-border sticky top-0 z-10">
         <CardContent className="p-4 space-y-3">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">
-                Start Date
-              </label>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-muted-foreground" />
-                <Input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => onStartDateChange(e.target.value)}
-                  className="flex-1"
-                />
-              </div>
-            </div>
-
-            {/* End Date */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">
-                End Date
-              </label>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-muted-foreground" />
-                <Input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => onEndDateChange(e.target.value)}
-                  className="flex-1"
-                />
-              </div>
-            </div>
-          </div>
-
+        
           {/* Search Bar */}
           <div className="space-y-2">
             <Label className="text-xs">Search Product</Label>

@@ -276,26 +276,21 @@ export default function POSPage() {
   }, []);
 
   useEffect(() => {
-    if (!startDate || !endDate) return;
-
-    if (startDate > endDate) {
-      alert("Start date cannot be greater than end date");
-      return;
-    }
+    const today = new Date().toISOString().split("T")[0];
 
     const payload: any = {
-      start_date: startDate,
-      end_date: endDate,
+      start_date: today,
+      end_date: today,
     };
 
-    // 👇 only add category when it exists
     if (selectedCategory) {
       payload.category_id = selectedCategory;
     }
 
     fetchStockReport(payload);
-  }, [selectedCategory, startDate, endDate]);
+  }, [selectedCategory]);
 
+  console.log(search)
 
   return (
     <div className="flex flex-col gap-4 h-[calc(100vh-7rem)] bg-background h-full overflow-hidden">
@@ -322,10 +317,6 @@ export default function POSPage() {
             saleType={saleType}
             onSaleTypeChange={setSaleType}
             saleTypes={saleTypes}
-            startDate={startDate}
-            onStartDateChange={setStartDate}
-            endDate={endDate}
-            onEndDateChange={setEndDate}
             selectedCustomer={selectedCustomer}
             onSelectedCustomerChange={setSelectedCustomer}
           />
@@ -334,6 +325,7 @@ export default function POSPage() {
             products={stockReportData}
             loading={fetchLoading}
             onAddToCart={handleAddToCart}
+            search={search}
           />
         </div>
 
