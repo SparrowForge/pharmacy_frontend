@@ -47,7 +47,7 @@ export function PaymentSection({
   onMethodChange,
   onPaidAmountChange,
   onPaymentComplete,
-
+  isProcessing,
 }: PaymentSectionProps) {
   const paidAmountNum = parseFloat(paidAmount) || 0;
   const change = paidAmountNum - total;
@@ -156,10 +156,10 @@ export function PaymentSection({
         {/* Action Button */}
         <Button
           onClick={onPaymentComplete}
-          disabled={!isPaymentValid || createLoading}
+          disabled={!isPaymentValid || isProcessing}
           className="w-full h-10 font-semibold"
         >
-          {createLoading || createLoading ? (
+          {isProcessing || isProcessing ? (
             <div className="flex items-center gap-2">
               <span className="animate-spin">⏳</span>
               Completing...

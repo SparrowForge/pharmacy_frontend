@@ -47,7 +47,7 @@ const salesInvoiceSlice = createSlice({
       action: PayloadAction<ISalesInvoice>,
     ) => {
       state.createLoading = false;
-      state.salesInvoices.unshift(action.payload);
+      // state.salesInvoices.unshift(action.payload);
     },
 
     createSalesInvoiceFailure: (state, action: PayloadAction<string>) => {

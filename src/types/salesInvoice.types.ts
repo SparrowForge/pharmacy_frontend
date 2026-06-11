@@ -16,7 +16,7 @@ export interface ISalesInvoicePayment {
 
 export interface ISalesInvoiceItem {
   product_id: string;
-  product_batch_id?: string ;
+  product_batch_id?: string;
   sales_unit_id: string;
 
   sales_qty: number;
@@ -77,4 +77,7 @@ export interface ISalesInvoicesResponse {
   limit: number;
   total: number;
   data: ISalesInvoice[];
+}
+export interface ISalesInvoiceResponse {
+  id: string;
 }

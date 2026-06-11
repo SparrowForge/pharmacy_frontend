@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
 import { FiltersSection } from "@/src/components/pos/FiltersSection";
 import { ProductList } from "@/src/components/pos/ProductList";
 import { CartSummary } from "@/src/components/pos/CartSummary";
 import { DiscountSection } from "@/src/components/pos/DiscountSection";
 import { PaymentSection } from "@/src/components/pos/PaymentSection";
-
 import { useProductCategories } from "@/src/hooks/useProductCategories";
 import { usePaymentMethods } from "@/src/hooks/usePaymentMethods";
 import { useShops } from "@/src/hooks/useShops";
@@ -18,27 +16,10 @@ import { useCompanies } from "@/src/hooks/useCompanies";
 import { useSalesInvoice } from "@/src/hooks/useSalesInvoice";
 import { useStockReport } from "@/src/hooks/useStockReport";
 import { usePurchaseOrderReceive } from "@/src/hooks/usePurchaseOrderReceive";
-
 import { InvoicePayload } from "@/src/components/pos/InvoiceData";
-import { Card, CardContent } from "@/src/components/ui/card";
-import { Label } from "@radix-ui/react-label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
-import { Button } from "@/src/components/ui/button";
-import { Plus } from "lucide-react";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
-import CustomerForm from "@/src/components/pos/CustomerForm";
+import { InvoiceModal } from "@/src/components/pos/InvoiceModal";
+import { salesInvoiceService } from "@/src/services/salesInvoice.service";
 
 interface CartItem {
   product_id: string;
@@ -55,8 +36,11 @@ interface CartItem {
 }
 
 export default function POSPage() {
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [trigger, setTrigger] = useState(false);
+  const [invoiceData, setInvoiceData] = useState({});
+  const [showInvoice, setShowInvoice] = useState(false);
+
   // ================= FILTERS
   // =================
   const [search, setSearch] = useState("");
@@ -98,7 +82,7 @@ export default function POSPage() {
   } = useStockReport();
 
   const { fetchAvailablePurchaseReceiptItems } = usePurchaseOrderReceive();
-  const { createSalesInvoice } = useSalesInvoice();
+  const { createSalesInvoice, salesInvoices } = useSalesInvoice();
 
   // ================= TOTALS
   // =================
@@ -243,10 +227,29 @@ export default function POSPage() {
       })),
     };
 
-    await createSalesInvoice(payload);
+    try {
+      setIsProcessing(true);
 
-    toast.success("Invoice created");
+      const res = await salesInvoiceService.createSalesInvoiceService(payload);
 
+      if (res?.id) {
+        toast.success("Invoice created successfully");
+        setInvoiceData(res);
+        setShowInvoice(true);
+        setIsProcessing(false)
+      } else {
+        toast.error("Invoice creation failed");
+        setIsProcessing(false)
+      }
+    } catch (error: any) {
+      console.error("Create Invoice Error:", error);
+
+      toast.error(
+        error?.message || "Something went wrong while creating invoice",
+      );
+      setIsProcessing(false)
+    }
+    setTrigger(!trigger);
     handleClearCart();
   };
 
@@ -288,9 +291,7 @@ export default function POSPage() {
     }
 
     fetchStockReport(payload);
-  }, [selectedCategory]);
-
-  console.log(search)
+  }, [selectedCategory, trigger]);
 
   return (
     <div className="flex flex-col gap-4 h-[calc(100vh-7rem)] bg-background h-full overflow-hidden">
@@ -370,6 +371,14 @@ export default function POSPage() {
           </div>
         </ScrollArea>
       </div>
+
+      {invoiceData && (
+        <InvoiceModal
+          open={showInvoice}
+          onOpenChange={setShowInvoice}
+          invoice={invoiceData}
+        />
+      )}
     </div>
   );
 }

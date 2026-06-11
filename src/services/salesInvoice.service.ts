@@ -2,20 +2,21 @@ import axiosInstance from "./axios";
 
 import {
   ICreateSalesInvoicePayload,
+  ISalesInvoiceResponse,
   ISalesInvoicesResponse,
 } from "@/src/types/salesInvoice.types";
 
 // CREATE
-export const createSalesInvoiceService = async (
+ const createSalesInvoiceService = async (
   payload: ICreateSalesInvoicePayload,
-): Promise<ISalesInvoicesResponse> => {
+): Promise<ISalesInvoiceResponse> => {
   const response = await axiosInstance.post("/sales_invoices", payload);
 
   return response.data;
 };
 
 // GET LIST
-export const getSalesInvoicesService = async (
+ const getSalesInvoicesService = async (
   page = 1,
   limit = 10,
 ): Promise<ISalesInvoicesResponse> => {
@@ -25,3 +26,9 @@ export const getSalesInvoicesService = async (
 
   return response.data;
 };
+
+
+export const salesInvoiceService = {
+  createSalesInvoiceService,
+  getSalesInvoicesService
+}

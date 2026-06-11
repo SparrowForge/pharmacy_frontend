@@ -4,8 +4,7 @@ import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/src/redux/hooks";
 
 import {
-  createSalesInvoiceService,
-  getSalesInvoicesService,
+  salesInvoiceService,
 } from "@/src/services/salesInvoice.service";
 
 import {
@@ -29,25 +28,17 @@ export const useSalesInvoice = () => {
     async (payload: ICreateSalesInvoicePayload) => {
       try {
         dispatch(createSalesInvoiceStart());
-
-        const res = await createSalesInvoiceService(payload);
-
+        const res = await salesInvoiceService.createSalesInvoiceService(payload);
         // backend returns list response → take latest item if needed
-        const created = res.data?.[0];
-
-        dispatch(createSalesInvoiceSuccess(created));
-
+        const created = res;
+        // dispatch(createSalesInvoiceSuccess(created));
         toast.success("Sales invoice created successfully");
-
         return res;
       } catch (error: any) {
         const message =
           error?.response?.data?.message || "Failed to create sales invoice";
-
         dispatch(createSalesInvoiceFailure(message));
-
         toast.error(message);
-
         throw error;
       }
     },
@@ -60,7 +51,7 @@ export const useSalesInvoice = () => {
       try {
         dispatch(fetchSalesInvoicesStart());
 
-        const res = await getSalesInvoicesService(page, limit);
+        const res = await salesInvoiceService.getSalesInvoicesService(page, limit);
 
         dispatch(
           fetchSalesInvoicesSuccess({
