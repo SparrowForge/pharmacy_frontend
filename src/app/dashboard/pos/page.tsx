@@ -20,7 +20,7 @@ import { InvoicePayload } from "@/src/components/pos/InvoiceData";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { InvoiceModal } from "@/src/components/pos/InvoiceModal";
 import { salesInvoiceService } from "@/src/services/salesInvoice.service";
-
+import { Button } from "@/src/components/ui/button";
 
 interface CartItem {
   product_id: string;
@@ -74,8 +74,59 @@ export default function POSPage() {
 
   // ================= TRANSACTION QUEUE
   // =================
-  // const { transactions, addTransaction, updateStatus, removeTransaction, clearCompleted } =
-  //   useTransactionQueue();
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [activeTransactionIndex, setActiveTransactionIndex] = useState<
+    number | null
+  >(null);
+
+  const handleHoldTransaction = () => {
+    if (cart.length === 0 && !selectedCustomer) {
+      toast.error("Nothing to hold");
+      return;
+    }
+
+    const transaction = {
+      id: Date.now(),
+      cart,
+      selectedCustomer,
+      discountInfo,
+      selectedPaymentMethods,
+      shopId,
+      branchId,
+      saleType,
+    };
+
+    setTransactions((prev) => [...prev, transaction]);
+
+    // reset UI for next customer
+    handleClearCart();
+    setSelectedCustomer(null);
+    setDiscountInfo(null);
+    setActiveTransactionIndex(null);
+
+    toast.success("Transaction saved");
+  };
+
+  const handleResumeTransaction = (index: number) => {
+    const t = transactions[index];
+    if (!t) return;
+
+    setCart(t.cart);
+    setSelectedCustomer(t.selectedCustomer);
+    setDiscountInfo(t.discountInfo);
+    setSelectedPaymentMethods(t.selectedPaymentMethods);
+    setShopId(t.shopId);
+    setBranchId(t.branchId);
+    setSaleType(t.saleType);
+
+    setActiveTransactionIndex(index);
+
+    toast.success("Transaction resumed");
+  };
+
+  const handleRemoveTransaction = (index: number) => {
+    setTransactions((prev) => prev.filter((_, i) => i !== index));
+  };
 
   // ================= HOOKS
   // =================
@@ -93,7 +144,6 @@ export default function POSPage() {
   } = useStockReport();
 
   const { fetchAvailablePurchaseReceiptItems } = usePurchaseOrderReceive();
-  const { createSalesInvoice, salesInvoices } = useSalesInvoice();
 
   // ================= TOTALS
   // =================
@@ -107,18 +157,14 @@ export default function POSPage() {
   const handleAddToCart = async (product: any) => {
     try {
       const existing = cart.find((i) => i.product_id === product.product_id);
-
       const batches = await fetchAvailablePurchaseReceiptItems(
         product.product_id,
       );
-
       const batch = batches?.[0];
-
       if (!batch) {
         toast.error("No batch available");
         return;
       }
-
       if (existing) {
         setCart((prev) =>
           prev.map((i) =>
@@ -129,7 +175,6 @@ export default function POSPage() {
         );
         return;
       }
-
       setCart((prev) => [
         ...prev,
         {
@@ -178,7 +223,6 @@ export default function POSPage() {
     setSelectedPaymentMethods([{ method_id: "", amount: "" }]);
   };
 
-
   // ================= PAYMENT (MULTIPLE METHODS SUPPORT)
   // =================
   const handleCompletePayment = async () => {
@@ -213,7 +257,9 @@ export default function POSPage() {
 
     // Validate for cash sales
     if (saleType === "cash" && totalPaid < total) {
-      toast.error(`Insufficient payment. Need $${(total - totalPaid).toFixed(2)} more.`);
+      toast.error(
+        `Insufficient payment. Need $${(total - totalPaid).toFixed(2)} more.`,
+      );
       return;
     }
 
@@ -258,10 +304,10 @@ export default function POSPage() {
         toast.success("Invoice created successfully");
         setInvoiceData(res);
         setShowInvoice(true);
-        setIsProcessing(false)
+        setIsProcessing(false);
       } else {
         toast.error("Invoice creation failed");
-        setIsProcessing(false)
+        setIsProcessing(false);
       }
     } catch (error: any) {
       console.error("Create Invoice Error:", error);
@@ -269,7 +315,7 @@ export default function POSPage() {
       toast.error(
         error?.message || "Something went wrong while creating invoice",
       );
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
     setTrigger(!trigger);
     handleClearCart();
@@ -319,6 +365,17 @@ export default function POSPage() {
     <div className="flex flex-col gap-4 h-[calc(100vh-7rem)] bg-background h-full overflow-hidden">
       <div className="flex gap-4 flex-1 overflow-hidden">
         <div className="flex-1 flex flex-col gap-4 min-w-0">
+          <div className="flex items-center justify-between p-2 border-b">
+            <h2 className="font-semibold">POS</h2>
+
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={handleHoldTransaction}>
+                Hold Transaction
+              </Button>
+
+              <Button>Queue ({transactions.length})</Button>
+            </div>
+          </div>
           <FiltersSection
             search={search}
             onSearchChange={setSearch}
@@ -407,6 +464,41 @@ export default function POSPage() {
           onOpenChange={setShowInvoice}
           invoice={invoiceData}
         />
+      )}
+
+      {transactions.length > 0 && (
+        <div className="border rounded p-2 space-y-2">
+          <h3 className="font-medium">Held Transactions</h3>
+
+          {transactions.map((t, index) => (
+            <div
+              key={t.id}
+              className="flex justify-between items-center border p-2 rounded"
+            >
+              <div>
+                <p className="text-sm">{t.selectedCustomer?.name || "Guest"}</p>
+                <p className="text-xs text-gray-500">Items: {t.cart.length}</p>
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => handleResumeTransaction(index)}
+                >
+                  Resume
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => handleRemoveTransaction(index)}
+                >
+                  Remove
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
