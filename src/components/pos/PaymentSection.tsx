@@ -16,9 +16,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/components/ui/select";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Plus, Trash2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/src/components/ui/alert";
-import { useSalesInvoice } from "@/src/hooks/useSalesInvoice";
+import { useState } from "react";
 
 interface PaymentMethod {
   id: string;
@@ -26,14 +26,17 @@ interface PaymentMethod {
   icon?: React.ReactNode;
 }
 
+interface PaymentEntry {
+  method_id: string;
+  amount: string;
+}
+
 interface PaymentSectionProps {
   saleType: "credit" | "cash";
   total: number;
   paymentMethods: PaymentMethod[];
-  selectedMethod: string;
-  paidAmount: string;
-  onMethodChange: (method: string) => void;
-  onPaidAmountChange: (amount: string) => void;
+  selectedMethods: PaymentEntry[];
+  onMethodsChange: (methods: PaymentEntry[]) => void;
   onPaymentComplete: () => void;
   isProcessing?: boolean;
 }
@@ -42,21 +45,59 @@ export function PaymentSection({
   saleType,
   total,
   paymentMethods,
-  selectedMethod,
-  paidAmount,
-  onMethodChange,
-  onPaidAmountChange,
+  selectedMethods,
+  onMethodsChange,
   onPaymentComplete,
   isProcessing,
 }: PaymentSectionProps) {
-  const paidAmountNum = parseFloat(paidAmount) || 0;
-  const change = paidAmountNum - total;
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const totalPaid = selectedMethods.reduce(
+    (sum, m) => sum + (parseFloat(m.amount) || 0),
+    0,
+  );
+  const change = totalPaid - total;
+
+  // Validate that at least one payment method is selected
+  const hasPaymentMethod = selectedMethods.some(
+    (m) => m.method_id && parseFloat(m.amount || "0") > 0,
+  );
+
   const isPaymentValid =
     saleType === "credit"
-      ? selectedMethod !== ""
-      : selectedMethod !== "" && paidAmountNum >= total;
+      ? hasPaymentMethod
+      : hasPaymentMethod && totalPaid >= total;
 
-  const { createLoading } = useSalesInvoice();
+  const handleAddPaymentMethod = () => {
+    onMethodsChange([
+      ...selectedMethods,
+      { method_id: "", amount: "" },
+    ]);
+    setErrorMessage("");
+  };
+
+  const handleRemovePaymentMethod = (index: number) => {
+    if (selectedMethods.length === 1) {
+      setErrorMessage("At least one payment method is required");
+      return;
+    }
+
+    const updated = selectedMethods.filter((_, i) => i !== index);
+    onMethodsChange(updated);
+    setErrorMessage("");
+  };
+
+  const handleMethodChange = (index: number, methodId: string) => {
+    const updated = [...selectedMethods];
+    updated[index].method_id = methodId;
+    onMethodsChange(updated);
+  };
+
+  const handleAmountChange = (index: number, amount: string) => {
+    const updated = [...selectedMethods];
+    updated[index].amount = amount;
+    onMethodsChange(updated);
+  };
 
   return (
     <Card className="border-border">
@@ -73,74 +114,111 @@ export function PaymentSection({
           </p>
         </div>
 
-        {/* Payment Method */}
-        <div className="space-y-2">
-          <Label className="text-xs">Payment Method *</Label>
-          <Select value={selectedMethod} onValueChange={onMethodChange}>
-            <SelectTrigger className="h-9 w-full">
-              <SelectValue placeholder="Select payment method" />
-            </SelectTrigger>
-            <SelectContent>
-              {paymentMethods.map((method) => (
-                <SelectItem key={method.id} value={method.id}>
-                  {method.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        {/* Multiple Payment Methods */}
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <Label className="text-xs font-semibold">Payment Methods *</Label>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={handleAddPaymentMethod}
+              className="h-7 text-xs"
+            >
+              <Plus className="w-3 h-3 mr-1" />
+              Add Method
+            </Button>
+          </div>
+
+          {errorMessage && (
+            <Alert className="bg-destructive/10 border-destructive/30 py-2">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="text-xs">
+                {errorMessage}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {selectedMethods.map((payment, index) => (
+            <div
+              key={index}
+              className="flex gap-2 items-end p-3 bg-muted rounded border border-border"
+            >
+              <div className="flex-1 space-y-1">
+                <Label className="text-xs">Method</Label>
+                <Select
+                  value={payment.method_id}
+                  onValueChange={(value) => handleMethodChange(index, value)}
+                >
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue placeholder="Select method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {paymentMethods.map((method) => (
+                      <SelectItem key={method.id} value={method.id}>
+                        {method.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex-1 space-y-1">
+                <Label className="text-xs">Amount</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={payment.amount}
+                  onChange={(e) => handleAmountChange(index, e.target.value)}
+                  className="h-8 text-sm"
+                />
+              </div>
+
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => handleRemovePaymentMethod(index)}
+                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
         </div>
 
-        {/* Paid Amount - Only for cash sales */}
-        {saleType === "cash" && (
-          <>
-            <div className="space-y-2">
-              <Label className="text-xs">Amount Paid *</Label>
-              <Input
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="0.00"
-                value={paidAmount}
-                onChange={(e) => onPaidAmountChange(e.target.value)}
-                className="h-9"
-              />
+        {/* Payment Summary */}
+        <div className="space-y-2 p-3 bg-muted rounded">
+          <div className="flex justify-between text-sm">
+            <span>Total Amount:</span>
+            <span className="font-semibold">${total.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span>Total Paid:</span>
+            <span className="font-semibold">${totalPaid.toFixed(2)}</span>
+          </div>
+          {change !== 0 && (
+            <div
+              className={`flex justify-between text-sm font-semibold ${
+                change >= 0 ? "text-green-600" : "text-destructive"
+              }`}
+            >
+              <span>{change >= 0 ? "Change" : "Shortfall"}:</span>
+              <span>${Math.abs(change).toFixed(2)}</span>
             </div>
+          )}
+        </div>
 
-            {/* Summary */}
-            <div className="space-y-2 p-3 bg-muted rounded">
-              <div className="flex justify-between text-sm">
-                <span>Total:</span>
-                <span className="font-semibold">${total.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Paid:</span>
-                <span className="font-semibold">
-                  ${paidAmountNum.toFixed(2)}
-                </span>
-              </div>
-              {change !== 0 && (
-                <div
-                  className={`flex justify-between text-sm font-semibold ${
-                    change >= 0 ? "text-green-600" : "text-destructive"
-                  }`}
-                >
-                  <span>Change:</span>
-                  <span>${Math.abs(change).toFixed(2)}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Validation Message */}
-            {paidAmountNum > 0 && paidAmountNum < total && (
-              <Alert className="bg-destructive/10 border-destructive/30">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription className="text-xs">
-                  Insufficient payment. Require $
-                  {(total - paidAmountNum).toFixed(2)} more.
-                </AlertDescription>
-              </Alert>
-            )}
-          </>
+        {/* Validation Message for Cash Sales */}
+        {saleType === "cash" && totalPaid > 0 && totalPaid < total && (
+          <Alert className="bg-destructive/10 border-destructive/30">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="text-xs">
+              Insufficient payment. Need ${(total - totalPaid).toFixed(2)} more.
+            </AlertDescription>
+          </Alert>
         )}
 
         {/* Credit Sale Info */}
@@ -159,7 +237,7 @@ export function PaymentSection({
           disabled={!isPaymentValid || isProcessing}
           className="w-full h-10 font-semibold"
         >
-          {isProcessing || isProcessing ? (
+          {isProcessing ? (
             <div className="flex items-center gap-2">
               <span className="animate-spin">⏳</span>
               Completing...

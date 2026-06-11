@@ -21,6 +21,7 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { InvoiceModal } from "@/src/components/pos/InvoiceModal";
 import { salesInvoiceService } from "@/src/services/salesInvoice.service";
 
+
 interface CartItem {
   product_id: string;
   product_batch_id: string;
@@ -35,8 +36,12 @@ interface CartItem {
   name: string;
 }
 
+interface PaymentEntry {
+  method_id: string;
+  amount: string;
+}
+
 export default function POSPage() {
-  const [loading, setLoading] = useState(false);
   const [trigger, setTrigger] = useState(false);
   const [invoiceData, setInvoiceData] = useState({});
   const [showInvoice, setShowInvoice] = useState(false);
@@ -56,15 +61,21 @@ export default function POSPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [discountInfo, setDiscountInfo] = useState<any>(null);
 
-  // ================= PAYMENT (KEEP UI)
+  // ================= PAYMENT (MULTIPLE METHODS SUPPORT)
   // =================
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [paidAmount, setPaidAmount] = useState("");
+  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
+    PaymentEntry[]
+  >([{ method_id: "", amount: "" }]);
   const [isProcessing, setIsProcessing] = useState(false);
 
   // ================= CUSTOMER (KEEP UI)
   // =================
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+
+  // ================= TRANSACTION QUEUE
+  // =================
+  // const { transactions, addTransaction, updateStatus, removeTransaction, clearCompleted } =
+  //   useTransactionQueue();
 
   // ================= HOOKS
   // =================
@@ -164,11 +175,11 @@ export default function POSPage() {
   const handleClearCart = () => {
     setCart([]);
     setDiscountInfo(null);
-    setPaymentMethod("");
-    setPaidAmount("");
+    setSelectedPaymentMethods([{ method_id: "", amount: "" }]);
   };
 
-  // ================= PAYMENT (FIXED PAYLOAD)
+
+  // ================= PAYMENT (MULTIPLE METHODS SUPPORT)
   // =================
   const handleCompletePayment = async () => {
     if (!selectedCustomer) {
@@ -176,8 +187,33 @@ export default function POSPage() {
       return;
     }
 
-    if (!paymentMethod) {
-      toast.error("Select payment method");
+    if (!selectedPaymentMethods.some((m) => m.method_id)) {
+      toast.error("Select at least one payment method");
+      return;
+    }
+
+    // Build payments array from selected methods
+    const payments = selectedPaymentMethods
+      .filter((m) => m.method_id && parseFloat(m.amount) > 0)
+      .map((m) => ({
+        payment_method_id: m.method_id,
+        amount: parseFloat(m.amount) || 0,
+        shop_id: shopId,
+        branch_id: branchId,
+
+        reference_type: "invoice",
+        reference_id: null,
+
+        status: "pending",
+        paid_at: new Date().toISOString(),
+        notes: "",
+      }));
+
+    const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
+
+    // Validate for cash sales
+    if (saleType === "cash" && totalPaid < total) {
+      toast.error(`Insufficient payment. Need $${(total - totalPaid).toFixed(2)} more.`);
       return;
     }
 
@@ -193,26 +229,12 @@ export default function POSPage() {
 
       discount_amount: discountAmount,
       tax_amount: taxAmount,
-      paid_amount: Number(paidAmount) || 0,
+      paid_amount: totalPaid,
 
       invoice_date: new Date().toISOString(),
       notes: "",
 
-      payments: [
-        {
-          payment_method_id: paymentMethod,
-          amount: Number(paidAmount) || 0,
-          shop_id: shopId,
-          branch_id: branchId,
-
-          reference_type: "invoice",
-          reference_id: null,
-
-          status: "pending",
-          paid_at: new Date().toISOString(),
-          notes: "",
-        },
-      ],
+      payments,
 
       items: cart.map((i) => ({
         product_id: i.product_id,
@@ -354,20 +376,27 @@ export default function POSPage() {
                   currentDiscount={discountInfo}
                 />
 
-                {/* PAYMENT (UNCHANGED UI) */}
+                {/* PAYMENT (MULTIPLE METHODS SUPPORT) */}
                 <PaymentSection
                   saleType={saleType as any}
                   total={total}
                   paymentMethods={paymentMethods}
-                  selectedMethod={paymentMethod}
-                  paidAmount={paidAmount}
-                  onMethodChange={setPaymentMethod}
-                  onPaidAmountChange={setPaidAmount}
+                  selectedMethods={selectedPaymentMethods}
+                  onMethodsChange={setSelectedPaymentMethods}
                   onPaymentComplete={handleCompletePayment}
                   isProcessing={isProcessing}
                 />
               </>
             )}
+
+            {/* TRANSACTION QUEUE */}
+            {/* {transactions.length > 0 && (
+              <TransactionQueue
+                transactions={transactions}
+                onRemove={removeTransaction}
+                onClearCompleted={clearCompleted}
+              />
+            )} */}
           </div>
         </ScrollArea>
       </div>
