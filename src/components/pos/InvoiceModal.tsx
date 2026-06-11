@@ -56,7 +56,7 @@ export function InvoiceModal({
             </thead>
 
             <tbody>
-              {invoice.length > 0 &&
+              {invoice?.length > 0 &&
                 invoice?.items.map((item: any) => (
                   <tr key={item.id} className="border-b">
                     <td className="p-2">{item.product_name}</td>

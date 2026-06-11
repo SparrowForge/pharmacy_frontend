@@ -47,37 +47,77 @@ export interface ICreateSalesInvoicePayload {
   items: ISalesInvoiceItem[];
 }
 
-export interface ISalesInvoice {
-  id: string;
 
+export interface ISalesInvoiceResponse {
+  id: string;
+}
+
+
+
+export interface ISalesInvoiceData {
+  id: string;
   invoice_number: string;
+
   customer_id: string;
+  customer_name: string;
 
   shop_id: string;
   branch_id: string;
+  created_by: string;
 
   status: string;
   sale_type: string;
 
-  discount_amount: number;
-  tax_amount: number;
-  paid_amount: number;
+  subtotal: string;
+  tax_amount: string;
+  discount_amount: string;
+
+  total_amount: string;
+  paid_amount: string;
+  due_amount: string;
+  change_amount: string;
 
   invoice_date: string;
+  notes: string;
 
-  notes?: string;
+  item_count: number;
 
   created_at: string;
   updated_at: string;
 }
 
-export interface ISalesInvoicesResponse {
-  entity: "sales_invoices";
+export interface ISalesInvoicesResponses {
+  entity: string;
   page: number;
   limit: number;
   total: number;
-  data: ISalesInvoice[];
+  data: ISalesInvoiceData[];
 }
-export interface ISalesInvoiceResponse {
+
+export interface IGetSalesInvoicesQuery {
+  page?: number;
+  limit?: number;
+  q?: string;
+
+  customer_id?: string;
+
+  status?: string;
+
+  includeDeleted?: boolean;
+}
+
+export interface ISingleSalesInvoiceResponse
+  extends ISalesInvoiceData {}
+
+export interface IDeleteSalesInvoiceResponse {
+  success: boolean;
+  message: string;
   id: string;
+}
+
+export interface ISalesInvoiceState {
+  loading: boolean;
+  error: string | null;
+
+  salesInvoice: ISalesInvoiceData | null;
 }
