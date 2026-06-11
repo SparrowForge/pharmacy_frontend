@@ -27,6 +27,7 @@ import {
   Printer,
   BarChart3,
   TrendingUp,
+  Upload,
 } from "lucide-react";
 import { useProducts } from "@/src/hooks/useProducts";
 import { useProductCategories } from "@/src/hooks/useProductCategories";
@@ -51,6 +52,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useRef } from "react";
+import * as XLSX from "xlsx";
+import { toast } from "sonner";
 
 export default function StockReportPage() {
   const [startDate, setStartDate] = useState("2026-06-01");
@@ -87,6 +91,55 @@ export default function StockReportPage() {
     selectedCategoryId,
   ]);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 📥 EXPORT EXCEL
+  const handleExport = () => {
+    if (!data || data.length === 0) return;
+
+    const exportData = data.map((item: any) => ({
+      "Product Code": item.code,
+      "Product Name": item.name,
+      Category: item.category_name,
+      Barcode: item.barcode,
+      "Opening Stock": item.opening_stock,
+      "Receive Qty": item.receive_qty,
+      "Purchase Return": item.purchase_return_qty,
+      "Sales Qty": item.sales_qty,
+      "Sales Return": item.sales_return_qty,
+      "Closing Stock": item.closing_stock,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Stock Report");
+
+    XLSX.writeFile(workbook, "stock-report.xlsx");
+    toast.success("Downloaded excel file")
+  };
+
+  // 📤 IMPORT EXCEL
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (evt: any) => {
+      const binaryStr = evt.target.result;
+      const workbook = XLSX.read(binaryStr, { type: "binary" });
+
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+
+      const parsedData = XLSX.utils.sheet_to_json(sheet);
+
+      console.log("Imported Excel Data:", parsedData);
+    };
+
+    reader.readAsBinaryString(file);
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -98,13 +151,28 @@ export default function StockReportPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
-            <Printer className="w-4 h-4 mr-2" />
-            Print
+          {/* Import */}
+          <input
+            type="file"
+            accept=".xlsx, .xls"
+            ref={fileInputRef}
+            className="hidden"
+            onChange={handleImport}
+          />
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            Import Excel
           </Button>
-          <Button variant="outline">
+
+          {/* Export */}
+          <Button variant="default" size="sm" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" />
-            Export
+            Download Excel
           </Button>
         </div>
       </div>

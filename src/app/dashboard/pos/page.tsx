@@ -21,6 +21,7 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { InvoiceModal } from "@/src/components/pos/InvoiceModal";
 import { salesInvoiceService } from "@/src/services/salesInvoice.service";
 import { Button } from "@/src/components/ui/button";
+import { SalesWatch } from "@/src/components/pos/SalesWatch";
 
 interface CartItem {
   product_id: string;
@@ -411,6 +412,7 @@ export default function POSPage() {
 
         <ScrollArea className="w-96 h-full overflow-hidden">
           <div className="flex flex-col gap-4 pr-4">
+            <SalesWatch />
             {/* CUSTOMER (UNCHANGED) */}
             <CartSummary
               cart={cart}
