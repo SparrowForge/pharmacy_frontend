@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -85,6 +84,20 @@ export default function CompaniesPage() {
     return () => clearTimeout(timer);
   }, [fetchCompanies]);
 
+  const companyTypeColorMap: Record<string, string> = {
+    customer: "bg-blue-100 text-blue-700",
+    supplier: "bg-green-100 text-green-700",
+    manufacturer: "bg-purple-100 text-purple-700",
+    distributor: "bg-yellow-100 text-yellow-800",
+    pharmacy: "bg-pink-100 text-pink-700",
+    wholesaler: "bg-indigo-100 text-indigo-700",
+    retailer: "bg-orange-100 text-orange-700",
+    doctor: "bg-teal-100 text-teal-700",
+    hospital: "bg-red-100 text-red-700",
+    clinic: "bg-cyan-100 text-cyan-700",
+    other: "bg-gray-100 text-gray-700",
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -157,13 +170,9 @@ export default function CompaniesPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Company</TableHead>
-
                   <TableHead>Contact</TableHead>
-
                   <TableHead>Type</TableHead>
-
                   <TableHead>Status</TableHead>
-
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -177,13 +186,10 @@ export default function CompaniesPage() {
                           <div className="w-10 h-10 bg-primary/10 flex items-center justify-center rounded">
                             <Building2 className="w-5 h-5 text-primary" />
                           </div>
-
                           <div>
                             <p className="font-medium">{company.name}</p>
-
                             <p className="text-xs text-muted-foreground flex items-center gap-1">
                               <MapPin className="w-3 h-3" />
-
                               {company.city || "No city"}
                             </p>
                           </div>
@@ -203,7 +209,13 @@ export default function CompaniesPage() {
                       </TableCell>
 
                       <TableCell>
-                        <Badge className={cn("capitalize")}>
+                        <Badge
+                          className={cn(
+                            "capitalize",
+                            companyTypeColorMap[company.company_type] ||
+                              companyTypeColorMap.other,
+                          )}
+                        >
                           {company.company_type}
                         </Badge>
                       </TableCell>

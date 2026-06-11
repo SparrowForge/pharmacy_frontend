@@ -154,50 +154,29 @@ export default function CompanyDialogueForm({
 
         setForm({
           company_type: res.company_type ?? "",
-
           name: res.name ?? "",
           code: res.code ?? "",
-
           contact_person: res.contact_person ?? "",
-
           email: res.email ?? "",
           phone: res.phone ?? "",
-
           website: res.website ?? "",
-
           address: res.address ?? "",
           city: res.city ?? "",
-
           postal_code: res.postal_code ?? "",
-
           country_id: res.country_id ?? "",
-
           division_id: res.division_id ?? "",
-
           district_id: res.district_id ?? "",
-
           thana_id: res.thana_id ?? "",
-
           route_id: res.route_id ?? "",
-
           line_id: res.line_id ?? "",
-
           established_year: res.established_year ?? new Date().getFullYear(),
-
           credit_limit: res.credit_limit ?? 0,
-
           payment_terms: res.payment_terms ?? "",
-
           lead_time_days: res.lead_time_days ?? 0,
-
           loyalty_points: res.loyalty_points ?? 0,
-
           total_orders: res.total_orders ?? 0,
-
           total_spent: res.total_spent ?? 0,
-
           status: res.status ?? "active",
-
           notes: res.notes ?? "",
         });
 
@@ -219,18 +198,43 @@ export default function CompanyDialogueForm({
 
   const validate = () => {
     if (!form.company_type) return "Company type is required";
-
     if (!form.name) return "Company name is required";
-
-    if (!form.code) return "Company code is required";
-
-    if (!form.contact_person) return "Contact person is required";
-
-    if (!form.email) return "Email is required";
-
     if (!form.phone) return "Phone is required";
-
     return null;
+  };
+
+  const buildPayload = (): any => {
+    const payload: Record<string, any> = {};
+
+    // Always include mandatory fields
+    payload.company_type = form.company_type;
+    payload.name = form.name;
+    payload.phone = form.phone;
+
+    // Include optional fields only if they have values
+    if (form.code) payload.code = form.code;
+    if (form.contact_person) payload.contact_person = form.contact_person;
+    if (form.email) payload.email = form.email;
+    if (form.website) payload.website = form.website;
+    if (form.address) payload.address = form.address;
+    if (form.city) payload.city = form.city;
+    if (form.postal_code) payload.postal_code = form.postal_code;
+    if (form.country_id) payload.country_id = form.country_id;
+    if (form.division_id) payload.division_id = form.division_id;
+    if (form.district_id) payload.district_id = form.district_id;
+    if (form.thana_id) payload.thana_id = form.thana_id;
+    if (form.route_id) payload.route_id = form.route_id;
+    if (form.line_id) payload.line_id = form.line_id;
+    if (form.established_year !== new Date().getFullYear()) {
+      payload.established_year = form.established_year;
+    }
+    if (form.credit_limit > 0) payload.credit_limit = form.credit_limit;
+    if (form.payment_terms) payload.payment_terms = form.payment_terms;
+    if (form.lead_time_days > 0) payload.lead_time_days = form.lead_time_days;
+    if (form.status !== "active") payload.status = form.status;
+    if (form.notes) payload.notes = form.notes;
+
+    return payload;
   };
 
   const handleSubmit = async () => {
@@ -243,12 +247,12 @@ export default function CompanyDialogueForm({
     }
 
     try {
+      const payload = buildPayload();
       if (isEditMode && companyId) {
-        await updateCompany(companyId, form);
-
+        await updateCompany(companyId, payload);
         toast.success("Company updated successfully");
       } else {
-        await createCompany(form);
+        await createCompany(payload);
 
         toast.success("Company created successfully");
       }
@@ -321,7 +325,7 @@ export default function CompanyDialogueForm({
             />
           </div>
           <div className="space-y-2">
-            <Label>Code *</Label>
+            <Label>Code</Label>
 
             <Input
               value={form.code}
@@ -330,7 +334,7 @@ export default function CompanyDialogueForm({
             />
           </div>
           <div className="space-y-2">
-            <Label>Contact Person *</Label>
+            <Label>Contact Person</Label>
 
             <Input
               value={form.contact_person}
@@ -339,7 +343,7 @@ export default function CompanyDialogueForm({
             />
           </div>
           <div className="space-y-2">
-            <Label>Email *</Label>
+            <Label>Email</Label>
 
             <Input
               type="email"

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/src/lib/utils";
 import { Button } from "@/src/components/ui/button";
 import { ScrollArea } from "@/src/components/ui/scroll-area";
@@ -30,20 +30,23 @@ import {
   Command,
 } from "lucide-react";
 
-interface SidebarProps {
-  isCollapsed: boolean;
-  onToggle: () => void;
-}
+/* -------------------- TYPES (FIX FOR "never" ERROR) -------------------- */
+
+type MenuItem = {
+  title: string;
+  icon: any;
+  href?: string;
+  children?: MenuItem[];
+};
 
 /* -------------------- MENU TREE -------------------- */
 
-const menu = [
+const menu: MenuItem[] = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
     href: "/dashboard",
   },
-
   {
     title: "Sales",
     icon: ShoppingCart,
@@ -53,7 +56,6 @@ const menu = [
       { title: "Sales Return", href: "/dashboard/returns", icon: RotateCcw },
     ],
   },
-
   {
     title: "Purchase",
     icon: ClipboardList,
@@ -64,10 +66,13 @@ const menu = [
         icon: ClipboardList,
       },
       { title: "Receive", href: "/dashboard/purchase-receive", icon: Package },
-      { title: "Purchase Return", href: "/dashboard/purchase-return", icon: RotateCcw },
+      {
+        title: "Purchase Return",
+        href: "/dashboard/purchase-return",
+        icon: RotateCcw,
+      },
     ],
   },
-
   {
     title: "Inventory",
     icon: Package,
@@ -77,48 +82,17 @@ const menu = [
         href: "/dashboard/product-category",
         icon: PackageOpen,
       },
-
-      {
-        title: "Brand",
-        href: "/dashboard/product-brand",
-        icon: PackageOpen,
-      },
+      { title: "Brand", href: "/dashboard/product-brand", icon: PackageOpen },
       { title: "Products", href: "/dashboard/medicines", icon: PackageOpen },
-
-      {
-        title: "Unit",
-        href: "/dashboard/product-units",
-        icon: PackageOpen,
-      },
-      {
-        title: "Badge",
-        href: "/dashboard/product-badge",
-        icon: PackageOpen,
-      },
-      {
-        title: "Tag",
-        href: "/dashboard/product-tag",
-        icon: PackageOpen,
-      },
-      {
-        title: "Image",
-        href: "/dashboard/product-image",
-        icon: PackageOpen,
-      },
-      {
-        title: "Batch",
-        href: "/dashboard/product-batch",
-        icon: PackageOpen,
-      },
-      {
-        title: "Offers",
-        href: "/dashboard/product-offers",
-        icon: PackageOpen,
-      },
+      { title: "Unit", href: "/dashboard/product-units", icon: PackageOpen },
+      { title: "Badge", href: "/dashboard/product-badge", icon: PackageOpen },
+      { title: "Tag", href: "/dashboard/product-tag", icon: PackageOpen },
+      { title: "Image", href: "/dashboard/product-image", icon: PackageOpen },
+      { title: "Batch", href: "/dashboard/product-batch", icon: PackageOpen },
+      { title: "Offers", href: "/dashboard/product-offers", icon: PackageOpen },
       { title: "Pricing", href: "/dashboard/pricing", icon: DollarSign },
     ],
   },
-
   {
     title: "People",
     icon: Users,
@@ -132,26 +106,13 @@ const menu = [
       },
     ],
   },
-
   {
     title: "Settings",
     icon: Settings,
     children: [
-      {
-        title: "Company",
-        href: "/dashboard/company",
-        icon: Home,
-      },
-      {
-        title: "Shops",
-        href: "/dashboard/shops",
-        icon: ShoppingBagIcon,
-      },
-      {
-        title: "Branch",
-        href: "/dashboard/branch",
-        icon: ShoppingCartIcon,
-      },
+      { title: "Company", href: "/dashboard/company", icon: Home },
+      { title: "Shops", href: "/dashboard/shops", icon: ShoppingBagIcon },
+      { title: "Branch", href: "/dashboard/branch", icon: ShoppingCartIcon },
       {
         title: "Discount Codes",
         href: "/dashboard/discount-codes",
@@ -162,7 +123,6 @@ const menu = [
         href: "/dashboard/payment-methods",
         icon: DollarSign,
       },
-
       {
         title: "General Settings",
         href: "/dashboard/settings",
@@ -175,59 +135,33 @@ const menu = [
     title: "General",
     icon: Command,
     children: [
-      {
-        title: "Countries",
-        href: "/dashboard/country",
-        icon: Home,
-      },
-      {
-        title: "Divisions",
-        href: "/dashboard/division",
-        icon: Home,
-      },
-      {
-        title: "Districts",
-        href: "/dashboard/districts",
-        icon: Home,
-      },
-      {
-        title: "Thanas",
-        href: "/dashboard/thanas",
-        icon: Home,
-      },
-      {
-        title: "Regions",
-        href: "/dashboard/regions",
-        icon: Home,
-      },
-      {
-        title: "Zones",
-        href: "/dashboard/zone",
-        icon: Home,
-      },
-      {
-        title: "Routes",
-        href: "/dashboard/route",
-        icon: Home,
-      },
-      {
-        title: "Lines",
-        href: "/dashboard/line",
-        icon: Home,
-      },
+      { title: "Countries", href: "/dashboard/country", icon: Home },
+      { title: "Divisions", href: "/dashboard/division", icon: Home },
+      { title: "Districts", href: "/dashboard/districts", icon: Home },
+      { title: "Thanas", href: "/dashboard/thanas", icon: Home },
+      { title: "Regions", href: "/dashboard/regions", icon: Home },
+      { title: "Zones", href: "/dashboard/zone", icon: Home },
+      { title: "Routes", href: "/dashboard/route", icon: Home },
+      { title: "Lines", href: "/dashboard/line", icon: Home },
     ],
   },
   {
     title: "Reports",
     icon: ChartAreaIcon,
-    href: "/reports",
+    href: "/dashboard/reports",
   },
 ];
 
 /* -------------------- COMPONENT -------------------- */
 
+interface SidebarProps {
+  isCollapsed: boolean;
+  onToggle: () => void;
+}
+
 export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [openMenus, setOpenMenus] = useState<string[]>([]);
 
   const toggleMenu = (title: string) => {
@@ -258,49 +192,68 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           {menu.map((item) => {
             const isOpen = openMenus.includes(item.title);
             const Icon = item.icon;
-
             const hasChildren = !!item.children;
+
+            const isActive =
+              "href" in item && item.href ? pathname === item.href : false;
 
             return (
               <div key={item.title}>
                 {/* PARENT */}
-                <button
-                  onClick={() => hasChildren && toggleMenu(item.title)}
-                  className={cn(
-                    "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium hover:bg-muted",
-                    pathname === item.href &&
-                      "bg-primary text-primary-foreground",
-                  )}
-                >
-                  <div className="flex items-center gap-3">
+                {hasChildren ? (
+                  <button
+                    onClick={() => {
+                      toggleMenu(item.title);
+
+                      if ("href" in item && item.href) {
+                        router.push(item.href);
+                      }
+                    }}
+                    className={cn(
+                      "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium hover:bg-muted",
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className="w-5 h-5" />
+                      {!isCollapsed && <span>{item.title}</span>}
+                    </div>
+
+                    {!isCollapsed && (
+                      <ChevronDown
+                        className={cn(
+                          "w-4 h-4 transition-transform",
+                          isOpen && "rotate-180",
+                        )}
+                      />
+                    )}
+                  </button>
+                ) : (
+                  <Link
+                    href={item.href!}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium hover:bg-muted",
+                      isActive && "bg-primary text-primary-foreground",
+                    )}
+                  >
                     <Icon className="w-5 h-5" />
                     {!isCollapsed && <span>{item.title}</span>}
-                  </div>
-
-                  {!isCollapsed && hasChildren && (
-                    <ChevronDown
-                      className={cn(
-                        "w-4 h-4 transition-transform",
-                        isOpen && "rotate-180",
-                      )}
-                    />
-                  )}
-                </button>
+                  </Link>
+                )}
 
                 {/* CHILDREN */}
                 {hasChildren && isOpen && !isCollapsed && (
                   <div className="ml-6 mt-1 space-y-1 border-l pl-3">
-                    {item.children.map((child) => {
+                    {item.children!.map((child) => {
                       const ChildIcon = child.icon;
-                      const isActive = pathname === child.href;
+                      const childActive = pathname === child.href;
 
                       return (
                         <Link
                           key={child.href}
-                          href={child.href}
+                          href={child.href!}
                           className={cn(
                             "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
-                            isActive
+                            childActive
                               ? "bg-primary text-primary-foreground"
                               : "text-muted-foreground hover:text-foreground hover:bg-muted",
                           )}

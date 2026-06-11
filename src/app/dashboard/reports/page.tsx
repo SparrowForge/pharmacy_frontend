@@ -252,81 +252,6 @@ export default function StockReportPage() {
         </div>
       )}
 
-      {data && data.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Stock Movement Bar Chart */}
-          <Card className="border-border">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5" />
-                Stock Movement Overview
-              </CardTitle>
-              <CardDescription>
-                Summary of all stock movements across products
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart
-                  data={[
-                    {
-                      name: "Overview",
-                      opening: totals?.opening_stock || 0,
-                      receive: totals?.receive_qty || 0,
-                      sales: totals?.sales_qty || 0,
-                      closing: totals?.closing_stock || 0,
-                    },
-                  ]}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="opening" fill="#8b5cf6" name="Opening Stock" />
-                  <Bar dataKey="receive" fill="#10b981" name="Received" />
-                  <Bar dataKey="sales" fill="#ef4444" name="Sales" />
-                  <Bar dataKey="closing" fill="#3b82f6" name="Closing Stock" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          {/* Product Stock Status Chart */}
-          <Card className="border-border">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" />
-                Top Products by Stock
-              </CardTitle>
-              <CardDescription>
-                Top 5 products by closing stock quantity
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* <ResponsiveContainer width="100%" height={300}>
-                <BarChart
-                  data={data
-                    ?.sort((a, b) => b.closing_stock - a.closing_stock)
-                    .slice(0, 5)
-                    .map((item) => ({
-                      name: item.name.substring(0, 15),
-                      stock: item.closing_stock,
-                    }))}
-                  layout="vertical"
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis dataKey="name" type="category" width={100} />
-                  <Tooltip />
-                  <Bar dataKey="stock" fill="#06b6d4" name="Stock Level" />
-                </BarChart>
-              </ResponsiveContainer> */}
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
       {/* Stock Report Table */}
       <Card className="border-border">
         <CardHeader>
@@ -426,6 +351,81 @@ export default function StockReportPage() {
           )}
         </CardContent>
       </Card>
+
+      {data && data.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+          {/* Stock Movement Bar Chart */}
+          <Card className="border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5" />
+                Stock Movement Overview
+              </CardTitle>
+              <CardDescription>
+                Summary of all stock movements across products
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart
+                  data={[
+                    {
+                      name: "Overview",
+                      opening: totals?.opening_stock || 0,
+                      receive: totals?.receive_qty || 0,
+                      sales: totals?.sales_qty || 0,
+                      closing: totals?.closing_stock || 0,
+                    },
+                  ]}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="opening" fill="#8b5cf6" name="Opening Stock" />
+                  <Bar dataKey="receive" fill="#10b981" name="Received" />
+                  <Bar dataKey="sales" fill="#ef4444" name="Sales" />
+                  <Bar dataKey="closing" fill="#3b82f6" name="Closing Stock" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Product Stock Status Chart */}
+          {/* <Card className="border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5" />
+                Top Products by Stock
+              </CardTitle>
+              <CardDescription>
+                Top 5 products by closing stock quantity
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart
+                  data={data
+                    ?.sort((a, b) => b.closing_stock - a.closing_stock)
+                    .slice(0, 5)
+                    .map((item) => ({
+                      name: item.name.substring(0, 15),
+                      stock: item.closing_stock,
+                    }))}
+                  layout="vertical"
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis type="number" />
+                  <YAxis dataKey="name" type="category" width={100} />
+                  <Tooltip />
+                  <Bar dataKey="stock" fill="#06b6d4" name="Stock Level" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card> */}
+        </div>
+      )}
     </div>
   );
 }
