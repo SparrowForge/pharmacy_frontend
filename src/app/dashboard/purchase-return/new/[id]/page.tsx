@@ -41,7 +41,7 @@ export default function PurchaseOrderReturnForm() {
     singlePurchaseOrderLoading,
   } = usePurchaseOrders();
   const { createPurchaseReturn, createLoading } = usePurchaseReturn();
-  const { returnPurchaseStatuses, fetchReturnPurchaseStatuses } = useEnum();
+  const { returnStatuses, fetchReturnStatuses } = useEnum();
   const { batches, fetchProductBatches } = useProductBatches();
   const [formData, setFormData] = useState<ICreatePurchaseReturnPayload>({
     return_number: "",
@@ -53,11 +53,11 @@ export default function PurchaseOrderReturnForm() {
   });
 
   useEffect(() => {
-    fetchReturnPurchaseStatuses();
+    fetchReturnStatuses();
     if (id) {
       fetchSinglePurchaseOrder(String(id));
     }
-  }, [id, fetchReturnPurchaseStatuses, fetchSinglePurchaseOrder]);
+  }, [id, fetchReturnStatuses, fetchSinglePurchaseOrder]);
 
   useEffect(() => {
     if (!singlePurchaseOrder?.items?.length) return;
@@ -182,7 +182,7 @@ export default function PurchaseOrderReturnForm() {
             </SelectTrigger>
 
             <SelectContent>
-              {returnPurchaseStatuses.map((status: string) => (
+              {returnStatuses.map((status: string) => (
                 <SelectItem key={status} value={status}>
                   {status}
                 </SelectItem>

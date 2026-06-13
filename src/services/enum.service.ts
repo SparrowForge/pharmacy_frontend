@@ -1,8 +1,18 @@
-import { ICompanyTypeEnumResponse, IPaymentMethodTypeResponse, IProductUnitTypeResponse, IPurchaseOrderStatusResponse, ISalesStatusEnumTypeResponse, IShopPlanEnumResponse, IPaymentStatusResponse, IReturnPurchase, ISaleTypes, IDiscountTypes} from "../types/enum.types";
+import {
+  ICompanyTypeEnumResponse,
+  IPaymentMethodTypeResponse,
+  IProductUnitTypeResponse,
+  IPurchaseOrderStatusResponse,
+  ISalesStatusEnumTypeResponse,
+  IShopPlanEnumResponse,
+  IPaymentStatusResponse,
+  IReturnPurchase,
+  ISaleTypes,
+  IDiscountTypes,
+} from "../types/enum.types";
 import axiosInstance from "./axios";
 
 const getShopPlansService = async (): Promise<IShopPlanEnumResponse> => {
-
   const response = await axiosInstance.get("/datatypes/_shop_plan");
   return response.data;
 };
@@ -15,7 +25,7 @@ const getCompanyTypeService = async (): Promise<ICompanyTypeEnumResponse> => {
 /* ================= GET PRODUCT UNIT TYPES ================= */
 const getProductUnitTypes = async (): Promise<IProductUnitTypeResponse> => {
   const res = await axiosInstance.get<IProductUnitTypeResponse>(
-    "/datatypes/product_unit_type"
+    "/datatypes/product_unit_type",
   );
 
   return res.data;
@@ -23,7 +33,7 @@ const getProductUnitTypes = async (): Promise<IProductUnitTypeResponse> => {
 /* ================= GET SALES STATUS TYPES ================= */
 const getSalesStatus = async (): Promise<ISalesStatusEnumTypeResponse> => {
   const res = await axiosInstance.get<ISalesStatusEnumTypeResponse>(
-    "/datatypes/sales_status"
+    "/datatypes/sales_status",
   );
 
   return res.data;
@@ -31,34 +41,35 @@ const getSalesStatus = async (): Promise<ISalesStatusEnumTypeResponse> => {
 /* ================= GET SALES STATUS TYPES ================= */
 const getPaymentMethodTypes = async (): Promise<IPaymentMethodTypeResponse> => {
   const res = await axiosInstance.get<IPaymentMethodTypeResponse>(
-    "/datatypes/payment_method_type"
+    "/datatypes/payment_method_type",
   );
 
   return res.data;
 };
 
 /* ================= GET SALES STATUS TYPES ================= */
-const getPurchaseOrderStatuses = async (): Promise<IPurchaseOrderStatusResponse> => {
-  const res = await axiosInstance.get<IPurchaseOrderStatusResponse>(
-    "/datatypes/purchase_order_status"
-  );
+const getPurchaseOrderStatuses =
+  async (): Promise<IPurchaseOrderStatusResponse> => {
+    const res = await axiosInstance.get<IPurchaseOrderStatusResponse>(
+      "/datatypes/purchase_order_status",
+    );
 
-  return res.data;
-};
+    return res.data;
+  };
 
 /* ================= GET SALES STATUS TYPES ================= */
 const getPaymentStatuses = async (): Promise<IPaymentStatusResponse> => {
   const res = await axiosInstance.get<IPaymentStatusResponse>(
-    "/datatypes/payment_status"
+    "/datatypes/payment_status",
   );
 
   return res.data;
 };
 
 /* ================= GET SALES STATUS TYPES ================= */
-const getReturnPurchaseStatuses = async (): Promise<IReturnPurchase> => {
+const getReturnStatuses = async (): Promise<IReturnPurchase> => {
   const res = await axiosInstance.get<IReturnPurchase>(
-    "/datatypes/return_status"
+    "/datatypes/return_status",
   );
 
   return res.data;
@@ -66,9 +77,7 @@ const getReturnPurchaseStatuses = async (): Promise<IReturnPurchase> => {
 
 /* ================= GET SALE TYPES ================= */
 const getSaleTypes = async (): Promise<ISaleTypes> => {
-  const res = await axiosInstance.get<ISaleTypes>(
-    "/datatypes/sale_type"
-  );
+  const res = await axiosInstance.get<ISaleTypes>("/datatypes/sale_type");
 
   return res.data;
 };
@@ -76,7 +85,7 @@ const getSaleTypes = async (): Promise<ISaleTypes> => {
 /* ================= GET DISCOUNT TYPES ================= */
 const getDiscountTypes = async (): Promise<IDiscountTypes> => {
   const res = await axiosInstance.get<IDiscountTypes>(
-    "/datatypes/discount_type"
+    "/datatypes/discount_type",
   );
 
   return res.data;
@@ -90,7 +99,7 @@ export const enumServices = {
   getPaymentMethodTypes,
   getPurchaseOrderStatuses,
   getPaymentStatuses,
-  getReturnPurchaseStatuses,
+  getReturnStatuses,
   getSaleTypes,
   getDiscountTypes,
 };

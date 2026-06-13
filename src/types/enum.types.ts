@@ -56,7 +56,7 @@ export interface IEnumbState {
   paymentMethodTypes: string[];
   purchaseOrderStatuses: string[];
   paymentStatuses: string[];
-  returnPurchaseStatuses: string[];
+  returnStatuses: string[];
   saleTypes: string[];
   discountTypes: string[];
 }

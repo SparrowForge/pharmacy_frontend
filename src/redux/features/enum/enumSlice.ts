@@ -12,7 +12,7 @@ const initialState: IEnumbState = {
   paymentMethodTypes: [],
   purchaseOrderStatuses: [],
   paymentStatuses: [],
-  returnPurchaseStatuses: [],
+  returnStatuses: [],
   saleTypes: [],
   discountTypes: [],
 };
@@ -91,7 +91,7 @@ const enumbSlice = createSlice({
       state.error = action.payload;
     },
 
-     /* ================= FETCH START ================= */
+    /* ================= FETCH START ================= */
     fetchPaymentMethodTypeStart: (state) => {
       state.loading = true;
       state.error = null;
@@ -115,12 +115,18 @@ const enumbSlice = createSlice({
       state.error = null;
     },
 
-    fetchPurchaseOrderStatusesSuccess: (state, action: PayloadAction<string[]>) => {
+    fetchPurchaseOrderStatusesSuccess: (
+      state,
+      action: PayloadAction<string[]>,
+    ) => {
       state.loading = false;
       state.purchaseOrderStatuses = action.payload;
     },
 
-    fetchPurchaseOrderStatusesFailure: (state, action: PayloadAction<string>) => {
+    fetchPurchaseOrderStatusesFailure: (
+      state,
+      action: PayloadAction<string>,
+    ) => {
       state.loading = false;
       state.error = action.payload;
     },
@@ -141,25 +147,23 @@ const enumbSlice = createSlice({
       state.error = action.payload;
     },
 
-
     /* ================= FETCH RETURN PURCHASE STATUSES ================= */
-    fetchReturnPurchaseStatusesStart: (state) => {
+    fetchReturnStatusesStart: (state) => {
       state.loading = true;
       state.error = null;
     },
 
-    fetchReturnPurchaseStatusesSuccess: (state, action: PayloadAction<string[]>) => {
+    fetchReturnStatusesSuccess: (state, action: PayloadAction<string[]>) => {
       state.loading = false;
-      state.returnPurchaseStatuses = action.payload;
+      state.returnStatuses = action.payload;
     },
 
-    fetchReturnPurchaseStatusesFailure: (state, action: PayloadAction<string>) => {
+    fetchReturnStatusesFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
       state.error = action.payload;
     },
 
-
-      /* ================= FETCH SALE TYPES ================= */  
+    /* ================= FETCH SALE TYPES ================= */
     fetchSaleTypesStart: (state) => {
       state.loading = true;
       state.error = null;
@@ -174,7 +178,6 @@ const enumbSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-
 
     fetchDiscountTypesStart: (state) => {
       state.loading = true;
@@ -226,9 +229,9 @@ export const {
   fetchPaymentStatusesSuccess,
   fetchPaymentStatusesFailure,
 
-  fetchReturnPurchaseStatusesStart,
-  fetchReturnPurchaseStatusesSuccess,
-  fetchReturnPurchaseStatusesFailure,
+  fetchReturnStatusesStart,
+  fetchReturnStatusesSuccess,
+  fetchReturnStatusesFailure,
 
   fetchSaleTypesStart,
   fetchSaleTypesSuccess,

@@ -53,7 +53,7 @@ const menu: MenuItem[] = [
     children: [
       { title: "POS", href: "/dashboard/pos", icon: ShoppingCart },
       { title: "Invoice", href: "/dashboard/invoices", icon: FileText },
-      { title: "Sales Return", href: "/dashboard/returns", icon: RotateCcw },
+      { title: "Sales Return", href: "/dashboard/sales-returns", icon: RotateCcw },
     ],
   },
   {

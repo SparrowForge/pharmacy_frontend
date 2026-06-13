@@ -21,9 +21,9 @@ import {
   fetchPurchaseOrderStatusesFailure,
   fetchPurchaseOrderStatusesStart,
   fetchPurchaseOrderStatusesSuccess,
-  fetchReturnPurchaseStatusesFailure,
-  fetchReturnPurchaseStatusesStart,
-  fetchReturnPurchaseStatusesSuccess,
+  fetchReturnStatusesFailure,
+  fetchReturnStatusesStart,
+  fetchReturnStatusesSuccess,
   fetchSalesSattusFailure,
   fetchSalesStatusStart,
   fetchSalesStatusSuccess,
@@ -189,14 +189,14 @@ export const useEnum = () => {
   }, [dispatch]);
 
   /* ================= FETCH ================= */
-  const fetchReturnPurchaseStatuses = useCallback(async () => {
+  const fetchReturnStatuses = useCallback(async () => {
     try {
-      dispatch(fetchReturnPurchaseStatusesStart());
+      dispatch(fetchReturnStatusesStart());
 
-      const res = await enumServices.getReturnPurchaseStatuses();
+      const res = await enumServices.getReturnStatuses();
       console.log(res);
 
-      dispatch(fetchReturnPurchaseStatusesSuccess(res.values));
+      dispatch(fetchReturnStatusesSuccess(res.values));
 
       return res.values;
     } catch (error: any) {
@@ -204,7 +204,7 @@ export const useEnum = () => {
         error?.response?.data?.message ||
         "Failed to fetch return purchase statuses";
 
-      dispatch(fetchReturnPurchaseStatusesFailure(message));
+      dispatch(fetchReturnStatusesFailure(message));
 
       toast.error(message);
 
@@ -281,8 +281,8 @@ export const useEnum = () => {
     paymentStatuses: enumb.paymentStatuses,
     fetchPaymentStatuses,
 
-    returnPurchaseStatuses: enumb.returnPurchaseStatuses,
-    fetchReturnPurchaseStatuses,
+    returnStatuses: enumb.returnStatuses,
+    fetchReturnStatuses,
 
     saleTypes: enumb.saleTypes,
     fetchSaleTypes,

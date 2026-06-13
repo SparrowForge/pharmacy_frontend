@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { Search, FileText, Edit, Trash2, MoreHorizontal } from "lucide-react";
+import { Search, FileText, Edit, Trash2, MoreHorizontal, LucideHopOff } from "lucide-react";
 
 import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
@@ -45,6 +45,7 @@ import { useSalesInvoice } from "@/src/hooks/useSalesInvoice";
 import { useCompanies } from "@/src/hooks/useCompanies";
 import SalesInvoiceDialogForm from "@/src/components/invoices/SalesInvoiceDialogForm";
 import { InvoiceModal } from "@/src/components/pos/InvoiceModal";
+import Link from "next/link";
 
 export default function SalesInvoicesPage() {
   const [page, setPage] = useState(initialPage);
@@ -267,6 +268,14 @@ export default function SalesInvoicesPage() {
                             <FileText className="w-4 h-4 mr-2" />
                             Print Invoice
                           </DropdownMenuItem>
+                          <Link
+                            href={`/dashboard/sales-returns/new/${invoice.id}`}
+                          >
+                            <DropdownMenuItem>
+                              <LucideHopOff className="w-4 h-4 mr-2" />
+                              Return Sale
+                            </DropdownMenuItem>
+                          </Link>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
