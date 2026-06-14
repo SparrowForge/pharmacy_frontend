@@ -66,21 +66,13 @@ export default function CompanyDialogueForm({
   } = useCompanies();
 
   const { countries, fetchCountries } = useCountries();
-
   const { divisions, fetchDivisions } = useDivisions();
-
   const { districts, fetchDistricts } = useDistricts();
-
   const { thanas, fetchThanas } = useThanas();
-
   const { regions, fetchRegions } = useRegions();
-
   const { zones, fetchZones } = useZones();
-
   const { routes, fetchRoutes } = useRoutes();
-
   const { lines, fetchLines } = useLines();
-
   const { companyTypes, getCompanyTypes } = useEnum();
 
   useEffect(() => {
@@ -254,7 +246,7 @@ export default function CompanyDialogueForm({
       } else {
         await createCompany(payload);
 
-        toast.success("Company created successfully");
+        // toast.success("Company created successfully");
       }
 
       setForm(initialFormState);
