@@ -140,7 +140,7 @@ export default function PurchaseOrderForm({
       return;
     }
 
-    const product = products.find((p) => p.id === selectedMedicine);
+    const product = products.find((p) => p.id === selectedMedicine.id);
 
     if (!product) {
       toast.error("Product not found");
@@ -160,7 +160,8 @@ export default function PurchaseOrderForm({
       return;
     }
 
-    const newItem: IPurchaseOrderItem = {
+    const newItem = {
+      name:product.name,
       product_id: product.id,
 
       product_batch_id: null, // or null if backend allows
@@ -422,7 +423,7 @@ export default function PurchaseOrderForm({
             <CardContent className="space-y-4">
               <div className="grid sm:grid-cols-4 gap-3">
                 <div className="space-y-2">
-                  <Label htmlFor="medicine">Medicine *</Label>
+                  <Label htmlFor="medicine">Medicine*</Label>
                   <Select
                     value={selectedMedicine}
                     onValueChange={setSelectedMedicine}
@@ -432,7 +433,7 @@ export default function PurchaseOrderForm({
                     </SelectTrigger>
                     <SelectContent>
                       {products.map((med) => (
-                        <SelectItem key={med.id} value={med.id}>
+                        <SelectItem key={med.id} value={med}>
                           {med.name}
                         </SelectItem>
                       ))}
@@ -498,7 +499,7 @@ export default function PurchaseOrderForm({
                       {lineItems.map((item, index) => (
                         <TableRow key={item.product_id}>
                           <TableCell>
-                            <p className="font-medium">{item.product_id}</p>
+                            <p className="font-medium">{item?.name}</p>
                           </TableCell>
                           <TableCell className="text-right">
                             {item.quantity_purchase}

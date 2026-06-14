@@ -51,6 +51,7 @@ export function PaymentSection({
   isProcessing,
 }: PaymentSectionProps) {
   const [errorMessage, setErrorMessage] = useState("");
+  const isFreeOrder = total <= 0;
 
   const totalPaid = selectedMethods.reduce(
     (sum, m) => sum + (parseFloat(m.amount) || 0),
@@ -64,15 +65,17 @@ export function PaymentSection({
   );
 
   const isPaymentValid =
-    saleType === "credit"
-      ? hasPaymentMethod
-      : hasPaymentMethod && totalPaid >= total;
+    isFreeOrder ||
+    (saleType === "credit"
+      ? selectedMethods.some(
+          (m) => m.method_id && parseFloat(m.amount || "0") >= 0,
+        )
+      : selectedMethods.some(
+          (m) => m.method_id && parseFloat(m.amount || "0") > 0,
+        ) && totalPaid >= total);
 
   const handleAddPaymentMethod = () => {
-    onMethodsChange([
-      ...selectedMethods,
-      { method_id: "", amount: "" },
-    ]);
+    onMethodsChange([...selectedMethods, { method_id: "", amount: "" }]);
     setErrorMessage("");
   };
 
