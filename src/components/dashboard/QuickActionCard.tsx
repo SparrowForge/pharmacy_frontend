@@ -14,8 +14,8 @@ import { ArrowRight, Plus, Package, ShoppingCart, Users } from "lucide-react";
 const quickActions = [
   { label: "New Sale", href: "/dashboard/pos", icon: Plus },
   { label: "Add Medicine", href: "/dashboard/medicines/new", icon: Package },
-  { label: "New Order", href: "/dashboard/orders/new", icon: ShoppingCart },
-  { label: "Add Customer", href: "/dashboard/customers/new", icon: Users },
+  { label: "New Order", href: "/dashboard/purchase-orders/new", icon: ShoppingCart },
+  { label: "Add Customer", href: "/dashboard/company", icon: Users },
 ];
 
 export function QuickActionsCard() {
