@@ -30,6 +30,7 @@ import salesInvoiceReducer from "./features/sales-invoices/salesInvoiceSlice";
 import discountCodeReducer from "./features/discount-codes/discountCodeSlice";
 import paymentMethodReducer from "./features/payment-methods/paymentMethodSlice";
 import salesReturnReducer from "./features/sales-invoices/salesReurnSlice";
+import dashboardReducer from "./features/dashboard/dashboardSlice";
 
 export const store = configureStore({
   reducer: {
@@ -64,6 +65,7 @@ export const store = configureStore({
     discountCodes: discountCodeReducer,
     paymentMethods: paymentMethodReducer,
     salesReturns: salesReturnReducer,
+    dashboardData: dashboardReducer,
   },
 });
 
