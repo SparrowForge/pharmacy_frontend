@@ -98,7 +98,7 @@ export const useAuth = () => {
           }),
         );
 
-        toast.success(response.message);
+        toast.success(response.message + 'Please check your email inbox and click the verification link to verify your account.');
 
         return response;
       } catch (error: any) {

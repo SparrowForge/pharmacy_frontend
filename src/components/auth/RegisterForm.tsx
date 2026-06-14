@@ -69,7 +69,6 @@ export default function RegisterForm() {
     if (!validate()) return;
     try {
       await registerUser(formData);
-      toast.success("Registration successful");
       router.push("/login");
     } catch (err) {
       console.log(err);
