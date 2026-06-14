@@ -56,7 +56,7 @@ export default function RegisterForm() {
     if (!formData.fullName) err.fullName = "Full name required";
     if (!formData.email) err.email = "Email required";
     if (!formData.phone) err.phone = "Phone required";
-    if (!formData.password || formData.password.length <= 8)
+    if (!formData.password || formData.password.length < 8)
       err.password = "Password minimum 8 characters required";
     if (!formData.shopId) err.shopId = "Shop required";
     if (!formData.branchId) err.branchId = "Branch required";

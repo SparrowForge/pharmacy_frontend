@@ -46,6 +46,7 @@ import { toast } from "sonner";
 
 import { useEnum } from "@/src/hooks/useEnum";
 import { useShops } from "@/src/hooks/useShops";
+import Loading from "../common/Loading";
 
 export default function ShopDialogueForm({
   shopId,
@@ -55,31 +56,22 @@ export default function ShopDialogueForm({
   onClose?: () => void;
 }) {
   const [open, setOpen] = useState(false);
-
   const { companies, fetchCompanies } = useCompanies();
-
   const { countries, fetchCountries } = useCountries();
-
   const { divisions, fetchDivisions } = useDivisions();
-
   const { districts, fetchDistricts } = useDistricts();
-
   const { thanas, fetchThanas } = useThanas();
-
   const { routes, fetchRoutes } = useRoutes();
-
   const { lines, fetchLines } = useLines();
-
   const {
     createShop,
     createLoading,
     fetchSingleShop,
+    singleShopLoading,
     updateShop,
     updateLoading,
   } = useShops();
-
   const { shopPlans, getShopPlans } = useEnum();
-
   const initialFormState = {
     company_id: "",
 
@@ -106,28 +98,19 @@ export default function ShopDialogueForm({
 
     branch_limit: 1,
   };
-
   const [form, setForm] = useState(initialFormState);
-
   const isEditMode = Boolean(shopId);
-
   useEffect(() => {
     getShopPlans();
   }, []);
 
   useEffect(() => {
     fetchCompanies();
-
     fetchCountries();
-
     fetchDivisions();
-
     fetchDistricts();
-
     fetchThanas();
-
     fetchRoutes();
-
     fetchLines();
   }, []);
 
@@ -135,43 +118,25 @@ export default function ShopDialogueForm({
   useEffect(() => {
     const loadShop = async () => {
       if (!shopId) return;
-
       try {
         const res = await fetchSingleShop(shopId);
-
         setForm({
           company_id: res.company_id ?? "",
-
           name: res.name ?? "",
-
           owner_name: res.owner_name ?? "",
-
           owner_email: res.owner_email ?? "",
-
           owner_phone: res.owner_phone ?? "",
-
           address: res.address ?? "",
-
           city: res.city ?? "",
-
           postal_code: res.postal_code ?? "",
-
           country_id: res.country_id ?? "",
-
           division_id: res.division_id ?? "",
-
           district_id: res.district_id ?? "",
-
           thana_id: res.thana_id ?? "",
-
           route_id: res.route_id ?? "",
-
           line_id: res.line_id ?? "",
-
           plan: res.plan ?? "",
-
           status: res.status ?? "active",
-
           branch_limit: res.branch_limit ?? 1,
         });
 
@@ -204,65 +169,46 @@ export default function ShopDialogueForm({
 
   const handleSubmit = async () => {
     const error = validate();
-
     if (error) return toast.error(error);
-
     try {
       const payload = {
         company_id: form.company_id,
-
         name: form.name,
-
         owner_name: form.owner_name,
-
         owner_email: form.owner_email,
-
         owner_phone: form.owner_phone,
-
         address: form.address,
-
         city: form.city,
-
         postal_code: form.postal_code,
-
         country_id: form.country_id || null,
-
         division_id: form.division_id || null,
-
         district_id: form.district_id || null,
-
         thana_id: form.thana_id || null,
-
         route_id: form.route_id || null,
-
         line_id: form.line_id || null,
-
         plan: form.plan as "starter" | "business" | "enterprise",
-
         status: form.status,
-
         branch_limit: Number(form.branch_limit),
       };
 
       if (isEditMode && shopId) {
         await updateShop(shopId, payload);
-
         toast.success("Shop updated successfully");
       } else {
         await createShop(payload);
-
         toast.success("Shop created successfully");
       }
-
       setForm(initialFormState);
-
       setOpen(false);
-
       onClose?.();
     } catch (err) {
       toast.error("Something went wrong");
     }
   };
+
+  if (singleShopLoading) {
+    return <Loading text="Loading Shop Data..." />;
+  }
 
   return (
     <Dialog
@@ -293,17 +239,11 @@ export default function ShopDialogueForm({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs
-          defaultValue="basic"
-          className="w-full overflow-hidden"
-        >
+        <Tabs defaultValue="basic" className="w-full overflow-hidden">
           <TabsList className="grid grid-cols-4 w-full">
             <TabsTrigger value="basic">Basic</TabsTrigger>
-
             <TabsTrigger value="location">Location</TabsTrigger>
-
             <TabsTrigger value="route">Route</TabsTrigger>
-
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -316,9 +256,7 @@ export default function ShopDialogueForm({
 
                 <Select
                   value={form.company_id}
-                  onValueChange={(value) =>
-                    handleChange("company_id", value)
-                  }
+                  onValueChange={(value) => handleChange("company_id", value)}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select company" />
@@ -326,10 +264,7 @@ export default function ShopDialogueForm({
 
                   <SelectContent>
                     {companies.map((company) => (
-                      <SelectItem
-                        key={company.id}
-                        value={company.id}
-                      >
+                      <SelectItem key={company.id} value={company.id}>
                         {company.name}
                       </SelectItem>
                     ))}
@@ -343,9 +278,7 @@ export default function ShopDialogueForm({
 
                 <Input
                   value={form.name}
-                  onChange={(e) =>
-                    handleChange("name", e.target.value)
-                  }
+                  onChange={(e) => handleChange("name", e.target.value)}
                   placeholder="Pharmacy name"
                 />
               </div>
@@ -357,9 +290,7 @@ export default function ShopDialogueForm({
 
                   <Input
                     value={form.owner_name}
-                    onChange={(e) =>
-                      handleChange("owner_name", e.target.value)
-                    }
+                    onChange={(e) => handleChange("owner_name", e.target.value)}
                     placeholder="Owner full name"
                   />
                 </div>
@@ -384,9 +315,7 @@ export default function ShopDialogueForm({
 
                 <Input
                   value={form.owner_phone}
-                  onChange={(e) =>
-                    handleChange("owner_phone", e.target.value)
-                  }
+                  onChange={(e) => handleChange("owner_phone", e.target.value)}
                   placeholder="+1 555-0000"
                 />
               </div>
@@ -400,9 +329,7 @@ export default function ShopDialogueForm({
 
                 <Textarea
                   value={form.address}
-                  onChange={(e) =>
-                    handleChange("address", e.target.value)
-                  }
+                  onChange={(e) => handleChange("address", e.target.value)}
                   rows={3}
                   placeholder="Full address"
                 />
@@ -415,9 +342,7 @@ export default function ShopDialogueForm({
 
                   <Input
                     value={form.city}
-                    onChange={(e) =>
-                      handleChange("city", e.target.value)
-                    }
+                    onChange={(e) => handleChange("city", e.target.value)}
                     placeholder="City"
                   />
                 </div>
@@ -442,9 +367,7 @@ export default function ShopDialogueForm({
 
                   <Select
                     value={form.country_id}
-                    onValueChange={(value) =>
-                      handleChange("country_id", value)
-                    }
+                    onValueChange={(value) => handleChange("country_id", value)}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select country" />
@@ -452,10 +375,7 @@ export default function ShopDialogueForm({
 
                     <SelectContent>
                       {countries.map((country) => (
-                        <SelectItem
-                          key={country.id}
-                          value={country.id}
-                        >
+                        <SelectItem key={country.id} value={country.id}>
                           {country.name}
                         </SelectItem>
                       ))}
@@ -478,10 +398,7 @@ export default function ShopDialogueForm({
 
                     <SelectContent>
                       {divisions.map((division) => (
-                        <SelectItem
-                          key={division.id}
-                          value={division.id}
-                        >
+                        <SelectItem key={division.id} value={division.id}>
                           {division.name}
                         </SelectItem>
                       ))}
@@ -507,10 +424,7 @@ export default function ShopDialogueForm({
 
                     <SelectContent>
                       {districts.map((district) => (
-                        <SelectItem
-                          key={district.id}
-                          value={district.id}
-                        >
+                        <SelectItem key={district.id} value={district.id}>
                           {district.name}
                         </SelectItem>
                       ))}
@@ -523,9 +437,7 @@ export default function ShopDialogueForm({
 
                   <Select
                     value={form.thana_id}
-                    onValueChange={(value) =>
-                      handleChange("thana_id", value)
-                    }
+                    onValueChange={(value) => handleChange("thana_id", value)}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select thana" />
@@ -533,10 +445,7 @@ export default function ShopDialogueForm({
 
                     <SelectContent>
                       {thanas.map((thana) => (
-                        <SelectItem
-                          key={thana.id}
-                          value={thana.id}
-                        >
+                        <SelectItem key={thana.id} value={thana.id}>
                           {thana.name}
                         </SelectItem>
                       ))}
@@ -555,9 +464,7 @@ export default function ShopDialogueForm({
 
                   <Select
                     value={form.route_id}
-                    onValueChange={(value) =>
-                      handleChange("route_id", value)
-                    }
+                    onValueChange={(value) => handleChange("route_id", value)}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select route" />
@@ -565,10 +472,7 @@ export default function ShopDialogueForm({
 
                     <SelectContent>
                       {routes.map((route) => (
-                        <SelectItem
-                          key={route.id}
-                          value={route.id}
-                        >
+                        <SelectItem key={route.id} value={route.id}>
                           {route.name}
                         </SelectItem>
                       ))}
@@ -581,9 +485,7 @@ export default function ShopDialogueForm({
 
                   <Select
                     value={form.line_id}
-                    onValueChange={(value) =>
-                      handleChange("line_id", value)
-                    }
+                    onValueChange={(value) => handleChange("line_id", value)}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select line" />
@@ -591,10 +493,7 @@ export default function ShopDialogueForm({
 
                     <SelectContent>
                       {lines.map((line) => (
-                        <SelectItem
-                          key={line.id}
-                          value={line.id}
-                        >
+                        <SelectItem key={line.id} value={line.id}>
                           {line.name}
                         </SelectItem>
                       ))}
@@ -612,9 +511,7 @@ export default function ShopDialogueForm({
 
                 <Select
                   value={form.plan}
-                  onValueChange={(value) =>
-                    handleChange("plan", value)
-                  }
+                  onValueChange={(value) => handleChange("plan", value)}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select plan" />
@@ -639,10 +536,7 @@ export default function ShopDialogueForm({
                   min={1}
                   value={form.branch_limit}
                   onChange={(e) =>
-                    handleChange(
-                      "branch_limit",
-                      Number(e.target.value)
-                    )
+                    handleChange("branch_limit", Number(e.target.value))
                   }
                 />
               </div>
@@ -653,22 +547,16 @@ export default function ShopDialogueForm({
 
                 <Select
                   value={form.status}
-                  onValueChange={(value) =>
-                    handleChange("status", value)
-                  }
+                  onValueChange={(value) => handleChange("status", value)}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
 
                   <SelectContent>
-                    <SelectItem value="active">
-                      Active
-                    </SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
 
-                    <SelectItem value="suspended">
-                      Suspended
-                    </SelectItem>
+                    <SelectItem value="suspended">Suspended</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

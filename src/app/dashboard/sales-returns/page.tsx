@@ -36,6 +36,7 @@ import { useSalesReturns } from "@/src/hooks/useSalesReturns";
 import { useAppSelector } from "@/src/redux/hooks";
 import { useCompanies } from "@/src/hooks/useCompanies";
 import { useSalesInvoice } from "@/src/hooks/useSalesInvoice";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 const STATUS_OPTIONS = ["pending", "completed", "cancelled"];
 
@@ -240,30 +241,7 @@ export default function SalesReturnsPage() {
             </TableHeader>
 
             <TableBody>
-              {fetchLoading ? (
-                Array.from({ length: 5 }).map((_, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell>
-                      <div className="h-4 w-24 bg-muted animate-pulse rounded" />
-                    </TableCell>
-                    <TableCell>
-                      <div className="h-4 w-28 bg-muted animate-pulse rounded" />
-                    </TableCell>
-                    <TableCell>
-                      <div className="h-4 w-32 bg-muted animate-pulse rounded" />
-                    </TableCell>
-                    <TableCell>
-                      <div className="h-4 w-20 bg-muted animate-pulse rounded" />
-                    </TableCell>
-                    <TableCell>
-                      <div className="h-4 w-16 bg-muted animate-pulse rounded" />
-                    </TableCell>
-                    <TableCell>
-                      <div className="h-4 w-24 bg-muted animate-pulse rounded" />
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : data?.length > 0 ? (
+              {fetchLoading ? <TableSkeleton/> : data?.length > 0 ? (
                 data.map((item: any) => (
                   <TableRow key={item.id}>
                     <TableCell>{item.return_number}</TableCell>

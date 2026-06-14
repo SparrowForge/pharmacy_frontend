@@ -49,7 +49,8 @@ export default function LoginForm() {
       if (!formData.password.trim()) {
         newErrors.password = "Password is required";
         isValid = false;
-      } else if (formData.password.length <= 8) {
+      } else if (formData.password.length < 8) {
+        console.log(formData.password.length)
         newErrors.password = "Password must be at least 8 characters";
         isValid = false;
       }

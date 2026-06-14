@@ -43,14 +43,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function ShopsPage() {
   const [page, setPage] = useState(initialPage);
   const [limit] = useState(initialLimit);
   const [search, setSearch] = useState("");
   const [includeDeleted, setIncludeDeleted] = useState(false);
-  const { fetchShops, deleteShop} = useShops();
+  const { fetchShops, deleteShop } = useShops();
   const { shops, fetchLoading } = useAppSelector((state) => state.shops);
   const [editShopId, setEditShopId] = useState<string | null>(null);
   const [openEdit, setOpenEdit] = useState(false);
@@ -108,7 +108,6 @@ export default function ShopsPage() {
             setOpenEdit(false);
           }}
         />
-       
       </div>
 
       {/* Stats */}
@@ -184,108 +183,115 @@ export default function ShopsPage() {
         </CardHeader>
 
         <CardContent>
-          {fetchLoading ? (
-            <Loading text="Loading data..." />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Shop</TableHead>
-                  <TableHead>Owner</TableHead>
-                  <TableHead>Plan</TableHead>
-                  <TableHead className="text-center">Branches</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Shop</TableHead>
+                <TableHead>Owner</TableHead>
+                <TableHead>Plan</TableHead>
+                <TableHead className="text-center">Branches</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
 
-              <TableBody>
-                {shops.length &&
-                  shops?.map((shop) => (
-                    <TableRow key={shop.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-primary/10 flex items-center justify-center rounded">
-                            <Building2 className="w-5 h-5 text-primary" />
-                          </div>
-                          <div>
-                            <p className="font-medium">{shop.name}</p>
-                            <p className="text-xs text-muted-foreground flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
-                              {shop.city || "No city"}
-                            </p>
-                          </div>
+            <TableBody>
+              {fetchLoading ? (
+                <TableSkeleton />
+              ) : shops?.length > 0 ? (
+                shops.map((shop) => (
+                  <TableRow key={shop.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary/10 flex items-center justify-center rounded">
+                          <Building2 className="w-5 h-5 text-primary" />
                         </div>
-                      </TableCell>
 
-                      <TableCell>
                         <div>
-                          <p className="font-medium">{shop.owner_name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {shop.owner_email}
+                          <p className="font-medium">{shop.name}</p>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {shop.city || "No city"}
                           </p>
                         </div>
-                      </TableCell>
+                      </div>
+                    </TableCell>
 
-                      <TableCell>
-                        <Badge className={cn(getPlanColor(shop.plan))}>
-                          {shop.plan}
-                        </Badge>
-                      </TableCell>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{shop.owner_name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {shop.owner_email}
+                        </p>
+                      </div>
+                    </TableCell>
 
-                      <TableCell className="text-center">
-                        {shop.branch_limit}
-                      </TableCell>
+                    <TableCell>
+                      <Badge className={cn(getPlanColor(shop.plan))}>
+                        {shop.plan}
+                      </Badge>
+                    </TableCell>
 
-                      <TableCell>
-                        <Badge
-                          className={
-                            shop.status === "active"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }
-                        >
-                          {shop.status}
-                        </Badge>
-                      </TableCell>
+                    <TableCell className="text-center">
+                      {shop.branch_limit}
+                    </TableCell>
 
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                            >
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
+                    <TableCell>
+                      <Badge
+                        className={
+                          shop.status === "active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }
+                      >
+                        {shop.status}
+                      </Badge>
+                    </TableCell>
 
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setEditShopId(shop.id);
-                                setOpenEdit(true);
-                              }}
-                            >
-                              <Edit className="w-4 h-4 mr-2" />
-                              Edit Shop
-                            </DropdownMenuItem>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                          >
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
 
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => deleteShop(shop.id)}
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          )}
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setEditShopId(shop.id);
+                              setOpenEdit(true);
+                            }}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit Shop
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => deleteShop(shop.id)}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-6">
+                    No shops found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 
