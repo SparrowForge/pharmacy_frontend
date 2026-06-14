@@ -49,6 +49,7 @@ import {
 import { usePurchaseOrders } from "@/src/hooks/usePurchaseOrders";
 import { useCompanies } from "@/src/hooks/useCompanies";
 import Loading from "@/src/components/common/Loading";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 // hooks (replace with your actual paths)
 
@@ -187,76 +188,63 @@ export default function PurchaseOrdersPage() {
               </TableHeader>
 
               <TableBody>
-                {fetchLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
-                      <LoaderIcon className="animate-spin text-center" />{" "}
-                      Loading purchase orders...
-                    </TableCell>
-                  </TableRow>
-                ) : purchaseOrders.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
-                      No purchase orders found
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  purchaseOrders.map((po: any) => (
-                    <TableRow key={po.id}>
-                      <TableCell className="font-medium">
-                        {po.po_number}
-                      </TableCell>
+                {purchaseOrders.length > 0 ? (
+                  fetchLoading ? (
+                    <TableSkeleton />
+                  ) : (
+                    purchaseOrders.map((po: any) => (
+                      <TableRow key={po.id}>
+                        <TableCell className="font-medium">
+                          {po.po_number}
+                        </TableCell>
 
-                      <TableCell>{po.supplier_name}</TableCell>
+                        <TableCell>{po.supplier_name}</TableCell>
 
-                      <TableCell className="text-right">
-                        {po.totalqty}
-                      </TableCell>
+                        <TableCell className="text-right">
+                          {po.totalqty}
+                        </TableCell>
 
-                      <TableCell className="text-right">
-                        {po.totalreceiveqty}
-                      </TableCell>
+                        <TableCell className="text-right">
+                          {po.totalreceiveqty}
+                        </TableCell>
 
-                      <TableCell className="text-right font-semibold">
-                        ৳{Number(po.total_amount).toFixed(2)}
-                      </TableCell>
+                        <TableCell className="text-right font-semibold">
+                          ৳{Number(po.total_amount).toFixed(2)}
+                        </TableCell>
 
-                      <TableCell>
-                        {new Date(po.placed_at).toLocaleDateString()}
-                      </TableCell>
+                        <TableCell>
+                          {new Date(po.placed_at).toLocaleDateString()}
+                        </TableCell>
 
-                      <TableCell>
-                        <Badge className={getStatusColor(po.status)}>
-                          {po.status}
-                        </Badge>
-                      </TableCell>
+                        <TableCell>
+                          <Badge className={getStatusColor(po.status)}>
+                            {po.status}
+                          </Badge>
+                        </TableCell>
 
-                      {/* 3 DOT ACTIONS */}
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
+                        {/* 3 DOT ACTIONS */}
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <MoreHorizontal className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
 
-                          <DropdownMenuContent align="end">
-                            {po.status !== "received" && (
-                              <Link
-                                href={`/dashboard/purchase-receive/new/${po.id}`}
-                                passHref
-                              >
-                                <DropdownMenuItem>
-                                  <Eye className="w-4 h-4 mr-2" />
-                                  Receive Items
-                                </DropdownMenuItem>
-                              </Link>
-                            )}
-
+                            <DropdownMenuContent align="end">
+                              {po.status !== "received" && (
+                                <Link
+                                  href={`/dashboard/purchase-receive/new/${po.id}`}
+                                >
+                                  <DropdownMenuItem>
+                                    <Eye className="w-4 h-4 mr-2" />
+                                    Receive Items
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
 
                               <Link
                                 href={`/dashboard/purchase-return/new/${po.id}`}
-                                passHref
                               >
                                 <DropdownMenuItem>
                                   <Eye className="w-4 h-4 mr-2" />
@@ -264,23 +252,30 @@ export default function PurchaseOrdersPage() {
                                 </DropdownMenuItem>
                               </Link>
 
-                            <DropdownMenuItem>
-                              <Download className="w-4 h-4 mr-2" />
-                              Download
-                            </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Download className="w-4 h-4 mr-2" />
+                                Download
+                              </DropdownMenuItem>
 
-                            <DropdownMenuItem
-                              onClick={() => deletePurchaseOrder(po.id)}
-                              className="text-red-600"
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                              <DropdownMenuItem
+                                onClick={() => deletePurchaseOrder(po.id)}
+                                className="text-red-600"
+                              >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8">
+                      No purchase orders found
+                    </TableCell>
+                  </TableRow>
                 )}
               </TableBody>
             </Table>

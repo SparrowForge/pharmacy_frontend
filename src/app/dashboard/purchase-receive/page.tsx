@@ -41,9 +41,16 @@ import {
 import { cn } from "@/src/lib/utils";
 import Loading from "@/src/components/common/Loading";
 import { usePurchaseOrderReceive } from "@/src/hooks/usePurchaseOrderReceive";
-
+import { ISinglePurchaseReceiptResponse } from "@/src/types/purchaseOrderReceive.types";
+import PurchaseReceiptViewModal from "@/src/components/purchase/PurchaseReceiptViewModal";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function PurchaseReceiptsPage() {
+  const { fetchSinglePurchaseReceipt, singlePurchaseReciept } =
+    usePurchaseOrderReceive();
+  const [selectedReceipt, setSelectedReceipt] =
+    useState<ISinglePurchaseReceiptResponse | null>(null);
+  const [viewOpen, setViewOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
 
@@ -53,74 +60,74 @@ export default function PurchaseReceiptsPage() {
   const { fetchPurchaseReceipts, fetchLoading, purchaseOrderReceive } =
     usePurchaseOrderReceive();
 
-
-
   // fetch
   useEffect(() => {
     fetchPurchaseReceipts(page, limit);
   }, [fetchPurchaseReceipts, page, limit]);
 
-
+  useEffect(() => {
+    if (selectedReceipt?.id) {
+      fetchSinglePurchaseReceipt(String(selectedReceipt.id));
+    }
+  }, [selectedReceipt]);
 
   return (
-    <div className="space-y-6">
-      {/* HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-            <FileText className="w-6 h-6 text-primary" />
+    <>
+      <div className="space-y-6">
+        {/* HEADER */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+              <FileText className="w-6 h-6 text-primary" />
+            </div>
+
+            <div>
+              <h1 className="text-2xl font-bold">Purchase Receipts</h1>
+              <p className="text-muted-foreground">
+                Manage all purchase receiving records
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* FILTERS */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+          {/* SEARCH */}
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+
+            <Input
+              placeholder="Search receipt number..."
+              className="pl-10"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+            />
           </div>
 
-          <div>
-            <h1 className="text-2xl font-bold">Purchase Receipts</h1>
-            <p className="text-muted-foreground">
-              Manage all purchase receiving records
-            </p>
+          {/* INCLUDE DELETED */}
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={includeDeleted}
+              onChange={(e) => {
+                setIncludeDeleted(e.target.checked);
+                setPage(1);
+              }}
+            />
+            <label className="text-sm">Include Deleted</label>
           </div>
         </div>
-      </div>
 
-      {/* FILTERS */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-        {/* SEARCH */}
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+        {/* TABLE */}
+        <Card>
+          <CardHeader>
+            <CardTitle>All Receipts</CardTitle>
+          </CardHeader>
 
-          <Input
-            placeholder="Search receipt number..."
-            className="pl-10"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-          />
-        </div>
-
-        {/* INCLUDE DELETED */}
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={includeDeleted}
-            onChange={(e) => {
-              setIncludeDeleted(e.target.checked);
-              setPage(1);
-            }}
-          />
-          <label className="text-sm">Include Deleted</label>
-        </div>
-      </div>
-
-      {/* TABLE */}
-      <Card>
-        <CardHeader>
-          <CardTitle>All Receipts</CardTitle>
-        </CardHeader>
-
-        <CardContent>
-          {fetchLoading ? (
-            <Loading text="Loading receipts..." />
-          ) : (
+          <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -134,7 +141,9 @@ export default function PurchaseReceiptsPage() {
               </TableHeader>
 
               <TableBody>
-                {purchaseOrderReceive?.length ? (
+                {fetchLoading ? (
+                  <TableSkeleton />
+                ) : purchaseOrderReceive?.length ? (
                   purchaseOrderReceive?.map((item: any) => (
                     <TableRow key={item.id}>
                       {/* Receipt */}
@@ -142,7 +151,9 @@ export default function PurchaseReceiptsPage() {
                         <div className="flex items-center gap-2">
                           <FileText className="w-4 h-4 text-primary" />
                           <div>
-                            <p className="font-medium">{item?.receipt_number}</p>
+                            <p className="font-medium">
+                              {item?.receipt_number}
+                            </p>
                             <p className="text-xs text-muted-foreground">
                               ID: {item?.id.slice(0, 8)}
                             </p>
@@ -190,18 +201,23 @@ export default function PurchaseReceiptsPage() {
                           </DropdownMenuTrigger>
 
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedReceipt(item);
+                                setViewOpen(true);
+                              }}
+                            >
                               <Eye className="w-4 h-4 mr-2" />
                               View
                             </DropdownMenuItem>
 
-                            <DropdownMenuItem
+                            {/* <DropdownMenuItem
                               className="text-destructive"
                               // onClick={() => deletePurchaseReceipt(item.id)}
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -219,24 +235,29 @@ export default function PurchaseReceiptsPage() {
                 )}
               </TableBody>
             </Table>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* PAGINATION */}
-      <div className="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          disabled={page === 1}
-          onClick={() => setPage((p) => p - 1)}
-        >
-          Prev
-        </Button>
+        {/* PAGINATION */}
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            Prev
+          </Button>
 
-        <Button variant="outline" onClick={() => setPage((p) => p + 1)}>
-          Next
-        </Button>
+          <Button variant="outline" onClick={() => setPage((p) => p + 1)}>
+            Next
+          </Button>
+        </div>
+        <PurchaseReceiptViewModal
+          open={viewOpen}
+          onOpenChange={setViewOpen}
+          receipt={singlePurchaseReciept}
+        />
       </div>
-    </div>
+    </>
   );
 }

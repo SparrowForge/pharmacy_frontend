@@ -1,4 +1,4 @@
-import PurchaseOrderReceiveForm from "@/src/components/purchase-order/PurchaseOrderReceiveForm";
+import PurchaseOrderReceiveForm from "@/src/components/purchase/PurchaseOrderReceiveForm";
 import React from "react";
 
 const PurchaseReceiveNewPage = () => {

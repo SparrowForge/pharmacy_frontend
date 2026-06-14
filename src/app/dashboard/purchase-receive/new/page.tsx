@@ -1,12 +1,12 @@
-import PurchaseOrderReceiveForm from '@/src/components/purchase-order/PurchaseOrderReceiveForm'
-import React from 'react'
+import PurchaseOrderReceiveForm from "@/src/components/purchase/PurchaseOrderReceiveForm";
+import React from "react";
 
 const PurchaseReceiveNewPage = () => {
   return (
     <div>
-      <PurchaseOrderReceiveForm/>
+      <PurchaseOrderReceiveForm />
     </div>
-  )
-}
+  );
+};
 
-export default PurchaseReceiveNewPage
+export default PurchaseReceiveNewPage;

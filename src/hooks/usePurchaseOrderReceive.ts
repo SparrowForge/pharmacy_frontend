@@ -17,6 +17,9 @@ import {
   fetchAvailableItemsStart,
   fetchAvailableItemsSuccess,
   fetchAvailableItemsFailure,
+  fetchSinglePurchaseReceiptsStart,
+  fetchSinglePurchaseReceiptsSuccess,
+  fetchSinglePurchaseReceiptsFailure,
 } from "@/src/redux/features/purchase-order/purchaseOrderReceiveSlice";
 
 import { IReceivePurchaseOrderPayload } from "@/src/types/purchaseOrderReceive.types";
@@ -24,9 +27,7 @@ import { IReceivePurchaseOrderPayload } from "@/src/types/purchaseOrderReceive.t
 export const usePurchaseOrderReceive = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-
   const state = useAppSelector((state) => state.purchaseOrderReceive);
-
   const receivePurchaseOrder = useCallback(
     async (payload: IReceivePurchaseOrderPayload) => {
       try {
@@ -55,7 +56,6 @@ export const usePurchaseOrderReceive = () => {
     },
     [dispatch, router],
   );
-
   const fetchPurchaseReceipts = useCallback(
     async (page = 1, limit = 10) => {
       try {
@@ -81,26 +81,42 @@ export const usePurchaseOrderReceive = () => {
     async (productId: string) => {
       try {
         dispatch(fetchAvailableItemsStart());
-
         const res =
           await purchaseOrderReceiveService.getAvailablePurchaseReceiptItemsService(
             {
               product_id: productId,
             },
           );
-
         dispatch(fetchAvailableItemsSuccess(res.items));
-
         return res.items;
       } catch (error: any) {
         const message =
           error?.response?.data?.message ||
           "Failed to fetch available receipt items";
-
         dispatch(fetchAvailableItemsFailure(message));
-
         toast.error(message);
+        throw error;
+      }
+    },
+    [dispatch],
+  );
 
+  const fetchSinglePurchaseReceipt = useCallback(
+    async (productId: string) => {
+      try {
+        dispatch(fetchSinglePurchaseReceiptsStart());
+        const res =
+          await purchaseOrderReceiveService.getSinglePurchaseRecieptItemService(
+            productId,
+          );
+        dispatch(fetchSinglePurchaseReceiptsSuccess(res));
+        return res;
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message ||
+          "Failed to fetch available receipt items";
+        dispatch(fetchSinglePurchaseReceiptsFailure(message));
+        toast.error(message);
         throw error;
       }
     },
@@ -110,8 +126,9 @@ export const usePurchaseOrderReceive = () => {
   return {
     receivePurchaseOrder,
     fetchPurchaseReceipts,
-
     fetchAvailablePurchaseReceiptItems,
+    fetchSinglePurchaseReceipt,
+    
     ...state,
   };
 };

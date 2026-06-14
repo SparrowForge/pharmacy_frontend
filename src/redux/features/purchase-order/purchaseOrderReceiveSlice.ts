@@ -2,11 +2,14 @@ import {
   IAvailablePurchaseReceiptItem,
   IPurchaseOrderReceiveItem,
   IReceivePurchaseOrderResponse,
+  ISinglePurchaseReceiptItem,
+  ISinglePurchaseReceiptResponse,
 } from "@/src/types/purchaseOrderReceive.types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface IPurchaseOrderReceiveState {
   purchaseOrderReceive: IReceivePurchaseOrderResponse["data"][];
+  singlePurchaseReciept: ISinglePurchaseReceiptResponse | null;
 
   availableItems: IAvailablePurchaseReceiptItem[];
   availableItemsLoading: boolean;
@@ -28,6 +31,7 @@ interface IPurchaseOrderReceiveState {
 }
 const initialState: IPurchaseOrderReceiveState = {
   purchaseOrderReceive: [],
+  singlePurchaseReciept: null,
 
   availableItems: [],
   availableItemsLoading: false,
@@ -120,6 +124,29 @@ const purchaseOrderReceiveSlice = createSlice({
       state.availableItemsLoading = false;
       state.error = action.payload;
     },
+
+    //fetch Single
+
+    fetchSinglePurchaseReceiptsStart: (state) => {
+      state.singlePurchaseReceiveOrderLoading = true;
+      state.error = null;
+    },
+
+    fetchSinglePurchaseReceiptsSuccess: (
+      state,
+      action: PayloadAction<ISinglePurchaseReceiptResponse>,
+    ) => {
+      state.singlePurchaseReceiveOrderLoading = false;
+      state.singlePurchaseReciept = action.payload;
+    },
+
+    fetchSinglePurchaseReceiptsFailure: (
+      state,
+      action: PayloadAction<string>,
+    ) => {
+      state.singlePurchaseReceiveOrderLoading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -135,6 +162,10 @@ export const {
   fetchAvailableItemsStart,
   fetchAvailableItemsSuccess,
   fetchAvailableItemsFailure,
+
+  fetchSinglePurchaseReceiptsStart,
+  fetchSinglePurchaseReceiptsSuccess,
+  fetchSinglePurchaseReceiptsFailure,
 } = purchaseOrderReceiveSlice.actions;
 
 export default purchaseOrderReceiveSlice.reducer;

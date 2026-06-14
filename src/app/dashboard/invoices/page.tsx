@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from "react";
 
-import { Search, FileText, Edit, Trash2, MoreHorizontal, LucideHopOff } from "lucide-react";
+import {
+  Search,
+  FileText,
+  Edit,
+  Trash2,
+  MoreHorizontal,
+  LucideHopOff,
+} from "lucide-react";
 
 import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
@@ -46,6 +53,7 @@ import { useCompanies } from "@/src/hooks/useCompanies";
 import SalesInvoiceDialogForm from "@/src/components/invoices/SalesInvoiceDialogForm";
 import { InvoiceModal } from "@/src/components/pos/InvoiceModal";
 import Link from "next/link";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function SalesInvoicesPage() {
   const [page, setPage] = useState(initialPage);
@@ -206,48 +214,33 @@ export default function SalesInvoicesPage() {
 
             <TableBody>
               {/* LOADING STATE */}
-              {fetchLoading ? (
-                <TableRow>
-                  <TableCell className="text-center py-10">
-                    <div className="flex justify-center items-center">
-                      <span className="animate-pulse text-muted-foreground">
-                        Loading invoices...
-                      </span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : /* EMPTY STATE */
-              salesInvoices.length === 0 ? (
-                <TableRow>
-                  <TableCell className="text-center py-10 text-muted-foreground">
-                    No invoices found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                /* DATA ROWS */
-                salesInvoices.map((invoice) => (
-                  <TableRow key={invoice.id}>
-                    <TableCell>{invoice.invoice_number}</TableCell>
-                    <TableCell>{invoice.customer_name}</TableCell>
-                    <TableCell>{invoice.status}</TableCell>
-                    <TableCell>{invoice.sale_type}</TableCell>
-                    <TableCell>{invoice.total_amount}</TableCell>
-                    <TableCell>{invoice.paid_amount}</TableCell>
-                    <TableCell>{invoice.due_amount}</TableCell>
-                    <TableCell>
-                      {new Date(invoice.invoice_date).toLocaleDateString()}
-                    </TableCell>
+              {salesInvoices.length > 0 ? (
+                fetchLoading ? (
+                  <TableSkeleton />
+                ) : (
+                  salesInvoices.map((invoice) => (
+                    <TableRow key={invoice.id}>
+                      <TableCell>{invoice.invoice_number}</TableCell>
+                      <TableCell>{invoice.customer_name}</TableCell>
+                      <TableCell>{invoice.status}</TableCell>
+                      <TableCell>{invoice.sale_type}</TableCell>
+                      <TableCell>{invoice.total_amount}</TableCell>
+                      <TableCell>{invoice.paid_amount}</TableCell>
+                      <TableCell>{invoice.due_amount}</TableCell>
+                      <TableCell>
+                        {new Date(invoice.invoice_date).toLocaleDateString()}
+                      </TableCell>
 
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="w-4 h-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
 
-                        <DropdownMenuContent align="end">
-                          {/* <DropdownMenuItem
+                          <DropdownMenuContent align="end">
+                            {/* <DropdownMenuItem
                             onClick={() => setEditId(invoice.id)}
                           >
                             <Edit className="w-4 h-4 mr-2" />
@@ -262,25 +255,32 @@ export default function SalesInvoicesPage() {
                             Delete
                           </DropdownMenuItem> */}
 
-                          <DropdownMenuItem
-                            onClick={() => handlePrintInvoice(invoice.id)}
-                          >
-                            <FileText className="w-4 h-4 mr-2" />
-                            Print Invoice
-                          </DropdownMenuItem>
-                          <Link
-                            href={`/dashboard/sales-returns/new/${invoice.id}`}
-                          >
-                            <DropdownMenuItem>
-                              <LucideHopOff className="w-4 h-4 mr-2" />
-                              Return Sale
+                            <DropdownMenuItem
+                              onClick={() => handlePrintInvoice(invoice.id)}
+                            >
+                              <FileText className="w-4 h-4 mr-2" />
+                              Print Invoice
                             </DropdownMenuItem>
-                          </Link>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
+                            <Link
+                              href={`/dashboard/sales-returns/new/${invoice.id}`}
+                            >
+                              <DropdownMenuItem>
+                                <LucideHopOff className="w-4 h-4 mr-2" />
+                                Return Sale
+                              </DropdownMenuItem>
+                            </Link>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )
+              ) : (
+                <TableRow>
+                  <TableCell className="text-center py-10 text-muted-foreground">
+                    No invoices found
+                  </TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>

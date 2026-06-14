@@ -8,23 +8,21 @@ import {
   IPurchaseReceiptsResponse,
   IReceivePurchaseOrderPayload,
   IReceivePurchaseOrderResponse,
+  ISinglePurchaseReceiptItem,
+  ISinglePurchaseReceiptResponse,
 } from "@/src/types/purchaseOrderReceive.types";
 
 const receivePurchaseOrder = async (
-
   payload: IReceivePurchaseOrderPayload,
 ): Promise<IReceivePurchaseOrderResponse> => {
-  const response = await axiosInstance.post(
-    `/purchase_receipts`,
-    payload,
-  );
+  const response = await axiosInstance.post(`/purchase_receipts`, payload);
 
   return response.data;
 };
 
 export const getPurchaseReceiptsService = async (
   page = 1,
-  limit = 10
+  limit = 10,
 ): Promise<IPurchaseReceiptsResponse> => {
   const response = await axiosInstance.get(`/purchase_receipts`, {
     params: { page, limit },
@@ -32,8 +30,6 @@ export const getPurchaseReceiptsService = async (
 
   return response.data;
 };
-
-
 
 const getAvailablePurchaseReceiptItemsService = async (
   params: IGetAvailablePurchaseReceiptItemsQuery,
@@ -49,8 +45,19 @@ const getAvailablePurchaseReceiptItemsService = async (
   return response.data;
 };
 
+export const getSinglePurchaseRecieptItemService = async (
+  id: string,
+): Promise<ISinglePurchaseReceiptResponse> => {
+  const response = await axiosInstance.get<ISinglePurchaseReceiptResponse>(
+    `/purchase_receipts/${id}`,
+  );
+
+  return response.data;
+};
+
 export const purchaseOrderReceiveService = {
   receivePurchaseOrder,
   getPurchaseReceipts: getPurchaseReceiptsService,
-  getAvailablePurchaseReceiptItemsService
+  getAvailablePurchaseReceiptItemsService,
+  getSinglePurchaseRecieptItemService,
 };
