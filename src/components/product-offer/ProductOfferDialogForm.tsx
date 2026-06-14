@@ -240,16 +240,14 @@ export default function ProductOfferDialogForm({
           </div>
 
           {/* DISCOUNT VALUE */}
-          <div className="space-y-2">
-            <Label>Discount Value *</Label>
-            <Input
-              type="number"
-              value={form.discount_value}
-              onChange={(e) =>
-                handleChange("discount_value", Number(e.target.value))
-              }
-            />
-          </div>
+          <Input
+            type="number"
+            value={form.discount_value}
+            onChange={(e) => {
+              const value = e.target.value;
+              handleChange("discount_value", value === "" ? "" : Number(value));
+            }}
+          />
 
           {/* DATES */}
           <div className="grid grid-cols-2 gap-4">
