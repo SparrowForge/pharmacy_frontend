@@ -21,9 +21,11 @@ import {
   TableRow,
 } from "@/src/components/ui/table";
 import UserUpdateModal from "@/src/components/users/UserUpdateModalForm";
+import CreateUserDialog from "@/src/components/users/CreateUserDialog";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function UsersPage() {
-  const { users, fetchUsers, deleteUser } = useUsers();
+  const { users, fetchUsers, deleteUser, loading } = useUsers();
 
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
@@ -42,7 +44,10 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Users</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Users</h1>
+        <CreateUserDialog />
+      </div>
 
       <Input
         placeholder="Search users..."
@@ -63,39 +68,28 @@ export default function UsersPage() {
                 <TableHead>Email</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Role</TableHead>
-                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {users?.map((u) => (
-                <TableRow key={u.id}>
-                  <TableCell>{u.fullName}</TableCell>
-                  <TableCell>{u.email}</TableCell>
-                  <TableCell>{u.phone}</TableCell>
-                  <TableCell>{u.role}</TableCell>
-
-                  {/* <TableCell className="space-x-2">
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setSelectedUserId(u.id);
-                        setOpen(true);
-                      }}
-                    >
-                      Edit
-                    </Button>
-
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => deleteUser(u.id)}
-                    >
-                      Delete
-                    </Button>
-                  </TableCell> */}
+              {loading ? (
+                <TableSkeleton />
+              ) : users?.length > 0 ? (
+                users.map((u) => (
+                  <TableRow key={u.id}>
+                    <TableCell>{u.fullName}</TableCell>
+                    <TableCell>{u.email}</TableCell>
+                    <TableCell>{u.phone}</TableCell>
+                    <TableCell>{u.role}</TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="py-8 text-center">
+                    No users found
+                  </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </CardContent>

@@ -147,9 +147,11 @@ export default function AddMedicinePage() {
     e.preventDefault();
 
     try {
-      console.log(formData);
-      const res = await createProduct(formData);
-      console.log(res);
+      const payload = {
+        ...formData,
+        preview_media_id: formData.preview_media_id ?? null,
+      };
+      const res = await createProduct(payload);
 
       if (res.id) {
         const badgePayload = {
@@ -162,7 +164,9 @@ export default function AddMedicinePage() {
         };
         const productImagePayload = {
           product_id: res.id,
-          media_id: formData.preview_media_id,
+          media_id: formData.preview_media_id
+            ? formData.preview_media_id
+            : null,
           sort_order: 1,
           is_primary: true,
         };
@@ -177,7 +181,8 @@ export default function AddMedicinePage() {
 
       // toast.success("Medicine added successfully!");
     } catch (error) {
-      toast.error("Failed to save medicine");
+      // toast.error("Failed to save medicine");
+      console.log(error);
     }
   };
 
@@ -790,11 +795,11 @@ export default function AddMedicinePage() {
                     {/* Shipping & Tax */}
                     <div>
                       <h3 className="font-semibold text-foreground mb-4">
-                        Shipping & Tax
+                        Shipping & Vat
                       </h3>
                       <div className="grid sm:grid-cols-3 gap-4 mb-4">
                         <div className="space-y-2">
-                          <Label htmlFor="tax">Tax Rate (%)</Label>
+                          <Label htmlFor="tax">Vat Rate (%)</Label>
                           <Input
                             id="tax"
                             type="number"
@@ -809,6 +814,7 @@ export default function AddMedicinePage() {
                             }
                           />
                         </div>
+
                         <div className="space-y-2">
                           <Label htmlFor="shippingCost">
                             Shipping Cost ($)
@@ -827,6 +833,7 @@ export default function AddMedicinePage() {
                             }
                           />
                         </div>
+
                         <div className="space-y-2">
                           <Label htmlFor="weight">Weight (kg)</Label>
                           <Input
@@ -1027,7 +1034,7 @@ export default function AddMedicinePage() {
                       <h3 className="font-semibold text-foreground">Media</h3>
 
                       <FileUpload
-                        value={formData.preview_media_id}
+                        value={formData.preview_media_id ?? undefined}
                         label="Medicine Media"
                         onChange={(fileId) =>
                           handleInputChange("preview_media_id", fileId)

@@ -68,11 +68,8 @@ export const useProducts = () => {
     async (payload: ICreateProductPayload) => {
       try {
         dispatch(createProductStart());
-
         const res = await productService.createProductService(payload);
-
         dispatch(createProductSuccess(res));
-
         toast.success("Product created successfully");
         router.push("/dashboard/medicines")
 

@@ -47,6 +47,7 @@ import {
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
 import CompanyDialogueForm from "@/src/components/company/CompanyDialogueForm";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function CompaniesPage() {
   const [page, setPage] = useState(initialPage);
@@ -108,10 +109,10 @@ export default function CompaniesPage() {
 
           <div>
             <h1 className="text-2xl font-bold text-foreground">
-              Company Management
+              Stakeholder Management
             </h1>
 
-            <p className="text-muted-foreground">Manage all companies</p>
+            <p className="text-muted-foreground">Manage all stakeholders</p>
           </div>
         </div>
 
@@ -130,7 +131,7 @@ export default function CompaniesPage() {
         <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
 
         <Input
-          placeholder="Search companies..."
+          placeholder="Search stakeholders..."
           className="pl-10"
           value={search}
           onChange={(e) => {
@@ -159,118 +160,121 @@ export default function CompaniesPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>All Companies</CardTitle>
+          <CardTitle>All Stakeholders</CardTitle>
         </CardHeader>
 
         <CardContent>
-          {fetchLoading ? (
-            <Loading text="Loading data..." />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Company</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Stakeholder</TableHead>
+                <TableHead>Contact</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
 
-              <TableBody>
-                {companies.length > 0 &&
-                  companies.map((company) => (
-                    <TableRow key={company.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-primary/10 flex items-center justify-center rounded">
-                            <Building2 className="w-5 h-5 text-primary" />
-                          </div>
-                          <div>
-                            <p className="font-medium">{company.name}</p>
-                            <p className="text-xs text-muted-foreground flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
-                              {company.city || "No city"}
-                            </p>
-                          </div>
+            <TableBody>
+              {fetchLoading ? (
+                <TableSkeleton />
+              ) : companies.length > 0 ? (
+                companies.map((company) => (
+                  <TableRow key={company.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary/10 flex items-center justify-center rounded">
+                          <Building2 className="w-5 h-5 text-primary" />
                         </div>
-                      </TableCell>
-
-                      <TableCell>
                         <div>
-                          <p className="font-medium">
-                            {company.contact_person}
-                          </p>
-
-                          <p className="text-xs text-muted-foreground">
-                            {company.email}
+                          <p className="font-medium">{company.name}</p>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {company.city || "No city"}
                           </p>
                         </div>
-                      </TableCell>
+                      </div>
+                    </TableCell>
 
-                      <TableCell>
-                        <Badge
-                          className={cn(
-                            "capitalize",
-                            companyTypeColorMap[company.company_type] ||
-                              companyTypeColorMap.other,
-                          )}
-                        >
-                          {company.company_type}
-                        </Badge>
-                      </TableCell>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{company.contact_person}</p>
 
-                      <TableCell>
-                        <Badge
-                          className={
-                            company.status === "active"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }
-                        >
-                          {company.status}
-                        </Badge>
-                      </TableCell>
+                        <p className="text-xs text-muted-foreground">
+                          {company.email}
+                        </p>
+                      </div>
+                    </TableCell>
 
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                            >
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
+                    <TableCell>
+                      <Badge
+                        className={cn(
+                          "capitalize",
+                          companyTypeColorMap[company.company_type] ||
+                            companyTypeColorMap.other,
+                        )}
+                      >
+                        {company.company_type}
+                      </Badge>
+                    </TableCell>
 
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setEditCompanyId(company.id);
+                    <TableCell>
+                      <Badge
+                        className={
+                          company.status === "active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }
+                      >
+                        {company.status}
+                      </Badge>
+                    </TableCell>
 
-                                setOpenEdit(true);
-                              }}
-                            >
-                              <Edit className="w-4 h-4 mr-2" />
-                              Edit Company
-                            </DropdownMenuItem>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                          >
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
 
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => deleteCompany(company.id)}
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          )}
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setEditCompanyId(company.id);
+
+                              setOpenEdit(true);
+                            }}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit Stakeholder
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => deleteCompany(company.id)}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-8">
+                    No data found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 

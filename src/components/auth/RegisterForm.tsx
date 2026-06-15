@@ -17,9 +17,7 @@ import {
 } from "@/src/components/ui/select";
 
 import { Eye, EyeOff, Loader2, ArrowRight, Pill } from "lucide-react";
-
 import { toast } from "sonner";
-
 import { useAuth } from "@/src/hooks/useAuth";
 import { useShops } from "@/src/hooks/useShops";
 import { useBranches } from "@/src/hooks/useBranches";

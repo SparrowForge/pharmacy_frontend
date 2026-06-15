@@ -21,13 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/src/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,6 +46,7 @@ import { cn } from "@/src/lib/utils";
 import { useProducts } from "@/src/hooks/useProducts";
 import Loading from "@/src/components/common/Loading";
 import { initialLimit, initialPage } from "@/src/constants/utils";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function ProductsPage() {
   const [page, setPage] = useState(initialPage);
@@ -71,8 +66,6 @@ export default function ProductsPage() {
       includeDeleted,
     });
   }, [page, limit, search, includeDeleted, fetchProducts]);
-
-
 
   return (
     <div className="space-y-6">
@@ -150,9 +143,7 @@ export default function ProductsPage() {
         </CardHeader>
 
         <CardContent>
-          {fetchLoading ? (
-            <Loading text="Loading products..." />
-          ) : (
+         
             <Table>
               <TableHeader>
                 <TableRow>
@@ -168,103 +159,113 @@ export default function ProductsPage() {
               </TableHeader>
 
               <TableBody>
-                {products?.map((product) => (
-                  <TableRow key={product.id}>
-                    {/* PRODUCT */}
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary/10 flex items-center justify-center rounded-lg">
-                          <Package className="w-5 h-5 text-primary" />
+                {fetchLoading ? (
+                  <TableSkeleton />
+                ) : products.length > 0 ? (
+                  products?.map((product) => (
+                    <TableRow key={product.id}>
+                      {/* PRODUCT */}
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-primary/10 flex items-center justify-center rounded-lg">
+                            <Package className="w-5 h-5 text-primary" />
+                          </div>
+
+                          <div>
+                            <p className="font-medium">{product.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {product.barcode}
+                            </p>
+                          </div>
                         </div>
+                      </TableCell>
 
-                        <div>
-                          <p className="font-medium">{product.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {product.barcode}
-                          </p>
-                        </div>
-                      </div>
-                    </TableCell>
+                      {/* GENERIC */}
+                      <TableCell className="text-muted-foreground">
+                        {product.generic_name}
+                      </TableCell>
 
-                    {/* GENERIC */}
-                    <TableCell className="text-muted-foreground">
-                      {product.generic_name}
-                    </TableCell>
+                      {/* BRAND */}
+                      <TableCell>{product.brand_id}</TableCell>
 
-                    {/* BRAND */}
-                    <TableCell>{product.brand_id}</TableCell>
+                      {/* CATEGORY */}
+                      <TableCell>
+                        <Badge variant="secondary">{product.category_id}</Badge>
+                      </TableCell>
 
-                    {/* CATEGORY */}
-                    <TableCell>
-                      <Badge variant="secondary">{product.category_id}</Badge>
-                    </TableCell>
+                      {/* SUPPLIER */}
+                      <TableCell className="text-muted-foreground">
+                        {product.supplier_id}
+                      </TableCell>
 
-                    {/* SUPPLIER */}
-                    <TableCell className="text-muted-foreground">
-                      {product.supplier_id}
-                    </TableCell>
+                      {/* PRICE */}
+                      <TableCell className="text-right font-semibold text-primary">
+                        ${Number(product.selling_price).toFixed(2)}
+                      </TableCell>
 
-                    {/* PRICE */}
-                    <TableCell className="text-right font-semibold text-primary">
-                      ${Number(product.selling_price).toFixed(2)}
-                    </TableCell>
+                      {/* STOCK */}
+                      <TableCell className="text-right">
+                        <span
+                          className={cn(
+                            "font-medium",
+                            product.current_stock < 10 && "text-red-600",
+                          )}
+                        >
+                          {product.current_stock}
+                        </span>
+                      </TableCell>
 
-                    {/* STOCK */}
-                    <TableCell className="text-right">
-                      <span
-                        className={cn(
-                          "font-medium",
-                          product.current_stock < 10 && "text-red-600",
-                        )}
-                      >
-                        {product.current_stock}
-                      </span>
-                    </TableCell>
+                      {/* ACTIONS */}
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
 
-                    {/* ACTIONS */}
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="w-4 h-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
-                            <Eye className="w-4 h-4 mr-2" />
-                            View
-                          </DropdownMenuItem>
-
-                          <Link
-                            href={`/dashboard/medicines/edit/${product.id}`}
-                          >
+                          <DropdownMenuContent align="end">
                             <DropdownMenuItem>
-                              <Edit className="w-4 h-4 mr-2" />
-                              Edit
+                              <Eye className="w-4 h-4 mr-2" />
+                              View
                             </DropdownMenuItem>
-                          </Link>
 
-                          <DropdownMenuItem>
-                            <Copy className="w-4 h-4 mr-2" />
-                            Duplicate
-                          </DropdownMenuItem>
+                            <Link
+                              href={`/dashboard/medicines/edit/${product.id}`}
+                            >
+                              <DropdownMenuItem>
+                                <Edit className="w-4 h-4 mr-2" />
+                                Edit
+                              </DropdownMenuItem>
+                            </Link>
 
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => deleteProduct(product.id)}
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                            <DropdownMenuItem>
+                              <Copy className="w-4 h-4 mr-2" />
+                              Duplicate
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() => deleteProduct(product.id)}
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={9} className="text-center py-8">
+                      No data found
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
-          )}
+         
         </CardContent>
       </Card>
 

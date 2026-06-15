@@ -53,7 +53,11 @@ const menu: MenuItem[] = [
     children: [
       { title: "POS", href: "/dashboard/pos", icon: ShoppingCart },
       { title: "Invoice", href: "/dashboard/invoices", icon: FileText },
-      { title: "Sales Return", href: "/dashboard/sales-returns", icon: RotateCcw },
+      {
+        title: "Sales Return",
+        href: "/dashboard/sales-returns",
+        icon: RotateCcw,
+      },
     ],
   },
   {
@@ -97,22 +101,21 @@ const menu: MenuItem[] = [
     title: "People",
     icon: Users,
     children: [
-      { title: "Stakeholders", href: "/dashboard/customers", icon: Users },
+      { title: "Stakeholders", href: "/dashboard/company", icon: Users },
       { title: "Users", href: "/dashboard/users", icon: UserCog },
       {
         title: "Manufacturers",
         href: "/dashboard/manufacturers",
         icon: Building2,
       },
+      { title: "Shops", href: "/dashboard/shops", icon: ShoppingBagIcon },
+      { title: "Branch", href: "/dashboard/branch", icon: ShoppingCartIcon },
     ],
   },
   {
     title: "Settings",
     icon: Settings,
     children: [
-      { title: "Company", href: "/dashboard/company", icon: Home },
-      { title: "Shops", href: "/dashboard/shops", icon: ShoppingBagIcon },
-      { title: "Branch", href: "/dashboard/branch", icon: ShoppingCartIcon },
       {
         title: "Discount Codes",
         href: "/dashboard/discount-codes",

@@ -189,8 +189,8 @@ export default function CompanyDialogueForm({
   };
 
   const validate = () => {
-    if (!form.company_type) return "Company type is required";
-    if (!form.name) return "Company name is required";
+    if (!form.company_type) return "Stakeholder type is required";
+    if (!form.name) return "Stakeholder name is required";
     if (!form.phone) return "Phone is required";
     return null;
   };
@@ -242,11 +242,11 @@ export default function CompanyDialogueForm({
       const payload = buildPayload();
       if (isEditMode && companyId) {
         await updateCompany(companyId, payload);
-        toast.success("Company updated successfully");
+        toast.success("Stakeholder updated successfully");
       } else {
         await createCompany(payload);
 
-        // toast.success("Company created successfully");
+        // toast.success("Stakeholder created successfully");
       }
 
       setForm(initialFormState);
@@ -273,14 +273,14 @@ export default function CompanyDialogueForm({
       <DialogTrigger asChild>
         <Button className="bg-primary hover:bg-primary/90">
           <Plus className="w-4 h-4 mr-2" />
-          Create Company
+          Create Stakeholder
         </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {isEditMode ? "Edit Company" : "Create Company"}
+            {isEditMode ? "Edit Stakeholder" : "Create Stakeholder"}
           </DialogTitle>
 
           <DialogDescription>Manage company information</DialogDescription>
@@ -288,7 +288,7 @@ export default function CompanyDialogueForm({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
           <div className="space-y-2">
-            <Label>Company Type *</Label>
+            <Label>Stakeholder Type *</Label>
 
             <Select
               value={form.company_type}
@@ -308,12 +308,12 @@ export default function CompanyDialogueForm({
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Company Name *</Label>
+            <Label>Stakeholder Name *</Label>
 
             <Input
               value={form.name}
               onChange={(e) => handleChange("name", e.target.value)}
-              placeholder="Company name"
+              placeholder="Stakeholder name"
             />
           </div>
           <div className="space-y-2">
@@ -627,9 +627,9 @@ export default function CompanyDialogueForm({
                   {isEditMode ? "Updating..." : "Creating..."}
                 </>
               ) : isEditMode ? (
-                "Update Company"
+                "Update Stakeholder"
               ) : (
-                "Create Company"
+                "Create Stakeholder"
               )}
             </Button>
           </div>

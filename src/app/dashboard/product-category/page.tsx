@@ -33,6 +33,7 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 
 import Loading from "@/src/components/common/Loading";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function ProductCategoriesPage() {
   const { categories, loading, fetchCategories, deleteCategory } =
@@ -92,7 +93,7 @@ export default function ProductCategoriesPage() {
 
         <CardContent>
           {loading ? (
-            <Loading text="Loading categories..." />
+            <TableSkeleton/>
           ) : (
             <Table>
               <TableHeader>
@@ -112,14 +113,14 @@ export default function ProductCategoriesPage() {
                       {/* NAME */}
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          {cat.icon ? (
+                          {/* {cat.icon ? (
                             <img
                               src={cat.icon}
                               className="w-8 h-8 rounded object-cover border"
                             />
                           ) : (
                             <div className="w-8 h-8 bg-muted rounded" />
-                          )}
+                          )} */}
 
                           <span className="font-medium">{cat.name}</span>
                         </div>

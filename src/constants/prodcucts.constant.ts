@@ -22,7 +22,7 @@ export interface IMedicineFormData {
   name: string;
   offered_price: number;
   overview: string;
-  preview_media_id: string;
+  preview_media_id: null | string;
   product_number: string;
   product_video_url: string;
   purchase_price: number;
@@ -43,7 +43,7 @@ export interface IMedicineFormData {
 
 export const defaultMedicineData: IMedicineFormData = {
   allow_return: false,
-  allow_warranty_claim: false,
+  allow_warranty_claim: true,
   barcode: "",
   brand_id: "",
   bundle_offer: "",
@@ -65,7 +65,7 @@ export const defaultMedicineData: IMedicineFormData = {
   name: "",
   offered_price: 1,
   overview: "",
-  preview_media_id: "",
+  preview_media_id: null,
   product_number: "",
   product_video_url: "",
   purchase_price: 1,
@@ -79,7 +79,7 @@ export const defaultMedicineData: IMedicineFormData = {
   supplier_id: "",
   tag_name: "",
   tax_rate: 1,
-  track_expiry_alert: false,
+  track_expiry_alert: true,
   unit_id: "",
   weight: 1,
 };

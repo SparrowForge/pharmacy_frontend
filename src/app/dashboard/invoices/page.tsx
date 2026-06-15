@@ -214,33 +214,32 @@ export default function SalesInvoicesPage() {
 
             <TableBody>
               {/* LOADING STATE */}
-              {salesInvoices.length > 0 ? (
-                fetchLoading ? (
-                  <TableSkeleton />
-                ) : (
-                  salesInvoices.map((invoice) => (
-                    <TableRow key={invoice.id}>
-                      <TableCell>{invoice.invoice_number}</TableCell>
-                      <TableCell>{invoice.customer_name}</TableCell>
-                      <TableCell>{invoice.status}</TableCell>
-                      <TableCell>{invoice.sale_type}</TableCell>
-                      <TableCell>{invoice.total_amount}</TableCell>
-                      <TableCell>{invoice.paid_amount}</TableCell>
-                      <TableCell>{invoice.due_amount}</TableCell>
-                      <TableCell>
-                        {new Date(invoice.invoice_date).toLocaleDateString()}
-                      </TableCell>
+              {fetchLoading ? (
+                <TableSkeleton />
+              ) : salesInvoices.length > 0 ? (
+                salesInvoices.map((invoice) => (
+                  <TableRow key={invoice.id}>
+                    <TableCell>{invoice.invoice_number}</TableCell>
+                    <TableCell>{invoice.customer_name}</TableCell>
+                    <TableCell>{invoice.status}</TableCell>
+                    <TableCell>{invoice.sale_type}</TableCell>
+                    <TableCell>{invoice.total_amount}</TableCell>
+                    <TableCell>{invoice.paid_amount}</TableCell>
+                    <TableCell>{invoice.due_amount}</TableCell>
+                    <TableCell>
+                      {new Date(invoice.invoice_date).toLocaleDateString()}
+                    </TableCell>
 
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
 
-                          <DropdownMenuContent align="end">
-                            {/* <DropdownMenuItem
+                        <DropdownMenuContent align="end">
+                          {/* <DropdownMenuItem
                             onClick={() => setEditId(invoice.id)}
                           >
                             <Edit className="w-4 h-4 mr-2" />
@@ -255,26 +254,25 @@ export default function SalesInvoicesPage() {
                             Delete
                           </DropdownMenuItem> */}
 
-                            <DropdownMenuItem
-                              onClick={() => handlePrintInvoice(invoice.id)}
-                            >
-                              <FileText className="w-4 h-4 mr-2" />
-                              Print Invoice
+                          <DropdownMenuItem
+                            onClick={() => handlePrintInvoice(invoice.id)}
+                          >
+                            <FileText className="w-4 h-4 mr-2" />
+                            Print Invoice
+                          </DropdownMenuItem>
+                          <Link
+                            href={`/dashboard/sales-returns/new/${invoice.id}`}
+                          >
+                            <DropdownMenuItem>
+                              <LucideHopOff className="w-4 h-4 mr-2" />
+                              Return Sale
                             </DropdownMenuItem>
-                            <Link
-                              href={`/dashboard/sales-returns/new/${invoice.id}`}
-                            >
-                              <DropdownMenuItem>
-                                <LucideHopOff className="w-4 h-4 mr-2" />
-                                Return Sale
-                              </DropdownMenuItem>
-                            </Link>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )
+                          </Link>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
               ) : (
                 <TableRow>
                   <TableCell className="text-center py-10 text-muted-foreground">

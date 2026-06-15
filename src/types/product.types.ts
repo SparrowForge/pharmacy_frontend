@@ -126,7 +126,7 @@ export interface ICreateProductPayload {
   meta_keyword: string;
   meta_description: string;
 
-  preview_media_id: string;
+  preview_media_id: string | null;
   product_video_url: string;
 
   status: string;
