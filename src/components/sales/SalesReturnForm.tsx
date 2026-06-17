@@ -53,12 +53,12 @@ export default function SalesReturnForm({ invoiceData }: SalesReturnFormProps) {
   const [notes, setNotes] = useState("");
   const [returnItems, setReturnItems] = useState<ReturnItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
 
   const { fetchReturnStatuses, returnStatuses } = useEnum();
   const { fetchProductUnits, units } = useProductUnits();
-  const { createSalesReturn } = useSalesReturns();
+  const { createSalesReturn, createLoading } = useSalesReturns();
 
   useEffect(() => {
     fetchReturnStatuses();
@@ -91,14 +91,12 @@ export default function SalesReturnForm({ invoiceData }: SalesReturnFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
     setError(null);
 
     const validItems = returnItems.filter((item) => item.return_qty > 0);
 
     if (!validItems.length) {
       setError("Please add at least one item to return");
-      setSubmitting(false);
       return;
     }
 
@@ -113,6 +111,7 @@ export default function SalesReturnForm({ invoiceData }: SalesReturnFormProps) {
     };
 
     await createSalesReturn(payload);
+    router.push("/dashboard/sales-returns")
   };
 
   if (loading) {
@@ -190,8 +189,8 @@ export default function SalesReturnForm({ invoiceData }: SalesReturnFormProps) {
       </Card>
 
       <div className="flex gap-4">
-        <Button type="submit" disabled={submitting}>
-          {submitting ? "Creating..." : "Create Return"}
+        <Button type="submit" disabled={createLoading}>
+          {createLoading ? "Creating..." : "Create Return"}
         </Button>
 
         <Button type="button" variant="outline" onClick={() => router.back()}>

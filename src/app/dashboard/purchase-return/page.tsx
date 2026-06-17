@@ -276,31 +276,31 @@ export default function PurchaseReturnsPage() {
             <TableBody>
               {fetchLoading ? (
                 <TableSkeleton />
-              ) : purchaseReturns.length > 0 ? (
-                purchaseReturns.map((item: any) => (
-                  <TableRow key={item.id}>
-                    <TableCell>{item.return_number}</TableCell>
+              ) : purchaseReturns?.length > 0 ? (
+                purchaseReturns?.map((item: any) => (
+                  <TableRow key={item?.id}>
+                    <TableCell>{item?.return_number}</TableCell>
 
-                    <TableCell>{item.supplier_name}</TableCell>
+                    <TableCell>{item?.supplier_name}</TableCell>
 
-                    <TableCell>{item.po_number}</TableCell>
+                    <TableCell>{item?.po_number}</TableCell>
 
-                    <TableCell>{item.item_count}</TableCell>
+                    <TableCell>{item?.item_count}</TableCell>
 
-                    <TableCell>{item.total_return_stock}</TableCell>
+                    <TableCell>{item?.total_return_stock}</TableCell>
 
                     <TableCell>
-                      ৳{Number(item.total_amount).toFixed(2)}
+                      ৳{Number(item?.total_amount).toFixed(2)}
                     </TableCell>
 
                     <TableCell>
-                      <Badge className={getStatusColor(item.status)}>
-                        {item.status}
+                      <Badge className={getStatusColor(item?.status)}>
+                        {item?.status}
                       </Badge>
                     </TableCell>
 
                     <TableCell>
-                      {new Date(item.created_at).toLocaleDateString()}
+                      {new Date(item?.created_at).toLocaleDateString()}
                     </TableCell>
 
                     {/* ACTIONS */}
@@ -313,7 +313,7 @@ export default function PurchaseReturnsPage() {
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent align="end">
-                          <Link href={`/dashboard/purchase-return/${item.id}`}>
+                          <Link href={`/dashboard/purchase-return/${item?.id}`}>
                             <DropdownMenuItem>
                               <Eye className="w-4 h-4 mr-2" />
                               View

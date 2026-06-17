@@ -9,8 +9,11 @@ import Loading from "@/src/components/common/Loading";
 export default function SalesReturnPage() {
   const router = useRouter();
   const { id } = useParams();
-  const { fetchSingleSalesInvoice, singleSalesInvoiceLoading, singleSalesInvoice } =
-    useSalesInvoice();
+  const {
+    fetchSingleSalesInvoice,
+    singleSalesInvoiceLoading,
+    singleSalesInvoice,
+  } = useSalesInvoice();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,6 +47,13 @@ export default function SalesReturnPage() {
     );
   }
 
+  const invoiceData = singleSalesInvoice
+    ? {
+        ...singleSalesInvoice,
+        items: (singleSalesInvoice as any).items ?? [],
+      }
+    : null;
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
@@ -53,7 +63,7 @@ export default function SalesReturnPage() {
           </h1>
           {/* <p className="text-gray-600 mt-2">Invoice: {invoiceData?.invoice_number}</p> */}
         </div>
-        {singleSalesInvoice && <SalesReturnForm invoiceData={singleSalesInvoice} />}
+        {invoiceData && <SalesReturnForm invoiceData={invoiceData} />}
       </div>
     </div>
   );
