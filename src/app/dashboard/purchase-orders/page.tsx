@@ -93,6 +93,8 @@ export default function PurchaseOrdersPage() {
     }
   };
 
+  // console.log(purchaseOrders)
+
   return (
     <div className="space-y-6">
       {/* Header */}

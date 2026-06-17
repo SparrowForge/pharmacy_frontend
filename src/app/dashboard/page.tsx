@@ -93,7 +93,11 @@ export default function DashboardPage() {
             Welcome back! Here&apos;s what&apos;s happening today.
           </p>
         </div>
-        <Button asChild className="bg-primary hover:bg-primary/90">
+
+        <Button
+          asChild
+          className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
+        >
           <Link href="/dashboard/pos">
             <Plus className="w-4 h-4 mr-2" />
             New Sale
@@ -102,7 +106,7 @@ export default function DashboardPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpiCards.map((kpi, index) => (
           <div
             key={index}
@@ -122,13 +126,13 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <SalesChart isLoading={summaryLoading} />
         <QuickActionsCard />
       </div>
 
       {/* Second Row */}
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <TopSellingCard data={todaySales} isLoading={todaySalesLoading} />
         <AIInsightsCard />
         <AlertsCard

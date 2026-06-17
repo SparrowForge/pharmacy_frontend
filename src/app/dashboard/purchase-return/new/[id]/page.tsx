@@ -126,7 +126,6 @@ export default function PurchaseOrderReturnForm() {
     await createPurchaseReturn(payload);
   };
 
-  console.log("Form Data:", singlePurchaseOrder, batches);
 
   useEffect(() => {
     if (!singlePurchaseOrder?.items?.length) return;
@@ -160,6 +159,8 @@ export default function PurchaseOrderReturnForm() {
   if (singlePurchaseOrderLoading) {
     return <Loading text="Loading Data ..." />;
   }
+
+  console.log(singlePurchaseOrder)
 
   return (
     <div className="space-y-6 p-4">
