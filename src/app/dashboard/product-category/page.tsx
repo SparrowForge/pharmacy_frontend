@@ -92,28 +92,27 @@ export default function ProductCategoriesPage() {
         </CardHeader>
 
         <CardContent>
-          {loading ? (
-            <TableSkeleton/>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Slug</TableHead>
-                  <TableHead>Parent</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Slug</TableHead>
+                <TableHead>Parent</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
 
-              <TableBody>
-                {categories?.length ? (
-                  categories.map((cat) => (
-                    <TableRow key={cat.id}>
-                      {/* NAME */}
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          {/* {cat.icon ? (
+            <TableBody>
+              {loading ? (
+                <TableSkeleton />
+              ) : categories?.length > 0 ? (
+                categories.map((cat) => (
+                  <TableRow key={cat.id}>
+                    {/* NAME */}
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        {/* {cat.icon ? (
                             <img
                               src={cat.icon}
                               className="w-8 h-8 rounded object-cover border"
@@ -122,85 +121,82 @@ export default function ProductCategoriesPage() {
                             <div className="w-8 h-8 bg-muted rounded" />
                           )} */}
 
-                          <span className="font-medium">{cat.name}</span>
-                        </div>
-                      </TableCell>
+                        <span className="font-medium">{cat.name}</span>
+                      </div>
+                    </TableCell>
 
-                      {/* SLUG */}
-                      <TableCell className="text-muted-foreground">
-                        {cat.slug}
-                      </TableCell>
+                    {/* SLUG */}
+                    <TableCell className="text-muted-foreground">
+                      {cat.slug}
+                    </TableCell>
 
-                      {/* PARENT */}
-                      <TableCell>
-                        {cat.parent_id ? (
-                          <Badge variant="outline">
-                            Parent: {cat.parent_id}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground text-sm">
-                            Root
-                          </span>
-                        )}
-                      </TableCell>
+                    {/* PARENT */}
+                    <TableCell>
+                      {cat.parent_id ? (
+                        <Badge variant="outline">Parent: {cat.parent_id}</Badge>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">
+                          Root
+                        </span>
+                      )}
+                    </TableCell>
 
-                      {/* STATUS */}
-                      <TableCell>
-                        {cat.is_delete ? (
-                          <Badge className="bg-red-100 text-red-700">
-                            Deleted
-                          </Badge>
-                        ) : (
-                          <Badge className="bg-green-100 text-green-700">
-                            Active
-                          </Badge>
-                        )}
-                      </TableCell>
+                    {/* STATUS */}
+                    <TableCell>
+                      {cat.is_delete ? (
+                        <Badge className="bg-red-100 text-red-700">
+                          Deleted
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-green-100 text-green-700">
+                          Active
+                        </Badge>
+                      )}
+                    </TableCell>
 
-                      {/* ACTIONS */}
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
+                    {/* ACTIONS */}
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
 
-                          <DropdownMenuContent align="end">
-                            {/* EDIT */}
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setCategoryId(cat.id);
-                                setOpenEdit(true);
-                              }}
-                            >
-                              <Edit className="w-4 h-4 mr-2" />
-                              Edit
-                            </DropdownMenuItem>
+                        <DropdownMenuContent align="end">
+                          {/* EDIT */}
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setCategoryId(cat.id);
+                              setOpenEdit(true);
+                            }}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
 
-                            {/* DELETE */}
-                            <DropdownMenuItem
-                              className="text-red-600"
-                              onClick={() => deleteCategory(cat.id)}
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-10">
-                      No categories found
+                          {/* DELETE */}
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            onClick={() => deleteCategory(cat.id)}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          )}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-10">
+                    No categories found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>

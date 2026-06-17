@@ -24,7 +24,6 @@ const createPurchaseOrderService = async (
   payload: ICreatePurchaseOrderPayload,
 ): Promise<IPurchaseOrder> => {
   const response = await axiosInstance.post("/purchase_orders", payload);
-
   return response.data;
 };
 

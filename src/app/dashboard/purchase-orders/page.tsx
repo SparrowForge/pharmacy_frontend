@@ -132,9 +132,9 @@ export default function PurchaseOrdersPage() {
 
             {/* Supplier Filter */}
             <div>
-              <Label className="text-sm mb-2 block">Supplier</Label>
+              <Label className="text-sm mb-2 block">Filter by Supplier</Label>
               <Select value={supplierId} onValueChange={setSupplierId}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="All Suppliers" />
                 </SelectTrigger>
                 <SelectContent>
@@ -188,88 +188,83 @@ export default function PurchaseOrdersPage() {
               </TableHeader>
 
               <TableBody>
-                {purchaseOrders.length > 0 ? (
-                  fetchLoading ? (
-                    <TableSkeleton />
-                  ) : (
-                    purchaseOrders.map((po: any) => (
-                      <TableRow key={po.id}>
-                        <TableCell className="font-medium">
-                          {po.po_number}
-                        </TableCell>
+                {fetchLoading ? (
+                  <TableSkeleton />
+                ) : purchaseOrders.length > 0 ? (
+                  purchaseOrders.map((po: any) => (
+                    <TableRow key={po.id}>
+                      <TableCell className="font-medium">
+                        {po.po_number}
+                      </TableCell>
 
-                        <TableCell>{po.supplier_name}</TableCell>
+                      <TableCell>{po.supplier_name}</TableCell>
 
-                        <TableCell className="text-right">
-                          {po.totalqty}
-                        </TableCell>
+                      <TableCell className="text-right">
+                        {po.totalqty}
+                      </TableCell>
 
-                        <TableCell className="text-right">
-                          {po.totalreceiveqty}
-                        </TableCell>
+                      <TableCell className="text-right">
+                        {po.totalreceiveqty}
+                      </TableCell>
 
-                        <TableCell className="text-right font-semibold">
-                          ৳{Number(po.total_amount).toFixed(2)}
-                        </TableCell>
+                      <TableCell className="text-right font-semibold">
+                        ৳{Number(po.total_amount).toFixed(2)}
+                      </TableCell>
 
-                        <TableCell>
-                          {new Date(po.placed_at).toLocaleDateString()}
-                        </TableCell>
+                      <TableCell>
+                        {new Date(po.placed_at).toLocaleDateString()}
+                      </TableCell>
 
-                        <TableCell>
-                          <Badge className={getStatusColor(po.status)}>
-                            {po.status}
-                          </Badge>
-                        </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(po.status)}>
+                          {po.status}
+                        </Badge>
+                      </TableCell>
 
-                        {/* 3 DOT ACTIONS */}
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreHorizontal className="w-4 h-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
+                      {/* 3 DOT ACTIONS */}
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
 
-                            <DropdownMenuContent align="end">
-                              {po.status !== "received" && (
-                                <Link
-                                  href={`/dashboard/purchase-receive/new/${po.id}`}
-                                >
-                                  <DropdownMenuItem>
-                                    <Eye className="w-4 h-4 mr-2" />
-                                    Receive Items
-                                  </DropdownMenuItem>
-                                </Link>
-                              )}
-
+                          <DropdownMenuContent align="end">
+                            {po.status !== "received" && (
                               <Link
-                                href={`/dashboard/purchase-return/new/${po.id}`}
+                                href={`/dashboard/purchase-receive/new/${po.id}`}
                               >
                                 <DropdownMenuItem>
                                   <Eye className="w-4 h-4 mr-2" />
-                                  Return Items
+                                  Receive Items
                                 </DropdownMenuItem>
                               </Link>
+                            )}
 
+                            <Link
+                              href={`/dashboard/purchase-return/new/${po.id}`}
+                            >
                               <DropdownMenuItem>
-                                <Download className="w-4 h-4 mr-2" />
-                                Download
+                                <Eye className="w-4 h-4 mr-2" />
+                                Return Items
                               </DropdownMenuItem>
+                            </Link>
 
-                              <DropdownMenuItem
-                                onClick={() => deletePurchaseOrder(po.id)}
-                                className="text-red-600"
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )
+                            
+
+                            <DropdownMenuItem
+                              onClick={() => deletePurchaseOrder(po.id)}
+                              className="text-red-600"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-8">

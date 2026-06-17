@@ -274,68 +274,56 @@ export default function PurchaseReturnsPage() {
             </TableHeader>
 
             <TableBody>
-              {purchaseReturns.length > 0 ? (
-                fetchLoading ? (
-                  <TableSkeleton />
-                ) : (
-                  purchaseReturns.map((item: any) => (
-                    <TableRow key={item.id}>
-                      <TableCell>{item.return_number}</TableCell>
+              {fetchLoading ? (
+                <TableSkeleton />
+              ) : purchaseReturns.length > 0 ? (
+                purchaseReturns.map((item: any) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.return_number}</TableCell>
 
-                      <TableCell>{item.supplier_name}</TableCell>
+                    <TableCell>{item.supplier_name}</TableCell>
 
-                      <TableCell>{item.po_number}</TableCell>
+                    <TableCell>{item.po_number}</TableCell>
 
-                      <TableCell>{item.item_count}</TableCell>
+                    <TableCell>{item.item_count}</TableCell>
 
-                      <TableCell>{item.total_return_stock}</TableCell>
+                    <TableCell>{item.total_return_stock}</TableCell>
 
-                      <TableCell>
-                        ৳{Number(item.total_amount).toFixed(2)}
-                      </TableCell>
+                    <TableCell>
+                      ৳{Number(item.total_amount).toFixed(2)}
+                    </TableCell>
 
-                      <TableCell>
-                        <Badge className={getStatusColor(item.status)}>
-                          {item.status}
-                        </Badge>
-                      </TableCell>
+                    <TableCell>
+                      <Badge className={getStatusColor(item.status)}>
+                        {item.status}
+                      </Badge>
+                    </TableCell>
 
-                      <TableCell>
-                        {new Date(item.created_at).toLocaleDateString()}
-                      </TableCell>
+                    <TableCell>
+                      {new Date(item.created_at).toLocaleDateString()}
+                    </TableCell>
 
-                      {/* ACTIONS */}
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
+                    {/* ACTIONS */}
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
 
-                          <DropdownMenuContent align="end">
-                            <Link
-                              href={`/dashboard/purchase-return/${item.id}`}
-                            >
-                              <DropdownMenuItem>
-                                <Eye className="w-4 h-4 mr-2" />
-                                View
-                              </DropdownMenuItem>
-                            </Link>
-
-                            {/* <DropdownMenuItem
-                              onClick={() => deletePurchaseReturn(item.id)}
-                              className="text-red-600"
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem> */}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )
+                        <DropdownMenuContent align="end">
+                          <Link href={`/dashboard/purchase-return/${item.id}`}>
+                            <DropdownMenuItem>
+                              <Eye className="w-4 h-4 mr-2" />
+                              View
+                            </DropdownMenuItem>
+                          </Link>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
               ) : (
                 <TableRow>
                   <TableCell colSpan={9} className="text-center py-8">

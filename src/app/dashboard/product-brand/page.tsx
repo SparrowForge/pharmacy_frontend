@@ -32,6 +32,7 @@ import { useProductBrands } from "@/src/hooks/useProductBrands";
 import { useCompanies } from "@/src/hooks/useCompanies";
 
 import ProductBrandDialog from "@/src/components/product-brand/ProductBrandDialogueForm";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function ProductBrandPage() {
   const [page, setPage] = useState(1);
@@ -103,54 +104,64 @@ export default function ProductBrandPage() {
             </TableHeader>
 
             <TableBody>
-              {brands?.map((b) => (
-                <TableRow key={b.id}>
-                  <TableCell className="font-medium">{b.name}</TableCell>
+              {fetchLoading ? (
+                <TableSkeleton />
+              ) : brands.length > 0 ? (
+                brands?.map((b) => (
+                  <TableRow key={b.id}>
+                    <TableCell className="font-medium">{b.name}</TableCell>
 
-                  <TableCell>{b.slug}</TableCell>
+                    <TableCell>{b.slug}</TableCell>
 
-                  <TableCell className="flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-muted-foreground" />
-                    {b.manufacturer_id}
-                  </TableCell>
+                    <TableCell className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-muted-foreground" />
+                      {b.manufacturer_id}
+                    </TableCell>
 
-                  <TableCell>
-                    <Badge variant="outline">
-                      {b.is_delete ? "Deleted" : "Active"}
-                    </Badge>
-                  </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">
+                        {b.is_delete ? "Deleted" : "Active"}
+                      </Badge>
+                    </TableCell>
 
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
 
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setEditId(b.id);
-                            setOpen(true);
-                          }}
-                        >
-                          <Edit className="w-4 h-4 mr-2" />
-                          Edit
-                        </DropdownMenuItem>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setEditId(b.id);
+                              setOpen(true);
+                            }}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
 
-                        <DropdownMenuItem
-                          className="text-red-500"
-                          onClick={() => deleteBrand(b.id)}
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                          <DropdownMenuItem
+                            className="text-red-500"
+                            onClick={() => deleteBrand(b.id)}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-10">
+                    No data found
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </CardContent>

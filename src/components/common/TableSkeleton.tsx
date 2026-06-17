@@ -7,7 +7,7 @@ interface TableSkeletonProps {
 
 export default function TableSkeleton({
   rows = 5,
-  columns = 6,
+  columns = 8,
 }: TableSkeletonProps) {
   return (
     <>

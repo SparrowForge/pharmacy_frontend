@@ -57,7 +57,7 @@ export interface IGetPurchaseOrdersQuery {
 
   q?: string;
 
-  supplierId?: string;
+  supplier_id?: string;
 
   includeDeleted?: boolean;
 }

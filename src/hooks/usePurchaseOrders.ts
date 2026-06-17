@@ -50,7 +50,7 @@ export const usePurchaseOrders = () => {
           page: params?.page ?? 1,
           limit: params?.limit ?? 10,
           q: params?.q ?? "",
-          supplierId: params?.supplierId,
+          supplier_id: params?.supplierId,
           includeDeleted: params?.includeDeleted ?? false,
         });
 

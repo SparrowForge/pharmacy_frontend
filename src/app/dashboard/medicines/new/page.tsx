@@ -640,7 +640,7 @@ export default function AddMedicinePage() {
                       <div className="grid sm:grid-cols-2 gap-4 mb-4">
                         <div className="space-y-2">
                           <Label htmlFor="purchasePrice">
-                            Purchase Price ($)
+                            Purchase Per Unit Price 
                           </Label>
                           <Input
                             id="purchasePrice"
@@ -657,7 +657,7 @@ export default function AddMedicinePage() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="mrp">MRP ($)</Label>
+                          <Label htmlFor="mrp">MRP </Label>
                           <Input
                             id="mrp"
                             type="number"
@@ -674,7 +674,7 @@ export default function AddMedicinePage() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="sellingPrice">
-                            Selling Price ($)
+                            Selling Per Unit Price 
                           </Label>
                           <Input
                             id="sellingPrice"
@@ -692,7 +692,7 @@ export default function AddMedicinePage() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="offeredPrice">
-                            Offered Price ($)
+                            Offered Per Unit Price 
                           </Label>
                           <Input
                             id="offeredPrice"
@@ -817,7 +817,7 @@ export default function AddMedicinePage() {
 
                         <div className="space-y-2">
                           <Label htmlFor="shippingCost">
-                            Shipping Cost ($)
+                            Shipping Cost 
                           </Label>
                           <Input
                             id="shippingCost"

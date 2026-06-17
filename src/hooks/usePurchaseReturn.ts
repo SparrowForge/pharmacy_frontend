@@ -28,15 +28,10 @@ export const usePurchaseReturn = () => {
     async (payload: ICreatePurchaseReturnPayload) => {
       try {
         dispatch(createPurchaseReturnStart());
-
         const res = await purchaseReturnService.createPurchaseReturn(payload);
-
         dispatch(createPurchaseReturnSuccess(res));
-
         toast.success(res?.data &&  "Purchase return created");
-
         router.push("/dashboard/purchase-return");
-
         return res;
       } catch (error: any) {
         const message =

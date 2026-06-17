@@ -18,8 +18,10 @@ import { TopSellingCard } from "@/src/components/dashboard/TopSellingCard";
 import { AIInsightsCard } from "@/src/components/dashboard/AIInsightCard";
 import { AlertsCard } from "@/src/components/dashboard/AlertsCard";
 import { RecentActivityTable } from "@/src/components/dashboard/RecentActivityTable";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
+  const router = useRouter();
   const {
     summary,
     summaryLoading,
@@ -39,7 +41,7 @@ export default function DashboardPage() {
     fetchSummary(30);
     fetchTodaySales(1, 20);
     fetchLowStock(1, 20);
-    fetchExpiringSoon(30, 1, 20);
+    fetchExpiringSoon(7, 1, 20);
   }, [fetchSummary, fetchTodaySales, fetchLowStock, fetchExpiringSoon]);
 
   const kpiCards = [
@@ -50,6 +52,7 @@ export default function DashboardPage() {
       trend: "up" as const,
       icon: <DollarSign className="w-6 h-6" />,
       color: "bg-primary/10 text-primary",
+      route: "",
     },
     {
       title: "Total Orders",
@@ -58,6 +61,7 @@ export default function DashboardPage() {
       trend: "up" as const,
       icon: <ShoppingCart className="w-6 h-6" />,
       color: "bg-blue-500/10 text-blue-500",
+      route: "",
     },
     {
       title: "Low Stock Items",
@@ -66,6 +70,7 @@ export default function DashboardPage() {
       trend: "down" as const,
       icon: <Package className="w-6 h-6" />,
       color: "bg-orange-500/10 text-orange-500",
+      route: "/dashboard/low-stock",
     },
     {
       title: "Expiring Soon",
@@ -74,6 +79,7 @@ export default function DashboardPage() {
       trend: "neutral" as const,
       icon: <AlertTriangle className="w-6 h-6" />,
       color: "bg-red-500/10 text-red-500",
+      route: "/dashboard/expiring",
     },
   ];
 
@@ -98,15 +104,20 @@ export default function DashboardPage() {
       {/* KPI Cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpiCards.map((kpi, index) => (
-          <KPICard
+          <div
             key={index}
-            title={kpi.title}
-            value={kpi.value}
-            change={kpi.change}
-            trend={kpi.trend}
-            icon={kpi.icon}
-            color={kpi.color}
-          />
+            onClick={() => router.push(kpi.route)}
+            className="cursor-pointer transition-transform hover:scale-[1.02]"
+          >
+            <KPICard
+              title={kpi.title}
+              value={kpi.value}
+              change={kpi.change}
+              trend={kpi.trend}
+              icon={kpi.icon}
+              color={kpi.color}
+            />
+          </div>
         ))}
       </div>
 

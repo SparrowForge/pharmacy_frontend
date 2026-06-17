@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/src/components/ui/card";
 import { AlertTriangle, Clock, ShoppingCart } from "lucide-react";
+import Link from "next/link";
 
 interface AlertsCardProps {
   lowStockCount?: number;
@@ -46,13 +47,15 @@ export function AlertsCard({
               <p className="text-xs text-muted-foreground">
                 {lowStockCount} medicines are below minimum stock level
               </p>
-              <Button
-                size="sm"
-                variant="link"
-                className="h-6 px-0 text-xs text-red-600"
-              >
-                View all
-              </Button>
+              <Link href="/dashboard/low-stock">
+                <Button
+                  size="sm"
+                  variant="link"
+                  className="h-6 px-0 text-xs text-red-600"
+                >
+                  View all
+                </Button>
+              </Link>
             </div>
             <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
               <div className="flex items-center gap-2 mb-1">
@@ -64,13 +67,15 @@ export function AlertsCard({
               <p className="text-xs text-muted-foreground">
                 {expiringCount} medicines expiring within 30 days
               </p>
-              <Button
-                size="sm"
-                variant="link"
-                className="h-6 px-0 text-xs text-orange-600"
-              >
-                View all
-              </Button>
+              <Link href="/dashboard/expiring">
+                <Button
+                  size="sm"
+                  variant="link"
+                  className="h-6 px-0 text-xs text-orange-600"
+                >
+                  View all
+                </Button>
+              </Link>
             </div>
             <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
               <div className="flex items-center gap-2 mb-1">
