@@ -117,3 +117,19 @@ export interface ICurrentUser {
   shopId?: string;
   branchId?: string;
 }
+
+
+export interface IRefreshTokenPayload {
+  refreshToken: string;
+}
+
+export interface IRefreshTokenResponse {
+  message: string;
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+    tokenType: string;
+    accessTokenExpiresIn: string;
+    refreshTokenExpiresIn: string;
+  };
+}

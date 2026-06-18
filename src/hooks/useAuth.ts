@@ -35,6 +35,9 @@ import {
   resetPasswordSuccess,
   resetPasswordFailure,
   logout,
+  refreshTokenStart,
+  refreshTokenSuccess,
+  refreshTokenFailure,
 } from "../redux/features/auth/authSlice";
 
 import { authService } from "../services/auth.service";
@@ -98,7 +101,10 @@ export const useAuth = () => {
           }),
         );
 
-        toast.success(response.message + 'Please check your email inbox and click the verification link to verify your account.');
+        toast.success(
+          response.message +
+            "Please check your email inbox and click the verification link to verify your account.",
+        );
 
         return response;
       } catch (error: any) {
@@ -229,6 +235,39 @@ export const useAuth = () => {
     router.push("/login");
   }, [dispatch]);
 
+  /* --------------------REFRESH ACCESS TOKEN-------------------- */
+  const refreshAccessToken = useCallback(
+    async (refreshToken: string) => {
+      try {
+        dispatch(refreshTokenStart());
+
+        const response = await authService.refreshAccessTokenService({
+          refreshToken,
+        });
+
+        dispatch(
+          refreshTokenSuccess({
+            tokens: response.tokens,
+            message: response.message,
+          }),
+        );
+
+        localStorage.setItem("accessToken", response.tokens.accessToken);
+        localStorage.setItem("refreshToken", response.tokens.refreshToken);
+
+        return response;
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message || "Token refresh failed";
+
+        dispatch(refreshTokenFailure(message));
+
+        throw error;
+      }
+    },
+    [dispatch],
+  );
+
   /* ---------------- STATE  ---------------- */
   const memoizedState = useMemo(
     () => ({
@@ -251,6 +290,7 @@ export const useAuth = () => {
     verifyResetCodeUser,
     resetPasswordUser,
     logoutUser,
+    refreshAccessToken,
     ...memoizedState,
   };
 };

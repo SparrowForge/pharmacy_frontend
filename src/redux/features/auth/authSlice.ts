@@ -189,6 +189,30 @@ const authSlice = createSlice({
       state.error = action.payload;
     },
 
+    /*-------------------------Refresh Access Token---------------------- */
+    refreshTokenStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+
+    refreshTokenSuccess: (
+      state,
+      action: PayloadAction<{
+        tokens: ITokens;
+        message: string;
+      }>,
+    ) => {
+      state.loading = false;
+      state.tokens = action.payload.tokens;
+      state.isAuthenticated = true;
+      state.error = null;
+    },
+
+    refreshTokenFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
     /* ---------------- AUTH LOGIN REDUCERS ---------------- */
     clearAuthMessage: (state) => {
       state.error = null;
@@ -245,6 +269,11 @@ export const {
   resetPasswordStart,
   resetPasswordSuccess,
   resetPasswordFailure,
+
+  /*-------------------------Refresh Access Token---------------------- */
+  refreshTokenStart,
+  refreshTokenSuccess,
+  refreshTokenFailure,
 
   clearAuthMessage,
   logout,

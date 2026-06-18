@@ -3,6 +3,8 @@ import {
   IAuthLoginResponse,
   IForgotPasswordPayload,
   IForgotPasswordResponse,
+  IRefreshTokenPayload,
+  IRefreshTokenResponse,
   IRegisterPayload,
   IRegisterResponse,
   IResendVerificationEmailPayload,
@@ -93,6 +95,17 @@ const resetPasswordService = async (
   return res.data;
 };
 
+const refreshAccessTokenService = async (
+  data: IRefreshTokenPayload,
+): Promise<IRefreshTokenResponse> => {
+  const res = await axiosInstance.post<IRefreshTokenResponse>(
+    "/auth/refresh",
+    data,
+  );
+
+  return res.data;
+};
+
 export const authService = {
   loginUserService,
   registerUserService,
@@ -101,4 +114,5 @@ export const authService = {
   verifyResetCodeService,
   resetPasswordService,
   resendVerificationEmailService,
+  refreshAccessTokenService
 };
