@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
@@ -81,9 +81,30 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle("dark");
-  };
+  const newMode = !isDarkMode;
+
+  setIsDarkMode(newMode);
+
+  if (newMode) {
+    document.documentElement.classList.add("dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme", "light");
+  }
+};
+
+  useEffect(() => {
+  const savedTheme = localStorage.getItem("theme");
+
+  if (savedTheme === "dark") {
+    document.documentElement.classList.add("dark");
+    setIsDarkMode(true);
+  } else {
+    document.documentElement.classList.remove("dark");
+    setIsDarkMode(false);
+  }
+}, []);
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -118,9 +139,9 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
         sidebarCollapsed ? "left-[72px]" : "left-64",
       )}
     >
-      <div className="flex items-center justify-between h-full px-6">
+      <div className="flex items-center justify-end h-full px-6">
         {/* Search */}
-        <div className="flex-1 max-w-md">
+        {/* <div className="flex-1 max-w-md">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-foreground/70" />
             <Input
@@ -132,7 +153,7 @@ export function Header({ sidebarCollapsed }: HeaderProps) {
               <span className="text-xs">⌘</span>K
             </kbd>
           </div>
-        </div>
+        </div> */}
 
         {/* Actions */}
         <div className="flex items-center gap-2">
