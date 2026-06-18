@@ -88,7 +88,7 @@ export function ProductList({
           </div>
         ) : (
           <ScrollArea className="h-full w-full">
-            <div className="p-4 grid grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="p-4 grid grid-cols-1 lg:grid-cols-3 gap-3">
               {paginatedProducts.map((product) => {
                 const inStock = product.closing_stock > 0;
 

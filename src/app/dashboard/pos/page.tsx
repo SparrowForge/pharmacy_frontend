@@ -48,7 +48,6 @@ export default function POSPage() {
   const [showInvoice, setShowInvoice] = useState(false);
 
   // ================= FILTERS
-  // =================
   const [search, setSearch] = useState("");
   const [barcodeInput, setBarcodeInput] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -57,28 +56,32 @@ export default function POSPage() {
   const [branchId, setBranchId] = useState("");
   const [saleType, setSaleType] = useState("");
 
-  // ================= CART (KEEP UI)
-  // =================
+  // ================= CART
   const [cart, setCart] = useState<CartItem[]>([]);
   const [discountInfo, setDiscountInfo] = useState<any>(null);
 
-  // ================= PAYMENT (MULTIPLE METHODS SUPPORT)
-  // =================
+  // ================= PAYMENT
   const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
     PaymentEntry[]
   >([{ method_id: "", amount: "" }]);
+
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // ================= CUSTOMER (KEEP UI)
-  // =================
+  // ================= CUSTOMER
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
 
-  // ================= TRANSACTION QUEUE
-  // =================
+  // ================= TRANSACTIONS
   const [transactions, setTransactions] = useState<any[]>([]);
   const [activeTransactionIndex, setActiveTransactionIndex] = useState<
     number | null
   >(null);
+
+  // ================= FIXED: MISSING FUNCTION =================
+  const handleClearCart = () => {
+    setCart([]);
+    setDiscountInfo(null);
+    setSelectedPaymentMethods([{ method_id: "", amount: "" }]);
+  };
 
   const handleHoldTransaction = () => {
     if (cart.length === 0 && !selectedCustomer) {
@@ -99,7 +102,6 @@ export default function POSPage() {
 
     setTransactions((prev) => [...prev, transaction]);
 
-    // reset UI for next customer
     handleClearCart();
     setSelectedCustomer(null);
     setDiscountInfo(null);
@@ -130,7 +132,6 @@ export default function POSPage() {
   };
 
   // ================= HOOKS
-  // =================
   const { categories, fetchCategories } = useProductCategories();
   const { shops, fetchShops } = useShops();
   const { branches, fetchBranches } = useBranches();
@@ -147,25 +148,28 @@ export default function POSPage() {
   const { fetchAvailablePurchaseReceiptItems } = usePurchaseOrderReceive();
 
   // ================= TOTALS
-  // =================
   const subtotal = cart.reduce((sum, i) => sum + i.unit_price * i.sales_qty, 0);
+
   const discountAmount = discountInfo?.amount || 0;
   const taxAmount = cart.reduce((sum, i) => sum + i.tax, 0);
   const total = subtotal - discountAmount + taxAmount;
 
-  // ================= ADD TO CART (FIXED)
-  // =================
+  // ================= ADD TO CART
   const handleAddToCart = async (product: any) => {
     try {
       const existing = cart.find((i) => i.product_id === product.product_id);
+
       const batches = await fetchAvailablePurchaseReceiptItems(
         product.product_id,
       );
+
       const batch = batches?.[0];
+
       if (!batch) {
         toast.error("No batch available");
         return;
       }
+
       if (existing) {
         setCart((prev) =>
           prev.map((i) =>
@@ -176,19 +180,17 @@ export default function POSPage() {
         );
         return;
       }
+
       setCart((prev) => [
         ...prev,
         {
           product_id: product.product_id,
           product_batch_id: batch.product_batch_id,
           sales_unit_id: batch.purchase_unit_id || "",
-
           sales_qty: 1,
           unit_price: batch.selling_price || 0,
-
           discount: 0,
           tax: 0,
-
           name: product.name,
         },
       ]);
@@ -200,7 +202,6 @@ export default function POSPage() {
   };
 
   // ================= CART UPDATE
-  // =================
   const handleUpdateQuantity = (productId: string, qty: number) => {
     if (qty <= 0) {
       setCart((prev) => prev.filter((i) => i.product_id !== productId));
@@ -218,14 +219,7 @@ export default function POSPage() {
     setCart((prev) => prev.filter((i) => i.product_id !== productId));
   };
 
-  const handleClearCart = () => {
-    setCart([]);
-    setDiscountInfo(null);
-    setSelectedPaymentMethods([{ method_id: "", amount: "" }]);
-  };
-
-  // ================= PAYMENT (MULTIPLE METHODS SUPPORT)
-  // =================
+  // ================= PAYMENT
   const handleCompletePayment = async () => {
     if (!selectedCustomer) {
       toast.error("Select customer");
@@ -237,7 +231,6 @@ export default function POSPage() {
       return;
     }
 
-    // Build payments array from selected methods
     const payments = selectedPaymentMethods
       .filter((m) => m.method_id && parseFloat(m.amount) > 0)
       .map((m) => ({
@@ -245,10 +238,8 @@ export default function POSPage() {
         amount: parseFloat(m.amount) || 0,
         shop_id: shopId,
         branch_id: branchId,
-
         reference_type: "invoice",
         reference_id: null,
-
         status: "pending",
         paid_at: new Date().toISOString(),
         notes: "",
@@ -256,7 +247,6 @@ export default function POSPage() {
 
     const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
 
-    // Validate for cash sales
     if (saleType === "cash" && totalPaid < total) {
       toast.error(
         `Insufficient payment. Need $${(total - totalPaid).toFixed(2)} more.`,
@@ -267,30 +257,22 @@ export default function POSPage() {
     const payload: InvoicePayload = {
       invoice_number: Date.now().toString(),
       customer_id: selectedCustomer.id,
-
       shop_id: shopId,
       branch_id: branchId,
-
       status,
       sale_type: saleType,
-
       discount_amount: discountAmount,
       tax_amount: taxAmount,
       paid_amount: totalPaid,
-
       invoice_date: new Date().toISOString(),
       notes: "",
-
       payments,
-
       items: cart.map((i) => ({
         product_id: i.product_id,
         product_batch_id: i.product_batch_id,
         sales_unit_id: i.sales_unit_id,
-
         sales_qty: i.sales_qty,
         unit_price: i.unit_price,
-
         discount: i.discount,
         tax: i.tax,
       })),
@@ -311,19 +293,17 @@ export default function POSPage() {
         setIsProcessing(false);
       }
     } catch (error: any) {
-      console.error("Create Invoice Error:", error);
-
       toast.error(
         error?.message || "Something went wrong while creating invoice",
       );
       setIsProcessing(false);
     }
+
     setTrigger(!trigger);
     handleClearCart();
   };
 
-  // ================= BARCODE (SAFE)
-  // =================
+  // ================= BARCODE
   const handleBarcodeScan = () => {
     const product = stockReportData.find((p) => p.barcode === barcodeInput);
 
@@ -337,7 +317,6 @@ export default function POSPage() {
   };
 
   // ================= INIT
-  // =================
   useEffect(() => {
     fetchCategories();
     fetchShops();
@@ -350,33 +329,35 @@ export default function POSPage() {
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
 
-    const payload: any = {
+    fetchStockReport({
       start_date: today,
       end_date: today,
-    };
-
-    if (selectedCategory) {
-      payload.category_id = selectedCategory;
-    }
-
-    fetchStockReport(payload);
+    });
   }, [selectedCategory, trigger]);
 
   return (
-    <div className="flex flex-col gap-4 h-[calc(100vh-7rem)] bg-background h-full overflow-hidden">
-      <div className="flex gap-4 flex-1 overflow-hidden">
-        <div className="flex-1 flex flex-col gap-4 min-w-0">
-          <div className="flex items-center justify-between p-2 border-b">
+    <div className="flex flex-col gap-4 bg-background min-h-[calc(100dvh-7rem)] xl:h-[calc(100dvh-7rem)]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_420px] xl:flex-1 xl:overflow-hidden">
+        {/* Left Section */}
+        <div className="flex flex-col gap-4 min-w-0">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-2 border-b">
             <h2 className="font-semibold">POS</h2>
 
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={handleHoldTransaction}>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button
+                variant="outline"
+                onClick={handleHoldTransaction}
+                className="w-full sm:w-auto"
+              >
                 Hold Transaction
               </Button>
 
-              <Button>Queue ({transactions.length})</Button>
+              <Button className="w-full sm:w-auto">
+                Queue ({transactions.length})
+              </Button>
             </div>
           </div>
+
           <FiltersSection
             search={search}
             onSearchChange={setSearch}
@@ -402,62 +383,56 @@ export default function POSPage() {
             onSelectedCustomerChange={setSelectedCustomer}
           />
 
-          <ProductList
-            products={stockReportData}
-            loading={fetchLoading}
-            onAddToCart={handleAddToCart}
-            search={search}
-          />
+          <div className="xl:flex-1 xl:overflow-hidden">
+            <ProductList
+              products={stockReportData}
+              loading={fetchLoading}
+              onAddToCart={handleAddToCart}
+              search={search}
+            />
+          </div>
         </div>
 
-        <ScrollArea className="w-96 h-full overflow-hidden">
-          <div className="flex flex-col gap-4 pr-4">
-            <SalesWatch />
-            {/* CUSTOMER (UNCHANGED) */}
-            <CartSummary
-              cart={cart}
-              subtotal={subtotal}
-              discountAmount={discountAmount}
-              taxAmount={taxAmount}
-              total={total}
-              onUpdateItem={handleUpdateQuantity}
-              onRemoveItem={handleRemoveFromCart}
-              onClearCart={handleClearCart}
-            />
+        {/* Cart Section */}
+        <div className="border rounded-lg bg-card xl:overflow-hidden">
+          <ScrollArea className="xl:h-full">
+            <div className="flex flex-col gap-4 p-4">
+              <SalesWatch />
 
-            {cart.length > 0 && (
-              <>
-                {/* DISCOUNT (UNCHANGED UI) */}
-                <DiscountSection
-                  subtotal={subtotal}
-                  onApplyDiscount={setDiscountInfo}
-                  onClearDiscount={() => setDiscountInfo(null)}
-                  currentDiscount={discountInfo}
-                />
-
-                {/* PAYMENT (MULTIPLE METHODS SUPPORT) */}
-                <PaymentSection
-                  saleType={saleType as any}
-                  total={total}
-                  paymentMethods={paymentMethods}
-                  selectedMethods={selectedPaymentMethods}
-                  onMethodsChange={setSelectedPaymentMethods}
-                  onPaymentComplete={handleCompletePayment}
-                  isProcessing={isProcessing}
-                />
-              </>
-            )}
-
-            {/* TRANSACTION QUEUE */}
-            {/* {transactions.length > 0 && (
-              <TransactionQueue
-                transactions={transactions}
-                onRemove={removeTransaction}
-                onClearCompleted={clearCompleted}
+              <CartSummary
+                cart={cart}
+                subtotal={subtotal}
+                discountAmount={discountAmount}
+                taxAmount={taxAmount}
+                total={total}
+                onUpdateItem={handleUpdateQuantity}
+                onRemoveItem={handleRemoveFromCart}
+                onClearCart={handleClearCart}
               />
-            )} */}
-          </div>
-        </ScrollArea>
+
+              {cart.length > 0 && (
+                <>
+                  <DiscountSection
+                    subtotal={subtotal}
+                    onApplyDiscount={setDiscountInfo}
+                    onClearDiscount={() => setDiscountInfo(null)}
+                    currentDiscount={discountInfo}
+                  />
+
+                  <PaymentSection
+                    saleType={saleType as any}
+                    total={total}
+                    paymentMethods={paymentMethods}
+                    selectedMethods={selectedPaymentMethods}
+                    onMethodsChange={setSelectedPaymentMethods}
+                    onPaymentComplete={handleCompletePayment}
+                    isProcessing={isProcessing}
+                  />
+                </>
+              )}
+            </div>
+          </ScrollArea>
+        </div>
       </div>
 
       {invoiceData && (
@@ -469,17 +444,22 @@ export default function POSPage() {
       )}
 
       {transactions.length > 0 && (
-        <div className="border rounded p-2 space-y-2">
+        <div className="border rounded-lg p-4 space-y-3">
           <h3 className="font-medium">Held Transactions</h3>
 
           {transactions.map((t, index) => (
             <div
               key={t.id}
-              className="flex justify-between items-center border p-2 rounded"
+              className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border p-3 rounded-lg"
             >
               <div>
-                <p className="text-sm">{t.selectedCustomer?.name || "Guest"}</p>
-                <p className="text-xs text-gray-500">Items: {t.cart.length}</p>
+                <p className="font-medium">
+                  {t.selectedCustomer?.name || "Guest"}
+                </p>
+
+                <p className="text-sm text-muted-foreground">
+                  Items: {t.cart.length}
+                </p>
               </div>
 
               <div className="flex gap-2">
