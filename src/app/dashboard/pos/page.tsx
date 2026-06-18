@@ -336,7 +336,7 @@ export default function POSPage() {
   }, [selectedCategory, trigger]);
 
   return (
-    <div className="flex flex-col gap-4 bg-background min-h-[calc(100dvh-7rem)] xl:h-[calc(100dvh-7rem)]">
+    <div className="flex flex-col gap-4 bg-background">
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_420px] xl:flex-1 xl:overflow-hidden">
         {/* Left Section */}
         <div className="flex flex-col gap-4 min-w-0">
