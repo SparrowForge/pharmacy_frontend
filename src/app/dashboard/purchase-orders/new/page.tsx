@@ -539,7 +539,7 @@ export default function PurchaseOrderForm({
         <div className="lg:col-span-1">
           <Card className="border-border sticky top-4">
             <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
+              <CardTitle>Cart Total</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Items Summary */}

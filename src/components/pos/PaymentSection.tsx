@@ -99,6 +99,8 @@ export function PaymentSection({
   const handleAmountChange = (index: number, amount: string) => {
     const updated = [...selectedMethods];
     updated[index].amount = amount;
+
+    console.log(updated)
     onMethodsChange(updated);
   };
 

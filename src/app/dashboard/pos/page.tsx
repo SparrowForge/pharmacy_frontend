@@ -131,7 +131,7 @@ export default function POSPage() {
     setTransactions((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // ================= HOOKS
+
   const { categories, fetchCategories } = useProductCategories();
   const { shops, fetchShops } = useShops();
   const { branches, fetchBranches } = useBranches();
@@ -147,24 +147,20 @@ export default function POSPage() {
 
   const { fetchAvailablePurchaseReceiptItems } = usePurchaseOrderReceive();
 
-  // ================= TOTALS
-  const subtotal = cart.reduce((sum, i) => sum + i.unit_price * i.sales_qty, 0);
 
+  const subtotal = cart.reduce((sum, i) => sum + i.unit_price * i.sales_qty, 0);
   const discountAmount = discountInfo?.amount || 0;
   const taxAmount = cart.reduce((sum, i) => sum + i.tax, 0);
   const total = subtotal - discountAmount + taxAmount;
 
-  // ================= ADD TO CART
+
   const handleAddToCart = async (product: any) => {
     try {
       const existing = cart.find((i) => i.product_id === product.product_id);
-
       const batches = await fetchAvailablePurchaseReceiptItems(
         product.product_id,
       );
-
       const batch = batches?.[0];
-
       if (!batch) {
         toast.error("No batch available");
         return;
@@ -232,7 +228,7 @@ export default function POSPage() {
     }
 
     const payments = selectedPaymentMethods
-      .filter((m) => m.method_id && parseFloat(m.amount) > 0)
+      .filter((m) => m.method_id)
       .map((m) => ({
         payment_method_id: m.method_id,
         amount: parseFloat(m.amount) || 0,
@@ -246,6 +242,8 @@ export default function POSPage() {
       }));
 
     const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
+    console.log("totalPaid",totalPaid)
+    console.log("payments",payments)
 
     if (saleType === "cash" && totalPaid < total) {
       toast.error(
@@ -288,11 +286,14 @@ export default function POSPage() {
         setInvoiceData(res);
         setShowInvoice(true);
         setIsProcessing(false);
+        handleClearCart();
       } else {
         toast.error("Invoice creation failed");
         setIsProcessing(false);
       }
     } catch (error: any) {
+
+
       toast.error(
         error?.message || "Something went wrong while creating invoice",
       );
@@ -300,7 +301,6 @@ export default function POSPage() {
     }
 
     setTrigger(!trigger);
-    handleClearCart();
   };
 
   // ================= BARCODE
