@@ -34,6 +34,7 @@ import {
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
 import ProductUnitDialogForm from "@/src/components/product-units/ProductUnitDialougeForm";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function ProductUnitsPage() {
   const [page, setPage] = useState(initialPage);
@@ -115,23 +116,23 @@ export default function ProductUnitsPage() {
         </CardHeader>
 
         <CardContent>
-          {fetchLoading ? (
-            <Loading text="Loading units..." />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Short Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Conversion</TableHead>
-                  <TableHead>Default</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Short Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Conversion</TableHead>
+                <TableHead>Default</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
 
-              <TableBody>
-                {units?.map((unit) => (
+            <TableBody>
+              {fetchLoading ? (
+                <TableSkeleton />
+              ) : units.length > 0 ? (
+                units?.map((unit) => (
                   <TableRow key={unit.id}>
                     {/* NAME */}
                     <TableCell>
@@ -191,10 +192,16 @@ export default function ProductUnitsPage() {
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    No purchase orders found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 

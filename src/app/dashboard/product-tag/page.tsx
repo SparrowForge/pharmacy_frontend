@@ -33,13 +33,13 @@ import { useAppSelector } from "@/src/redux/hooks";
 import { useProductTags } from "@/src/hooks/useProductTags";
 import ProductTagDialog from "@/src/components/product-tag/ProductTagDialogForm";
 import Loading from "@/src/components/common/Loading";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function ProductTagsPage() {
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [search, setSearch] = useState("");
   const [includeDeleted, setIncludeDeleted] = useState(false);
-
   const [editId, setEditId] = useState<string | null>(null);
 
   const { fetchProductTags, deleteProductTag } = useProductTags();
@@ -100,77 +100,75 @@ export default function ProductTagsPage() {
         </CardHeader>
 
         <CardContent>
-          {fetchLoading ? (
-            <Loading text="Loading data..." />
-          ) : (
-            <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Product ID</TableHead>
-                    <TableHead>Tag</TableHead>
-                    <TableHead className="w-[80px]" />
-                  </TableRow>
-                </TableHeader>
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Product ID</TableHead>
+                  <TableHead>Tag</TableHead>
+                  <TableHead className="w-[80px]" />
+                </TableRow>
+              </TableHeader>
 
-                <TableBody>
-                  {productTags?.length ? (
-                    productTags.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell>{item.product_id}</TableCell>
-                        <TableCell>{item.tag}</TableCell>
+              <TableBody>
+                {fetchLoading ? (
+                  <TableSkeleton />
+                ) : productTags?.length ? (
+                  productTags.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell>{item.product_id}</TableCell>
+                      <TableCell>{item.tag}</TableCell>
 
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreHorizontal className="w-4 h-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
 
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() => setEditId(item.id)}
-                              >
-                                <Edit className="w-4 h-4 mr-2" />
-                                Edit
-                              </DropdownMenuItem>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => setEditId(item.id)}
+                            >
+                              <Edit className="w-4 h-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
 
-                              <DropdownMenuItem
-                                className="text-red-500"
-                                onClick={() => deleteProductTag(item.id)}
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={3} className="text-center py-6">
-                        No data found
+                            <DropdownMenuItem
+                              className="text-red-500"
+                              onClick={() => deleteProductTag(item.id)}
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center py-6">
+                      No data found
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
 
-              <div className="flex justify-end gap-2 mt-4">
-                <Button
-                  variant="outline"
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => p - 1)}
-                >
-                  Prev
-                </Button>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button
+                variant="outline"
+                disabled={page === 1}
+                onClick={() => setPage((p) => p - 1)}
+              >
+                Prev
+              </Button>
 
-                <Button onClick={() => setPage((p) => p + 1)}>Next</Button>
-              </div>
-            </>
-          )}
+              <Button onClick={() => setPage((p) => p + 1)}>Next</Button>
+            </div>
+          </>
         </CardContent>
       </Card>
     </div>

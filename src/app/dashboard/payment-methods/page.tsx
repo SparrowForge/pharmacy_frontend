@@ -36,6 +36,7 @@ import { usePaymentMethods } from "@/src/hooks/usePaymentMethods";
 
 import { initialLimit, initialPage } from "@/src/constants/utils";
 import PaymentMethodDialogForm from "@/src/components/payment-methods/PaymentMethodDialogForm";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function PaymentMethodsPage() {
   const [page, setPage] = useState(initialPage);
@@ -117,22 +118,22 @@ export default function PaymentMethodsPage() {
         </CardHeader>
 
         <CardContent>
-          {fetchLoading ? (
-            <Loading text="Loading payment methods..." />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
 
-              <TableBody>
-                {paymentMethods?.map((item) => (
+            <TableBody>
+              {fetchLoading ? (
+                <TableSkeleton />
+              ) : paymentMethods.length > 0 ? (
+                paymentMethods?.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium flex items-center gap-2">
                       {item.icon && (
@@ -188,10 +189,16 @@ export default function PaymentMethodsPage() {
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    No data found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 

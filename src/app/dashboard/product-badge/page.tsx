@@ -39,16 +39,13 @@ import { useAppSelector } from "@/src/redux/hooks";
 
 import { initialLimit, initialPage } from "@/src/constants/utils";
 import ProductBadgeDialogForm from "@/src/components/product-badge/ProductBadgeDialogForm";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function ProductBadgesPage() {
   const [page, setPage] = useState(initialPage);
-
   const [search, setSearch] = useState("");
-
   const [editBadgeId, setEditBadgeId] = useState<string | null>(null);
-
   const { fetchProductBadges, deleteProductBadge } = useProductBadges();
-
   const { productBadges, fetchLoading } = useAppSelector(
     (state) => state.productBadge,
   );
@@ -66,7 +63,6 @@ export default function ProductBadgesPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">Product Badges</h1>
-
           <p className="text-muted-foreground">Manage product badges</p>
         </div>
 
@@ -93,35 +89,29 @@ export default function ProductBadgesPage() {
         </CardHeader>
 
         <CardContent>
-          {fetchLoading ? (
-            <Loading text="Loading..." />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Product ID</TableHead>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Product ID</TableHead>
+                <TableHead>Badge</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
 
-                  <TableHead>Badge</TableHead>
-
-                  <TableHead>Created</TableHead>
-
-                  <TableHead />
-                </TableRow>
-              </TableHeader>
-
-              <TableBody>
-                {productBadges?.map((item) => (
+            <TableBody>
+              {fetchLoading ? (
+                <TableSkeleton />
+              ) : productBadges.length > 0 ? (
+                productBadges?.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell>{item.product_id}</TableCell>
-
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Tag className="h-4 w-4" />
-
                         {item.badge}
                       </div>
                     </TableCell>
-
                     <TableCell>
                       {new Date(item.created_at).toLocaleDateString()}
                     </TableCell>
@@ -153,10 +143,16 @@ export default function ProductBadgesPage() {
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    No data found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 

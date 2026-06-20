@@ -47,21 +47,17 @@ import { initialLimit, initialPage } from "@/src/constants/utils";
 import Loading from "@/src/components/common/Loading";
 import { useBranches } from "@/src/hooks/useBranches";
 import BranchDialogueForm from "@/src/components/branch/BranchDialogueForm";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function BranchesPage() {
   const [page, setPage] = useState(initialPage);
   const [limit] = useState(initialLimit);
-
   const [search, setSearch] = useState("");
-
   const [includeDeleted, setIncludeDeleted] = useState(false);
-
   const [editBranchId, setEditBranchId] = useState<string | null>(null);
-
   const [openEdit, setOpenEdit] = useState(false);
-
   const { fetchBranches, deleteBranch } = useBranches();
-  const { branches, fetchLoading} = useAppSelector((state) => state.branch);
+  const { branches, fetchLoading } = useAppSelector((state) => state.branch);
 
   useEffect(() => {
     fetchBranches({
@@ -149,127 +145,125 @@ export default function BranchesPage() {
         </CardHeader>
 
         <CardContent>
-          {fetchLoading ? (
-            <Loading text="Loading branches..." />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Branch</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="w-[80px]"></TableHead>
-                </TableRow>
-              </TableHeader>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Branch</TableHead>
+                <TableHead>Contact</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="w-[80px]"></TableHead>
+              </TableRow>
+            </TableHeader>
 
-              <TableBody>
-                {branches?.length ? (
-                  branches.map((branch) => (
-                    <TableRow key={branch.id}>
-                      {/* Branch */}
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
-                            <Building2 className="w-5 h-5 text-primary" />
-                          </div>
-
-                          <div>
-                            <p className="font-medium">{branch.name}</p>
-
-                            <p className="text-xs text-muted-foreground">
-                              ID: {branch.id}
-                            </p>
-                          </div>
+            <TableBody>
+              {fetchLoading ? (
+                <TableSkeleton />
+              ) : branches?.length ? (
+                branches.map((branch) => (
+                  <TableRow key={branch.id}>
+                    {/* Branch */}
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
+                          <Building2 className="w-5 h-5 text-primary" />
                         </div>
-                      </TableCell>
 
-                      {/* Contact */}
-                      <TableCell>
-                        <div className="space-y-1">
-                          <p className="text-sm flex items-center gap-1">
-                            <Mail className="w-3 h-3" />
-                            {branch.email || "No email"}
-                          </p>
+                        <div>
+                          <p className="font-medium">{branch.name}</p>
 
-                          <p className="text-sm flex items-center gap-1">
-                            <Phone className="w-3 h-3" />
-                            {branch.phone || "No phone"}
+                          <p className="text-xs text-muted-foreground">
+                            ID: {branch.id}
                           </p>
                         </div>
-                      </TableCell>
+                      </div>
+                    </TableCell>
 
-                      {/* Location */}
-                      <TableCell>
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <MapPin className="w-4 h-4" />
+                    {/* Contact */}
+                    <TableCell>
+                      <div className="space-y-1">
+                        <p className="text-sm flex items-center gap-1">
+                          <Mail className="w-3 h-3" />
+                          {branch.email || "No email"}
+                        </p>
 
-                          {branch.city || "No city"}
-                        </div>
-                      </TableCell>
+                        <p className="text-sm flex items-center gap-1">
+                          <Phone className="w-3 h-3" />
+                          {branch.phone || "No phone"}
+                        </p>
+                      </div>
+                    </TableCell>
 
-                      {/* Status */}
-                      <TableCell>
-                        <Badge
-                          className={cn(
-                            branch.status === "active"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700",
-                          )}
-                        >
-                          {branch.status}
-                        </Badge>
-                      </TableCell>
+                    {/* Location */}
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <MapPin className="w-4 h-4" />
 
-                      {/* Actions */}
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                            >
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
+                        {branch.city || "No city"}
+                      </div>
+                    </TableCell>
 
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setEditBranchId(branch.id);
-                                setOpenEdit(true);
-                              }}
-                            >
-                              <Edit className="w-4 h-4 mr-2" />
-                              Edit Branch
-                            </DropdownMenuItem>
+                    {/* Status */}
+                    <TableCell>
+                      <Badge
+                        className={cn(
+                          branch.status === "active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700",
+                        )}
+                      >
+                        {branch.status}
+                      </Badge>
+                    </TableCell>
 
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => deleteBranch(branch.id)}
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={5}
-                      className="text-center py-10 text-muted-foreground"
-                    >
-                      No branches found
+                    {/* Actions */}
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                          >
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setEditBranchId(branch.id);
+                              setOpenEdit(true);
+                            }}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit Branch
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => deleteBranch(branch.id)}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          )}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="text-center py-10 text-muted-foreground"
+                  >
+                    No branches found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 

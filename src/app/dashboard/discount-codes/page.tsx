@@ -35,6 +35,7 @@ import { useDiscountCodes } from "@/src/hooks/useDiscountCodes";
 
 import { initialLimit, initialPage } from "@/src/constants/utils";
 import DiscountCodeDialogForm from "@/src/components/discount-codes/DiscountCodeDialogForm";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function DiscountCodesPage() {
   const [page, setPage] = useState(initialPage);
@@ -112,23 +113,23 @@ export default function DiscountCodesPage() {
         </CardHeader>
 
         <CardContent>
-          {fetchLoading ? (
-            <Loading text="Loading discount codes..." />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Code</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Value</TableHead>
-                  <TableHead>Max Usage</TableHead>
-                  <TableHead>Active</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Code</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Value</TableHead>
+                <TableHead>Max Usage</TableHead>
+                <TableHead>Active</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
 
-              <TableBody>
-                {discountCodes?.map((item) => (
+            <TableBody>
+              {fetchLoading ? (
+                <TableSkeleton />
+              ) : discountCodes.length > 0 ? (
+                discountCodes?.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{item.code}</TableCell>
 
@@ -169,10 +170,16 @@ export default function DiscountCodesPage() {
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    No data found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 

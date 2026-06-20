@@ -88,13 +88,14 @@ const menu: MenuItem[] = [
       },
       { title: "Brand", href: "/dashboard/product-brand", icon: PackageOpen },
       { title: "Products", href: "/dashboard/medicines", icon: PackageOpen },
+      { title: "Batch", href: "/dashboard/product-batch", icon: PackageOpen },
       { title: "Unit", href: "/dashboard/product-units", icon: PackageOpen },
       { title: "Badge", href: "/dashboard/product-badge", icon: PackageOpen },
       { title: "Tag", href: "/dashboard/product-tag", icon: PackageOpen },
       { title: "Image", href: "/dashboard/product-image", icon: PackageOpen },
-      { title: "Batch", href: "/dashboard/product-batch", icon: PackageOpen },
+
       { title: "Offers", href: "/dashboard/product-offers", icon: PackageOpen },
-      { title: "Pricing", href: "/dashboard/pricing", icon: DollarSign },
+      // { title: "Pricing", href: "/dashboard/pricing", icon: DollarSign },
     ],
   },
   {

@@ -35,6 +35,7 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 
 import ProductOfferDialogForm from "@/src/components/product-offer/ProductOfferDialogForm";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function ProductOffersPage() {
   const [page, setPage] = useState(initialPage);
@@ -128,24 +129,24 @@ export default function ProductOffersPage() {
         </CardHeader>
 
         <CardContent>
-          {fetchLoading ? (
-            <Loading text="Loading offers..." />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Product ID</TableHead>
-                  <TableHead>Discount</TableHead>
-                  <TableHead>Start</TableHead>
-                  <TableHead>End</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Product ID</TableHead>
+                <TableHead>Discount</TableHead>
+                <TableHead>Start</TableHead>
+                <TableHead>End</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
 
-              <TableBody>
-                {offers?.map((item) => (
+            <TableBody>
+              {fetchLoading ? (
+                <TableSkeleton />
+              ) : offers.length > 0 ? (
+                offers?.map((item) => (
                   <TableRow key={item.id}>
                     {/* TITLE */}
                     <TableCell>
@@ -216,10 +217,16 @@ export default function ProductOffersPage() {
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    No data found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 

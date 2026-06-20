@@ -37,6 +37,7 @@ import { initialLimit, initialPage } from "@/src/constants/utils";
 
 import Loading from "@/src/components/common/Loading";
 import ProductImageDialog from "@/src/components/product-image/ProductImageDialogForm";
+import TableSkeleton from "@/src/components/common/TableSkeleton";
 
 export default function ProductImagesPage() {
   const [page, setPage] = useState(initialPage);
@@ -108,9 +109,7 @@ export default function ProductImagesPage() {
         </CardHeader>
 
         <CardContent>
-          {fetchLoading ? (
-            <Loading text="Loading product images..." />
-          ) : (
+          
             <Table>
               <TableHeader>
                 <TableRow>
@@ -123,7 +122,7 @@ export default function ProductImagesPage() {
               </TableHeader>
 
               <TableBody>
-                {productImages?.length ? (
+                {fetchLoading ? <TableSkeleton/> : productImages?.length ? (
                   productImages.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell>{item.product_id}</TableCell>
@@ -184,7 +183,7 @@ export default function ProductImagesPage() {
                 )}
               </TableBody>
             </Table>
-          )}
+         
         </CardContent>
       </Card>
 
