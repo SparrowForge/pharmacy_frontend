@@ -43,7 +43,7 @@ export interface ICreateSalesInvoicePayload {
   invoice_date: string;
   notes?: string;
 
-  payments: ISalesInvoicePayment[];
+  payments?: ISalesInvoicePayment[];
   items: ISalesInvoiceItem[];
 }
 

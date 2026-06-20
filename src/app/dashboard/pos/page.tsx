@@ -157,10 +157,13 @@ export default function POSPage() {
   const handleAddToCart = async (product: any) => {
     try {
       const existing = cart.find((i) => i.product_id === product.product_id);
+
       const batches = await fetchAvailablePurchaseReceiptItems(
         product.product_id,
       );
+
       const batch = batches?.[0];
+
       if (!batch) {
         toast.error("No batch available");
         return;
@@ -228,7 +231,7 @@ export default function POSPage() {
     }
 
     const payments = selectedPaymentMethods
-      .filter((m) => m.method_id)
+      .filter((m) => m.method_id && parseFloat(m.amount) > 0)
       .map((m) => ({
         payment_method_id: m.method_id,
         amount: parseFloat(m.amount) || 0,
@@ -242,8 +245,6 @@ export default function POSPage() {
       }));
 
     const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
-    console.log("totalPaid",totalPaid)
-    console.log("payments",payments)
 
     if (saleType === "cash" && totalPaid < total) {
       toast.error(
@@ -264,7 +265,6 @@ export default function POSPage() {
       paid_amount: totalPaid,
       invoice_date: new Date().toISOString(),
       notes: "",
-      payments,
       items: cart.map((i) => ({
         product_id: i.product_id,
         product_batch_id: i.product_batch_id,
@@ -274,6 +274,7 @@ export default function POSPage() {
         discount: i.discount,
         tax: i.tax,
       })),
+       ...(payments?.length > 0 && { payments }),
     };
 
     try {

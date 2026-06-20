@@ -33,7 +33,7 @@ export interface InvoicePayload {
   paid_amount: number;
   invoice_date: string;
   notes: string;
-  payments: PaymentRecord[];
+  payments?: PaymentRecord[];
   items: InvoiceItem[];
 }
 
