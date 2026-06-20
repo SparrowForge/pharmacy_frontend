@@ -150,6 +150,14 @@ export default function AddMedicinePage() {
       const payload = {
         ...formData,
         preview_media_id: formData.preview_media_id ?? null,
+        unit_id: formData.unit_id ?? null,
+        default_unit_id: formData.default_unit_id ?? null,
+        brand_id: formData.brand_id ?? null,
+        category_id: formData.category_id ?? null,
+        supplier_id: formData.supplier_id ?? null,
+        manufacturer_id: formData.manufacturer_id ?? null,
+        distributor_id: formData.distributor_id ?? null,
+        product_video_url:formData.product_video_url ?? null
       };
       const res = await createProduct(payload);
 
@@ -178,10 +186,7 @@ export default function AddMedicinePage() {
           await createProductImage(productImagePayload);
         }
       }
-
-      // toast.success("Medicine added successfully!");
     } catch (error) {
-      // toast.error("Failed to save medicine");
       console.log(error);
     }
   };
@@ -640,7 +645,7 @@ export default function AddMedicinePage() {
                       <div className="grid sm:grid-cols-2 gap-4 mb-4">
                         <div className="space-y-2">
                           <Label htmlFor="purchasePrice">
-                            Purchase Per Unit Price 
+                            Purchase Per Unit Price
                           </Label>
                           <Input
                             id="purchasePrice"
@@ -674,7 +679,7 @@ export default function AddMedicinePage() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="sellingPrice">
-                            Selling Per Unit Price 
+                            Selling Per Unit Price
                           </Label>
                           <Input
                             id="sellingPrice"
@@ -692,7 +697,7 @@ export default function AddMedicinePage() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="offeredPrice">
-                            Offered Per Unit Price 
+                            Offered Per Unit Price
                           </Label>
                           <Input
                             id="offeredPrice"
@@ -816,9 +821,7 @@ export default function AddMedicinePage() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="shippingCost">
-                            Shipping Cost 
-                          </Label>
+                          <Label htmlFor="shippingCost">Shipping Cost</Label>
                           <Input
                             id="shippingCost"
                             type="number"

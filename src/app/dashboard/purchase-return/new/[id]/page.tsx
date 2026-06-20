@@ -126,7 +126,6 @@ export default function PurchaseOrderReturnForm() {
     await createPurchaseReturn(payload);
   };
 
-
   useEffect(() => {
     if (!singlePurchaseOrder?.items?.length) return;
     if (!batches.length) return;
@@ -160,14 +159,14 @@ export default function PurchaseOrderReturnForm() {
     return <Loading text="Loading Data ..." />;
   }
 
-  console.log(singlePurchaseOrder)
+  console.log(singlePurchaseOrder);
 
   return (
     <div className="space-y-6 p-4">
       {/* Header */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Label>Status</Label>
+          <Label className="mb-2">Status</Label>
 
           <Select
             value={formData.status}
@@ -195,7 +194,7 @@ export default function PurchaseOrderReturnForm() {
 
       {/* Reason */}
       <div>
-        <Label>Reason</Label>
+        <Label className="mb-2">Reason</Label>
         <Textarea
           value={formData.reason}
           onChange={(e) =>
@@ -210,7 +209,7 @@ export default function PurchaseOrderReturnForm() {
 
       {/* Notes */}
       <div>
-        <Label>Notes</Label>
+        <Label className="mb-2">Notes</Label>
 
         <Textarea
           value={formData.notes}
@@ -246,12 +245,12 @@ export default function PurchaseOrderReturnForm() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                  <Label>Ordered Quantity</Label>
+                  <Label className="mb-2">Ordered Quantity</Label>
                   <Input value={poItem.quantity_purchase} disabled />
                 </div>
 
                 <div>
-                  <Label>Return Quantity</Label>
+                  <Label className="mb-2">Return Quantity</Label>
                   <Input
                     type="number"
                     value={returnItem.return_qty || ""}
@@ -262,7 +261,7 @@ export default function PurchaseOrderReturnForm() {
                 </div>
 
                 <div>
-                  <Label>Unit Cost</Label>
+                  <Label className="mb-2">Unit Cost</Label>
                   <Input
                     type="number"
                     value={returnItem.unit_cost}
@@ -273,7 +272,7 @@ export default function PurchaseOrderReturnForm() {
                 </div>
 
                 <div>
-                  <Label>Batch</Label>
+                  <Label className="mb-2">Batch</Label>
 
                   <Select
                     value={returnItem.product_batch_id || ""}
@@ -296,8 +295,8 @@ export default function PurchaseOrderReturnForm() {
                 </div>
 
                 <div>
-                  <Label>Reason for Return</Label>
-                  <Input
+                  <Label className="mb-2">Reason for Return</Label>
+                  <Textarea
                     value={returnItem.reason || ""}
                     onChange={(e) =>
                       updateItem(index, "reason", e.target.value)

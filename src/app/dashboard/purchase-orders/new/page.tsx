@@ -46,6 +46,7 @@ import { Textarea } from "@/src/components/ui/textarea";
 import { useProducts } from "@/src/hooks/useProducts";
 import { useShops } from "@/src/hooks/useShops";
 import { useEnum } from "@/src/hooks/useEnum";
+import Loading from "@/src/components/common/Loading";
 
 interface PurchaseOrderFormProps {
   initialData?: IPurchaseOrder;
@@ -65,7 +66,7 @@ export default function PurchaseOrderForm({
   const { fetchBranches, branches } = useBranches();
   const { fetchCompanies, companies } = useCompanies();
   const { fetchProducts, products } = useProducts();
-  const { shops, fetchShops } = useShops();
+  const { shops, fetchShops, fetchLoading } = useShops();
 
   const [branchId, setBranchId] = useState(initialData?.branch_id || "");
   const [supplierId, setSupplierId] = useState(initialData?.supplier_id || "");
@@ -161,7 +162,7 @@ export default function PurchaseOrderForm({
     }
 
     const newItem = {
-      name:product.name,
+      name: product.name,
       product_id: product.id,
 
       product_batch_id: null, // or null if backend allows
@@ -173,7 +174,7 @@ export default function PurchaseOrderForm({
       discount: Number(itemDiscount || 0),
       tax: Number(itemTax || 0),
 
-      batch_number: batchNumber ,
+      batch_number: batchNumber,
       expected_expiry_date: null,
     };
 
@@ -234,7 +235,7 @@ export default function PurchaseOrderForm({
     );
 
     setPoNumber(generatedPO);
-
+    const products = lineItems.map(({ name, ...rest }) => rest);
     const payload: ICreatePurchaseOrderPayload = {
       po_number: poNumber,
       shop_id: shopId,
@@ -248,12 +249,15 @@ export default function PurchaseOrderForm({
       tax_amount: parseFloat(itemTax || "0"),
       shipping_cost: parseFloat(shippingCost || "0"),
       notes,
-      items: lineItems,
+      items: products,
     };
-
 
     await createPurchaseOrder(payload);
   };
+
+  if (fetchLoading) {
+    return <Loading text="loading data.." />;
+  }
 
   return (
     <div className="space-y-6">
@@ -397,8 +401,6 @@ export default function PurchaseOrderForm({
                   />
                 </div>
               </div>
-
-              
 
               <div className="space-y-2">
                 <Label htmlFor="notes">Special Notes / Instructions</Label>

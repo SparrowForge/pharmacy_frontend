@@ -75,7 +75,7 @@ export const defaultMedicineData: IMedicineFormData = {
   selling_price: 1,
   shipping_cost: 1,
   sku: "",
-  status: "",
+  status: "active",
   supplier_id: "",
   tag_name: "",
   tax_rate: 1,
