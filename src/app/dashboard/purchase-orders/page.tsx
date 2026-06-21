@@ -253,6 +253,15 @@ export default function PurchaseOrdersPage() {
                               </DropdownMenuItem>
                             </Link>
 
+                            <Link
+                              href={`/dashboard/purchase-order-payment/new/${po.id}`}
+                            >
+                              <DropdownMenuItem>
+                                <Eye className="w-4 h-4 mr-2" />
+                                Make Payment
+                              </DropdownMenuItem>
+                            </Link>
+
                             
 
                             <DropdownMenuItem

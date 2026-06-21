@@ -36,6 +36,8 @@ import salesReportReducer from "./features/stock-report/salesReportSlice"
 import purchaseReportReducer from "./features/stock-report/purchaseReportSlice"
 import supplierStatementReducer from "./features/statement/supplierStatementSlice"
 import customerStatementReducer from "./features/statement/customerStatementSlice"
+import purchaseOrderPaymentReducer from "./features/payments/purchaseOrderPaymentSlice"
+import supplierPaymentReportReducer from "./features/payments/supplierPaymentReportSlice"
 
 export const store = configureStore({
   reducer: {
@@ -75,7 +77,9 @@ export const store = configureStore({
     salesReport: salesReportReducer,
     purchaseReport: purchaseReportReducer,
     supplierStatement:supplierStatementReducer,
-    customerStatement:customerStatementReducer,
+    customerStatement: customerStatementReducer,
+    purhcaseOrderPayment: purchaseOrderPaymentReducer,
+    supplierPaymentReport: supplierPaymentReportReducer
   },
 });
 

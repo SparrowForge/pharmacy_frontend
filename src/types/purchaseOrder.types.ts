@@ -1,5 +1,4 @@
 export interface IPurchaseOrderItem {
-
   product_id: string;
   product_batch_id: string | null; // or null if backend allows
   purchase_unit_id: string;
@@ -35,8 +34,8 @@ export interface IPurchaseOrder {
   notes: string | null;
 
   items: IPurchaseOrderItem[];
-  totalqty: number,
-  totalreceiveqty: number
+  totalqty: number;
+  totalreceiveqty: number;
 
   created_at: string;
   updated_at: string;
@@ -112,8 +111,6 @@ export interface IDeletePurchaseOrderResponse {
   message: string;
   id: string;
 }
-
-
 
 // Product type
 export interface IProduct {
@@ -214,4 +211,6 @@ export interface IGetSinglePurchaseOrder {
   supplier_name: string;
 
   items: IGetSinglePurchaseOrderItem[];
+  paid_amount?: number;
+  due_amount?: number;
 }
