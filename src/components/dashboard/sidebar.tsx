@@ -159,6 +159,11 @@ const menu: MenuItem[] = [
         href: "/dashboard/purchase-order-payment/supplier-report",
         icon: CreditCard,
       },
+      {
+        title: "Customer Report",
+        href: "/dashboard/purchase-order-payment/customer-report",
+        icon: CreditCard,
+      },
     ],
   },
   {
