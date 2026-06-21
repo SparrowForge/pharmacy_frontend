@@ -34,6 +34,8 @@ import dashboardReducer from "./features/dashboard/dashboardSlice";
 import userReducer from "./features/users/userSlice";
 import salesReportReducer from "./features/stock-report/salesReportSlice"
 import purchaseReportReducer from "./features/stock-report/purchaseReportSlice"
+import supplierStatementReducer from "./features/statement/supplierStatementSlice"
+import customerStatementReducer from "./features/statement/customerStatementSlice"
 
 export const store = configureStore({
   reducer: {
@@ -71,7 +73,9 @@ export const store = configureStore({
     dashboardData: dashboardReducer,
     users: userReducer,
     salesReport: salesReportReducer,
-    purchaseReport:purchaseReportReducer
+    purchaseReport: purchaseReportReducer,
+    supplierStatement:supplierStatementReducer,
+    customerStatement:customerStatementReducer,
   },
 });
 

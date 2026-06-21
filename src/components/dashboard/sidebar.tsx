@@ -28,6 +28,7 @@ import {
   ShoppingCartIcon,
   Home,
   Command,
+  Stamp,
 } from "lucide-react";
 
 /* -------------------- TYPES (FIX FOR "never" ERROR) -------------------- */
@@ -155,6 +156,15 @@ const menu: MenuItem[] = [
       { title: "All Reports", href: "/dashboard/reports", icon: ChartAreaIcon },
       { title: "Sales Reports", href: "/dashboard/sales-reports", icon: ChartAreaIcon },
       { title: "Purchase Reports", href: "/dashboard/purchase-reports", icon: ChartAreaIcon },
+    ],
+  },
+  {
+    title: "Statements",
+    icon: Stamp,
+    children: [
+      { title: "Supplier", href: "/dashboard/statement/supplier", icon: Stamp },
+      { title: "Customer", href: "/dashboard/statement/customer", icon: Stamp },
+     
     ],
   },
 ];
