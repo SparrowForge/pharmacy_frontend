@@ -154,6 +154,7 @@ const menu: MenuItem[] = [
     children: [
       { title: "All Reports", href: "/dashboard/reports", icon: ChartAreaIcon },
       { title: "Sales Reports", href: "/dashboard/sales-reports", icon: ChartAreaIcon },
+      { title: "Purchase Reports", href: "/dashboard/purchase-reports", icon: ChartAreaIcon },
     ],
   },
 ];

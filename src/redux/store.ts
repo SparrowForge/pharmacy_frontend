@@ -33,6 +33,7 @@ import salesReturnReducer from "./features/sales-invoices/salesReurnSlice";
 import dashboardReducer from "./features/dashboard/dashboardSlice";
 import userReducer from "./features/users/userSlice";
 import salesReportReducer from "./features/stock-report/salesReportSlice"
+import purchaseReportReducer from "./features/stock-report/purchaseReportSlice"
 
 export const store = configureStore({
   reducer: {
@@ -69,7 +70,8 @@ export const store = configureStore({
     salesReturns: salesReturnReducer,
     dashboardData: dashboardReducer,
     users: userReducer,
-    salesReport:salesReportReducer
+    salesReport: salesReportReducer,
+    purchaseReport:purchaseReportReducer
   },
 });
 

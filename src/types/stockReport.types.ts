@@ -99,3 +99,47 @@ export interface ISalesReportResponse {
   totals: ISalesReportTotals;
   data: ISalesReportItem[];
 }
+
+
+/* ---------------PURCHASE REPORT --------------- */
+export interface IPurchaseReportParams {
+  start_date: string;
+  end_date: string;
+  supplier_id?: string | null;
+  category_id?: string | null;
+  product_id?: string | null;
+  page?: number;
+  limit?: number;
+}
+
+export interface IPurchaseReportItem {
+  date: string;
+  po_number: string;
+  supplier_name: string;
+  product_name: string;
+  category_name: string;
+  purchase_qty: number;
+  unit_cost: number;
+  purchase_amount: number;
+}
+
+export interface IPurchaseReportTotals {
+  total_qty: number;
+  total_amount: number;
+}
+
+export interface IPurchaseReportResponse {
+  report: "purchase";
+  filters: {
+    start_date: string;
+    end_date: string;
+    supplier_id: string | null;
+    category_id: string | null;
+    product_id: string | null;
+  };
+  page: number;
+  limit: number;
+  total: number;
+  totals: IPurchaseReportTotals;
+  data: IPurchaseReportItem[];
+}

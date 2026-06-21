@@ -1,7 +1,7 @@
 // stockReport.service.ts
 
 import axiosInstance from "./axios";
-import { ISalesReportParams, ISalesReportResponse, IStockReportQuery, IStockReportResponse } from "@/src/types/stockReport.types";
+import { IPurchaseReportParams, IPurchaseReportResponse, ISalesReportParams, ISalesReportResponse, IStockReportQuery, IStockReportResponse } from "@/src/types/stockReport.types";
 
 
 
@@ -28,7 +28,19 @@ const getSalesReportService = async (
   return response.data;
 };
 
+const getPurchaseReportService = async (
+  params: IPurchaseReportParams,
+): Promise<IPurchaseReportResponse> => {
+  const res = await axiosInstance.get<IPurchaseReportResponse>(
+    "/reports/purchases",
+    { params },
+  );
+
+  return res.data;
+};
+
 export const stockReportService = {
   getStockReportService,
-  getSalesReportService
+  getSalesReportService,
+  getPurchaseReportService
 }
