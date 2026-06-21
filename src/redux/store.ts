@@ -32,6 +32,7 @@ import paymentMethodReducer from "./features/payment-methods/paymentMethodSlice"
 import salesReturnReducer from "./features/sales-invoices/salesReurnSlice";
 import dashboardReducer from "./features/dashboard/dashboardSlice";
 import userReducer from "./features/users/userSlice";
+import salesReportReducer from "./features/stock-report/salesReportSlice"
 
 export const store = configureStore({
   reducer: {
@@ -68,6 +69,7 @@ export const store = configureStore({
     salesReturns: salesReturnReducer,
     dashboardData: dashboardReducer,
     users: userReducer,
+    salesReport:salesReportReducer
   },
 });
 

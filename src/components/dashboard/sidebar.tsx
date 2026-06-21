@@ -93,7 +93,6 @@ const menu: MenuItem[] = [
       { title: "Badge", href: "/dashboard/product-badge", icon: PackageOpen },
       { title: "Tag", href: "/dashboard/product-tag", icon: PackageOpen },
       { title: "Image", href: "/dashboard/product-image", icon: PackageOpen },
-
       { title: "Offers", href: "/dashboard/product-offers", icon: PackageOpen },
       // { title: "Pricing", href: "/dashboard/pricing", icon: DollarSign },
     ],
@@ -152,7 +151,10 @@ const menu: MenuItem[] = [
   {
     title: "Reports",
     icon: ChartAreaIcon,
-    href: "/dashboard/reports",
+    children: [
+      { title: "All Reports", href: "/dashboard/reports", icon: ChartAreaIcon },
+      { title: "Sales Reports", href: "/dashboard/sales-reports", icon: ChartAreaIcon },
+    ],
   },
 ];
 

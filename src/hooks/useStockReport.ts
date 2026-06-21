@@ -12,10 +12,7 @@ import {
   setStockFilters,
 } from "@/src/redux/features/stock-report/stockReportSlice";
 
-import {
-  getStockReportService,
-
-} from "@/src/services/stockReport.service";
+import { stockReportService } from "@/src/services/stockReport.service";
 import { IStockReportQuery } from "../types/stockReport.types";
 
 export const useStockReport = () => {
@@ -29,7 +26,7 @@ export const useStockReport = () => {
 
         const query = params || state.filters;
 
-        const res = await getStockReportService(query);
+        const res = await stockReportService.getStockReportService(query);
 
         dispatch(
           fetchStockReportSuccess({
@@ -52,6 +49,8 @@ export const useStockReport = () => {
     },
     [dispatch, state.filters],
   );
+
+  
 
   return {
     fetchStockReport,

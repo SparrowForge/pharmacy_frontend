@@ -44,3 +44,58 @@ export interface IStockReportQuery {
   category_id?: string;
   product_id?: string;
 }
+
+
+/* ---------------- SALES REPORT REQUEST ---------------- */
+
+export interface ISalesReportParams {
+  start_date: string;
+  end_date: string;
+  customer_id?: string | null;
+  category_id?: string | null;
+  product_id?: string | null;
+  page?: number;
+  limit?: number;
+}
+
+/* ---------------- SALES REPORT TOTALS ---------------- */
+
+export interface ISalesReportTotals {
+  total_qty: number;
+  total_amount: number;
+}
+
+/* ---------------- SALES REPORT ITEM ---------------- */
+
+export interface ISalesReportItem {
+  date: string;
+  invoice_number: string;
+  customer_name: string;
+  product_name: string;
+  category_name: string;
+  sales_qty: number;
+  unit_price: number;
+  sales_amount: number;
+}
+
+/* ---------------- SALES REPORT FILTERS ---------------- */
+
+export interface ISalesReportFilters {
+  start_date: string;
+  end_date: string;
+  customer_id: string | null;
+  category_id: string | null;
+  product_id: string | null;
+}
+
+/* ---------------- SALES REPORT RESPONSE ---------------- */
+
+export interface ISalesReportResponse {
+  report: "sales";
+  filters: ISalesReportFilters;
+  page: number;
+  limit: number;
+  total: number;
+  totals: ISalesReportTotals;
+  data: ISalesReportItem[];
+}
