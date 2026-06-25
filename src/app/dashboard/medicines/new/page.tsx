@@ -149,16 +149,17 @@ export default function AddMedicinePage() {
     try {
       const payload = {
         ...formData,
-        preview_media_id: formData.preview_media_id ?? null,
-        unit_id: formData.unit_id ?? null,
-        default_unit_id: formData.default_unit_id ?? null,
-        brand_id: formData.brand_id ?? null,
-        category_id: formData.category_id ?? null,
-        supplier_id: formData.supplier_id ?? null,
-        manufacturer_id: formData.manufacturer_id ?? null,
-        distributor_id: formData.distributor_id ?? null,
-        product_video_url:formData.product_video_url ?? null
+        preview_media_id: formData.preview_media_id || null,
+        unit_id: formData.unit_id || null,
+        default_unit_id: formData.default_unit_id || null,
+        brand_id: formData.brand_id || null,
+        category_id: formData.category_id || null,
+        supplier_id: formData.supplier_id || null,
+        manufacturer_id: formData.manufacturer_id || null,
+        distributor_id: formData.distributor_id || null,
+        product_video_url: formData.product_video_url || null,
       };
+      console.log(payload);
       const res = await createProduct(payload);
 
       if (res.id) {
@@ -319,7 +320,7 @@ export default function AddMedicinePage() {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="category">Category *</Label>
+                        <Label htmlFor="category">Category </Label>
                         <Select
                           value={formData.category_id}
                           onValueChange={(value) =>
@@ -342,7 +343,7 @@ export default function AddMedicinePage() {
 
                     <div className="grid grid-cols-3 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="supplier">Supplier *</Label>
+                        <Label htmlFor="supplier">Supplier </Label>
                         <Select
                           value={formData.supplier_id}
                           onValueChange={(value) =>
@@ -362,7 +363,7 @@ export default function AddMedicinePage() {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="manufacturer">Manufacturer *</Label>
+                        <Label htmlFor="manufacturer">Manufacturer </Label>
                         <Select
                           value={formData.manufacturer_id}
                           onValueChange={(value) =>
@@ -383,7 +384,7 @@ export default function AddMedicinePage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="Distributor">Distributor *</Label>
+                        <Label htmlFor="Distributor">Distributor </Label>
                         <Select
                           value={formData.distributor_id}
                           onValueChange={(value) =>

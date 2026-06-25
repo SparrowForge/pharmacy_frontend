@@ -1,249 +1,181 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useEffect, useState } from "react";
+
+import { Building2, Search, MapPin, Mail, Phone } from "lucide-react";
 
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
-import { Card, CardContent } from "@/src/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import { Badge } from "@/src/components/ui/badge";
 
-import { Search, MapPin, Mail, Phone, Building2 } from "lucide-react";
-
 import { useCompanies } from "@/src/hooks/useCompanies";
+import { useAppSelector } from "@/src/redux/hooks";
+
+import TableSkeleton from "@/src/components/common/TableSkeleton";
+
+import { initialLimit, initialPage } from "@/src/constants/utils";
+import Loading from "@/src/components/common/Loading";
 
 export default function ManufacturersPage() {
-  const { fetchLoading, companies } = useCompanies();
+  const [page, setPage] = useState(initialPage);
+  const [search, setSearch] = useState("");
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(1);
-  const limit = 6;
+  const limit = initialLimit;
 
-  // manufacturers only
-  const manufacturers = useMemo(() => {
-    return companies.filter((c: any) => c.company_type === "manufacturer");
-  }, [companies]);
+  const { fetchCompanies } = useCompanies();
 
-  // search
-  const filtered = useMemo(() => {
-    return manufacturers.filter((m: any) =>
-      `${m.name} ${m.city ?? ""} ${m.email ?? ""} ${m.phone ?? ""}`
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()),
-    );
-  }, [manufacturers, searchQuery]);
+  const { companies, fetchLoading } = useAppSelector(
+    (state) => state.companies,
+  );
 
-  const totalPages = Math.ceil(filtered.length / limit);
-
-  const paginated = useMemo(() => {
-    const start = (page - 1) * limit;
-    return filtered.slice(start, start + limit);
-  }, [filtered, page]);
+  useEffect(() => {
+    fetchCompanies({
+      page,
+      limit,
+      q: search,
+    });
+  }, [fetchCompanies, page, limit, search]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-green-500/10 text-green-600 border-green-500/20";
+        return "bg-green-100 text-green-700";
       case "inactive":
-        return "bg-red-500/10 text-red-600 border-red-500/20";
+        return "bg-red-100 text-red-700";
       default:
-        return "bg-gray-500/10 text-gray-600 border-gray-500/20";
+        return "bg-gray-100 text-gray-700";
     }
   };
+
+  const manufacturers = companies.filter(
+    (item) => item.company_type === "manufacturer",
+  );
 
   return (
     <div className="space-y-6">
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Manufacturers
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Manage and monitor all pharmaceutical manufacturers
-          </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+            <Building2 className="w-6 h-6 text-primary" />
+          </div>
+
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">
+              Manufacturers
+            </h1>
+
+            <p className="text-muted-foreground">Manage all manufacturers</p>
+          </div>
         </div>
 
         <div className="text-sm text-muted-foreground">
-          Total:{" "}
-          <span className="font-medium text-foreground">
+          Total Manufacturers:
+          <span className="ml-1 font-medium text-foreground">
             {manufacturers.length}
           </span>
         </div>
-
-        {/* <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 animate-gradient">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Manufacturer
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Manufacturer</DialogTitle>
-              <DialogDescription>
-                Enter the manufacturer details
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleAddManufacturer} className="space-y-4">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Manufacturer Name *</Label>
-                  <Input
-                    id="name"
-                    placeholder="e.g. Pharma Corp Ltd."
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="country">Country *</Label>
-                  <Input id="country" placeholder="e.g. India" required />
-                </div>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="city">City</Label>
-                  <Input id="city" placeholder="e.g. Mumbai" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="established">Established Year</Label>
-                  <Input
-                    id="established"
-                    type="number"
-                    placeholder="e.g. 2010"
-                  />
-                </div>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="contact@manufacturer.com"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" placeholder="+1-XXX-XXX-XXXX" />
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <Button
-                  type="submit"
-                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 animate-gradient flex-1"
-                >
-                  Add Manufacturer
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsAddDialogOpen(false)}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog> */}
       </div>
 
-      {/* SEARCH BAR */}
+      {/* SEARCH */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+
         <Input
-          className="pl-10 h-10 bg-background"
-          placeholder="Search by name, email, phone..."
-          value={searchQuery}
+          placeholder="Search manufacturers..."
+          className="pl-10"
+          value={search}
           onChange={(e) => {
-            setSearchQuery(e.target.value);
+            setSearch(e.target.value);
             setPage(1);
           }}
         />
       </div>
 
       {/* LIST */}
-      <div className="grid gap-4">
-        {paginated.map((m: any) => (
-          <Card
-            key={m.id}
-            className="group border border-border/60 hover:border-primary/30 transition-all hover:shadow-sm"
-          >
-            <CardContent className="p-5 flex items-start justify-between gap-6">
-              {/* LEFT */}
-              <div className="space-y-3">
-                {/* NAME + STATUS */}
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-muted-foreground" />
-                    <h3 className="font-semibold text-foreground">{m.name}</h3>
-                  </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>All Manufacturers</CardTitle>
+        </CardHeader>
 
-                  <Badge
-                    className={`${getStatusColor(m.status)} capitalize border`}
-                  >
-                    {m.status ?? "active"}
-                  </Badge>
-                </div>
+        <CardContent>
+          {fetchLoading ? (
+            <Loading text="loading data" />
+          ) : manufacturers.length > 0 ? (
+            <div className="space-y-4">
+              {manufacturers.map((manufacturer) => (
+                <Card
+                  key={manufacturer.id}
+                  className="border border-border/60 hover:border-primary/30 transition-all hover:shadow-sm"
+                >
+                  <CardContent className="p-5 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                    <div className="space-y-3 flex-1">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="w-4 h-4 text-muted-foreground" />
 
-                {/* INFO GRID */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-2 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    <span>{m.city || "-"}</span>
-                  </div>
+                          <h3 className="font-semibold">{manufacturer.name}</h3>
+                        </div>
 
-                  <div className="flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
-                    <span className="truncate max-w-[180px]">
-                      {m.email || "-"}
-                    </span>
-                  </div>
+                        <Badge
+                          className={`${getStatusColor(manufacturer.status)}`}
+                        >
+                          {manufacturer.status}
+                        </Badge>
+                      </div>
 
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-4 h-4" />
-                    <span>{m.phone || "-"}</span>
-                  </div>
-                </div>
-              </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4" />
+                          <span>{manufacturer.city || "-"}</span>
+                        </div>
 
-              {/* RIGHT SIDE (optional future actions space) */}
-              <div className="text-right text-xs text-muted-foreground">
-                ID: {m.code || "N/A"}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4" />
+                          <span>{manufacturer.email || "-"}</span>
+                        </div>
 
-      {/* EMPTY STATE */}
-      {!fetchLoading && paginated.length === 0 && (
-        <Card className="border-dashed">
-          <CardContent className="py-14 text-center">
-            <p className="text-muted-foreground">No manufacturers found</p>
-          </CardContent>
-        </Card>
-      )}
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4" />
+                          <span>{manufacturer.phone || "-"}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-sm text-muted-foreground">
+                      {manufacturer.contact_person || "No Contact"}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              No manufacturers found
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* PAGINATION */}
-      <div className="flex items-center justify-between pt-2">
+      <div className="flex justify-end gap-2">
         <Button
           variant="outline"
           disabled={page === 1}
           onClick={() => setPage((p) => p - 1)}
         >
-          Previous
+          Prev
         </Button>
-
-        <p className="text-sm text-muted-foreground">
-          Page <span className="font-medium text-foreground">{page}</span> of{" "}
-          {totalPages || 1}
-        </p>
 
         <Button
           variant="outline"
-          disabled={page === totalPages || totalPages === 0}
+          disabled={companies.length < limit}
           onClick={() => setPage((p) => p + 1)}
         >
           Next

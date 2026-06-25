@@ -90,13 +90,13 @@ export interface ICreateProductPayload {
   overview: string;
   tag_name: string;
 
-  brand_id: string;
-  category_id: string;
-  default_unit_id:string
-  unit_id: string;
-  supplier_id: string;
-  manufacturer_id: string;
-  distributor_id: string;
+  brand_id: string | null;
+  category_id: string | null;
+  default_unit_id:string | null
+  unit_id: string | null;
+  supplier_id: string | null;
+  manufacturer_id: string | null;
+  distributor_id: string | null;
 
   purchase_price: number;
   mrp: number;
@@ -127,7 +127,7 @@ export interface ICreateProductPayload {
   meta_description: string;
 
   preview_media_id: string | null;
-  product_video_url: string;
+  product_video_url: string | null;
 
   status: string;
   is_active: boolean;
