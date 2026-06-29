@@ -224,6 +224,10 @@ export default function POSPage() {
       toast.error("Select customer");
       return;
     }
+    if (!status) {
+      toast.error("Select status");
+      return;
+    }
 
     if (!selectedPaymentMethods.some((m) => m.method_id)) {
       toast.error("Select at least one payment method");

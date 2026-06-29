@@ -148,8 +148,8 @@ export function FiltersSection({
             </div>
 
             <div className="space-y-2">
-              <Label className="text-xs">Status</Label>
-              <Select value={status} onValueChange={onStatusChange}>
+              <Label className="text-xs">Status*</Label>
+              <Select required value={status} onValueChange={onStatusChange}>
                 <SelectTrigger className="h-9 text-sm w-full">
                   <SelectValue placeholder="Select Status" />
                 </SelectTrigger>
